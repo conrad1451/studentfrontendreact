@@ -2,7 +2,7 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 // import CustomTable from './MyTable'
-import Table from "./components/StudentTable";
+import StudentTable from "./components/StudentTable";
 
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -79,12 +79,24 @@ function App() {
           <Route
             path="/tabletest"
             element={
-              <Table
+              <StudentTable
                 thePages={[
-                  { id: 1, value: "bro" },
-                  { id: 2, value: "yo" },
+                  {
+                    id: 101,
+                    FirstName: "Steven",
+                    LastName: "Okang",
+                    Email: "steveokang@gmail.com",
+                    Major: "Computer Science",
+                  },
+                  {
+                    id: 102,
+                    FirstName: "Kwame",
+                    LastName: "Kingston",
+                    Email: "kwamekingston@gmail.com",
+                    Major: "Electrical Engineering",
+                  },
                 ]}
-                theQuantities={[1, 7]}
+                // theQuantities={[1, 7]}
               />
             }
           />
