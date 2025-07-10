@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
-import DataFetcher from "./services/DataFetcher";
+import StudentsDisplay from "./components/StudentsDisplay";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "./App.css";
@@ -78,7 +78,7 @@ function App() {
         <Routes>
           <Route path="/" element={<NavigationButtons />} />
           <Route path="/orig" element={<OldApp />} />
-          <Route path="/datafetcher" element={<DataFetcher />} />
+          <Route path="/datafetcher" element={<StudentsDisplay />} />
           <Route
             path="/tabletest"
             element={
