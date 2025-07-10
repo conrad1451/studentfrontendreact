@@ -5,9 +5,9 @@ import { useState, useMemo } from "react";
 
 import type { RowPage } from "../utils/dataTypes";
 
-interface Item {
-  value: string;
-}
+// interface Item {
+//   value: string;
+// }
 
 // const allColumnKeys: Array<keyof RowPage> = [
 //   "Name",
