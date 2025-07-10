@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-import { RowPage } from "../utils/dataTypes";
+import type { RowPage } from "../utils/dataTypes";
 
 /**
  * Comparator function for sorting RowPage objects by Name.
@@ -9,13 +9,13 @@ import { RowPage } from "../utils/dataTypes";
  * @param direction - Sort direction ("asc" or "desc").
  * @returns -1 if a < b, 1 if a > b, 0 if equal, based on direction.
  */
-function sortByNameComparator(
+function sortByFirstNameComparator(
   a: RowPage,
   b: RowPage,
   direction: "asc" | "desc"
 ): number {
-  const nameA = a.Name.toLowerCase();
-  const nameB = b.Name.toLowerCase();
+  const nameA = a.FirstName.toLowerCase();
+  const nameB = b.FirstName.toLowerCase();
   if (nameA < nameB) {
     return direction === "asc" ? -1 : 1;
   }
@@ -40,38 +40,53 @@ function sortByNameComparator(
  */
 export const useTableSorting = (filteredData: RowPage[]) => {
   // --- State for Sort Directions ---
-  const [sortDirectionName, setSortDirectionName] = useState<
+  const [sortDirectionFirstName, setSortDirectionFirstName] = useState<
     "asc" | "desc" | null
   >(null);
 
+  // const [sortDirectionLastName, setSortDirectionLastName] = useState<
+  //   "asc" | "desc" | null
+  // >(null);
+
+  // const [sortDirectionEmail, setSortDirectionEmail] = useState<
+  //   "asc" | "desc" | null
+  // >(null);
+
+  // const [sortDirectionMajor, setSortDirectionMajor] = useState<
+  //   "asc" | "desc" | null
+  // >(null);
+
   // --- Reset Functions for Sorting ---
-  const resetNameSort = () => setSortDirectionName(null);
+  const resetFirstNameSort = () => setSortDirectionFirstName(null);
+  // const resetLastNameSort = () => setSortDirectionLastName(null);
+  // const resetEmailSort = () => setSortDirectionEmail(null);
+  // const resetMajorSort = () => setSortDirectionMajor(null);
 
   // --- Sort Handlers (to be called by UI) ---
-  const handleNameSort = (direction: "asc" | "desc") => {
-    setSortDirectionName(direction);
+  const handleFirstNameSort = (direction: "asc" | "desc") => {
+    setSortDirectionFirstName(direction);
 
     // --- Memoized Sorted Data ---
     const sortedData = useMemo(() => {
       const sortableData = [...filteredData]; // Create a shallow copy to avoid mutating original array
 
-      if (sortDirectionName) {
+      if (sortDirectionFirstName) {
         sortableData.sort((a, b) =>
-          sortByNameComparator(a, b, sortDirectionName)
+          sortByFirstNameComparator(a, b, sortDirectionFirstName)
         );
       }
 
       return sortableData;
-    }, [filteredData, sortDirectionName]);
+    }, [filteredData, sortDirectionFirstName]);
 
     return {
       sortedData,
       sortProps: {
-        sortDirectionName,
+        sortDirectionFirstName,
       },
       sortHandlers: {
-        handleNameSort,
-        resetNameSort,
+        handleFirstNameSort,
+        resetFirstNameSort,
       },
     };
   };
