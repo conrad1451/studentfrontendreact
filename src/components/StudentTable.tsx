@@ -29,7 +29,6 @@ import Modal from "@mui/material/Modal";
 import { useTableFilters } from "../hooks/useTableFilters";
 import { useTableSorting } from "../hooks/useTableSorting";
 
-// need another
 import {
   // useColumnVisibility,
   // ColumnVisibility,
@@ -46,115 +45,32 @@ import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 //   producePropList,
 // } from "../../utils/dataTransforms"; // Adjust the path as per your project structure
 
-import { mapPagesToCustomTableData } from "../utils/dataTransforms";
+import {
+  mapPagesToCustomTableData,
+  producePropList,
+} from "../utils/dataTransforms";
 
 // import axios from "axios";
-import BasicDownshiftV1 from "../dropdown/BasicDropdownList";
+// import BasicDownshiftV1 from "../dropdown/BasicDropdownList";
 import renderModalContent1 from "../renderModalContent";
+
 // import "./App.css";
 
 // import OtherDropdownList from "./OtherDropdownList";
 // import "./../MyTable.css"; // Import the CSS file
 
 // --- Interfaces ---
-import { FoodItem, RowPage, FoodPage } from "../../utils/dataTypes";
+// import { FoodItem, RowPage, FoodPage } from "../../utils/dataTypes";
+
+import type { Item, RowPage, StudentRecord } from "../utils/dataTypes";
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
-  "Name",
+  "FirstName",
   "Qty",
-  "Source",
-  "UnitSize",
-  "ServingSize",
-  "Fat",
-  "SatFat",
-  "Sodium",
-  "Protein",
-  "Carbs",
-  "Fiber",
-  "Sugar",
-  "AddedSugar",
-  // "PageURL",
-  // "pageContent",
+  "LastName",
+  "Email",
+  "Major",
 ];
-
-// --- Helper Functions ---
-// function createMiniTableData(
-//   myID: string,
-//   Name: string,
-//   Source: string[],
-//   Tags: string[],
-//   Company: string,
-//   PageURL: string,
-//   pageContent: string,
-//   CreatedTime: Date,
-//   EditedTime: Date,
-//   UnitSize: string,
-//   UnitCount: number,
-//   ServingSize: string,
-//   ServingCount: number,
-//   Fat: number,
-//   SatFat: number,
-//   Sodium: number,
-//   Protein: number,
-//   Carbs: number,
-//   Fiber: number,
-//   Sugar: number,
-//   AddedSugar: number
-// ): RowPage {
-//   return {
-//     myID,
-//     Name,
-//     Source: Source.join(" | "),
-//     Tags,
-//     Company,
-//     PageURL,
-//     pageContent,
-//     CreatedTime,
-//     EditedTime,
-//     UnitSize,
-//     UnitCount,
-//     ServingSize,
-//     ServingCount,
-//     Fat,
-//     SatFat,
-//     Sodium,
-//     Protein,
-//     Carbs,
-//     Fiber,
-//     Sugar,
-//     AddedSugar,
-//   };
-// }
-
-// function mapPagesToCustomTableData(pages: FoodPage[]): RowPage[] {
-//   return pages.map((page) =>
-//     createMiniTableData(
-//       page.id,
-//       page.Name,
-//       page.Source,
-//       page.Tags,
-//       page.Company,
-//       page.PageURL,
-//       page.pageContent,
-//       page.CreatedTime,
-//       page.EditedTime,
-//       page.UnitSize,
-//       page.UnitCount,
-//       page.ServingSize,
-//       page.ServingCount,
-//       page.Fat,
-//       page.SatFat,
-//       page.Sodium,
-//       page.Protein,
-//       page.Carbs,
-//       page.Fiber,
-//       page.Sugar,
-//       page.AddedSugar
-//     )
-//   );
-// }
-
-// ------------------------------------------------------------//
 
 const ColumnVisibilityToggles = (props: {
   visibleColumns: ColumnVisibilityMiniTable;
@@ -355,25 +271,25 @@ const TableHeaderCells = (props: {
 
 const TableBodyRows = (props: {
   data: RowPage[];
-  FoodQty: number[];
+  // FoodQty: number[];
   visibleColumns: ColumnVisibilityMiniTable;
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
 }) => {
   // CHQ: Gemini AI generated
   // Helper function to calculate the dot product for a given nutrient column
-  const calculateDotProduct = (
-    nutrientColName: keyof RowPage,
-    data: RowPage[],
-    quantities: number[]
-  ) => {
-    let total = 0;
-    for (let i = 0; i < data.length; i++) {
-      const quantity = quantities[i] || 0; // Default to 0 if quantity is undefined
-      const nutrientValue = (data[i][nutrientColName] as number) || 0; // Cast to number, default to 0
-      total += quantity * nutrientValue;
-    }
-    return total.toFixed(2); // Format to two decimal places
-  };
+  // const calculateDotProduct = (
+  //   nutrientColName: keyof RowPage,
+  //   data: RowPage[],
+  //   quantities: number[]
+  // ) => {
+  //   let total = 0;
+  //   for (let i = 0; i < data.length; i++) {
+  //     const quantity = quantities[i] || 0; // Default to 0 if quantity is undefined
+  //     const nutrientValue = (data[i][nutrientColName] as number) || 0; // Cast to number, default to 0
+  //     total += quantity * nutrientValue;
+  //   }
+  //   return total.toFixed(2); // Format to two decimal places
+  // };
 
   return (
     <TableBody>
@@ -384,7 +300,7 @@ const TableBodyRows = (props: {
               <TableCell key={colName}>
                 {colName === "FirstName" && row.FirstName}
                 {/* below caused an error */}
-                {colName === "Qty" && props.FoodQty[index]}
+                {/* {colName === "Qty" && props.FoodQty[index]} */}
                 {/* {colName === "Qty" && row.ServingCount} */}
                 {/* NEW: Display ServingCount as Qty */}
                 {colName === "LastName" && row.LastName}
@@ -423,10 +339,10 @@ const MyExpandMoreIcon = () => {
 };
 
 const StudentTable = (props: {
-  thePages: FoodPage[];
-  theQuantities: number[];
+  thePages: StudentRecord[];
+  // theQuantities: number[];
 }) => {
-  // 1. Data Transformation: Convert FoodPage[] to RowPage[]
+  // 1. Data Transformation: Convert StudentRecord[] to RowPage[]
   const rawTableData: RowPage[] = useMemo(
     () => mapPagesToCustomTableData(props.thePages),
     [props.thePages]
@@ -434,7 +350,7 @@ const StudentTable = (props: {
 
   // Filter out rows with empty names (as per your original logic)
   const initialTableDataForHooks = rawTableData.filter(
-    (row) => row && row.Name && row.Name.trim() !== ""
+    (row) => row && row.FirstName && row.FirstName.trim() !== ""
   );
 
   // 2. Column Visibility Hook
@@ -454,32 +370,20 @@ const StudentTable = (props: {
   // 4. Sorting Hook
   const { sortedData, sortProps, sortHandlers } = useTableSorting(filteredData);
 
-  // Derive lists for dropdowns based on the currently filtered data
-  // These should be passed to FilterControlsSection
-  const tagList = useMemo(
-    () => producePropList(sortedData, "Tags"),
-    [sortedData]
-  );
-
-  const sourceList = useMemo(
-    () => producePropList(sortedData, "Source"),
-    [sortedData]
-  );
-
-  // The list of all available food names, mapped to the { value: string } FoodItem format
-  const allFoodNames: FoodItem[] = useMemo(
+  // The list of all student names, mapped to the { id: number, value: string } Item format
+  const allStudentNames: Item[] = useMemo(
     () =>
       rawTableData.map((row) => ({
         id: Math.floor(100 * Math.random()),
-        value: row.Name,
+        value: row.FirstName,
       })),
     [rawTableData]
   );
 
   //   // State to hold the processed lines from FoodEntryProcessor
-  const [foodEntryProcessedLines, setFoodEntryProcessedLines] = useState<
-    { id: string; text: string; matchedItem: FoodItem | null }[]
-  >([]);
+  // const [foodEntryProcessedLines, setFoodEntryProcessedLines] = useState<
+  //   { id: string; text: string; matchedItem: Item | null }[]
+  // >([]);
 
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
@@ -487,13 +391,13 @@ const StudentTable = (props: {
     return () => console.log("StudentTable unmounted or re-rendered"); // Corrected log
   }, []);
   useEffect(
-    () => console.log("allFoodNames updated:", allFoodNames),
-    [allFoodNames]
+    () => console.log("allStudentNames updated:", allStudentNames),
+    [allStudentNames]
   );
   // Log the processed lines from FoodEntryProcessor
-  useEffect(() => {
-    console.log("Food Entry Processed Lines:", foodEntryProcessedLines);
-  }, [foodEntryProcessedLines]);
+  // useEffect(() => {
+  //   console.log("Food Entry Processed Lines:", foodEntryProcessedLines);
+  // }, [foodEntryProcessedLines]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
@@ -544,11 +448,6 @@ const StudentTable = (props: {
         onReset={resetVisibility}
         presets={presets}
       />
-      {/* NEW: Integrate the FoodEntryProcessor */}
-      {/* <FoodEntryProcessor
-        foodItems={allFoodNames}
-        onFinalSelectionsChange={setFoodEntryProcessedLines} // Store the processed lines here
-      /> */}
 
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <IconButton
@@ -576,7 +475,7 @@ const StudentTable = (props: {
             />
             <TableBodyRows
               data={sortedData}
-              FoodQty={props.theQuantities}
+              // FoodQty={props.theQuantities}
               visibleColumns={visibleColumns}
               theColumnKeys={allColumnKeys}
             />
