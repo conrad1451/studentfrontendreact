@@ -2,10 +2,10 @@
 // CHQ: Gemini AI generated this
 
 import { useState, useEffect } from "react";
-import { Student } from "../utils/dataTypes"; // Import Student interface
+import type { StudentRecord } from "../utils/dataTypes";
 
 interface UseStudentsResult {
-  students: Student[];
+  students: StudentRecord[];
   loading: boolean;
   error: string | null;
   refetchStudents: () => void; // Add a refetch function
@@ -15,7 +15,7 @@ interface UseStudentsResult {
 const apiURL = import.meta.env.VITE_API_URL;
 
 export const useStudents = (): UseStudentsResult => {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<StudentRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [triggerRefetch, setTriggerRefetch] = useState(0); // State to trigger refetch
@@ -36,7 +36,7 @@ export const useStudents = (): UseStudentsResult => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: Student[] = await response.json();
+      const data: StudentRecord[] = await response.json();
       setStudents(data);
     } catch (e: any) {
       setError(e.message);
