@@ -14,8 +14,7 @@ interface Student {
   enrollment_date: string; // Date string from backend
 }
 
-// IMPORTANT: Ensure this API_URL matches your running Flask backend
-const API_URL = "http://localhost:5000/api/students";
+const apiURL = import.meta.env.API_URL;
 
 function DataFetcher() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -25,7 +24,7 @@ function DataFetcher() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(apiURL);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
