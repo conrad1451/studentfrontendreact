@@ -46,7 +46,8 @@ import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 // } from "../../utils/dataTransforms"; // Adjust the path as per your project structure
 
 import {
-  mapPagesToCustomTableData,
+  // mapPagesToCustomTableData,
+  transformStudentRecordToRowPage,
   producePropList,
 } from "../utils/dataTransforms";
 
@@ -347,12 +348,17 @@ const MyExpandMoreIcon = () => {
 };
 
 // CHQ: Gemini AI removed useless comments and function exports from hook
-const StudentTable = (props: { thePages: StudentRecord[] }) => {
-  // 1. Data Transformation: Convert StudentRecord[] to RowPage[]
-  const rawTableData: RowPage[] = useMemo(
-    () => mapPagesToCustomTableData(props.thePages),
-    [props.thePages]
-  );
+const StudentTable = (props: { thePages: RowPage[] }) => {
+  // const StudentTable = (props: { thePages: StudentRecord[] }) => {
+  // // 1. Data Transformation: Convert StudentRecord[] to RowPage[]
+  // const rawTableData: RowPage[] = useMemo(
+  //   () => transformStudentRecordToRowPage(props.thePages),
+
+  //   // () => mapPagesToCustomTableData(props.thePages),
+  //   [props.thePages]
+  // );
+
+  const rawTableData = props.thePages;
 
   // Filter out rows with empty names (as per your original logic)
   const initialTableDataForHooks = rawTableData.filter(

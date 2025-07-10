@@ -1,17 +1,33 @@
+// dataTypes.ts
 export interface RowPage {
   myID: number;
   FirstName: string;
   LastName: string;
   Email: string;
-  Major: string;
+  // Major: string;
+  Major: string | null;
+
+  // CreatedTime: Date;
+  // EditedTime: Date;
 }
+
+// export interface StudentRecord {
+//   id: number;
+//   FirstName: string;
+//   LastName: string;
+//   Email: string;
+//   Major: string;
+//   // EnrollmentDate: string;
+// }
 
 export interface StudentRecord {
   id: number;
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  Major: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  // major: string;
+  major: string | null;
+  enrollment_date?: string;
 }
 
 export interface Item {

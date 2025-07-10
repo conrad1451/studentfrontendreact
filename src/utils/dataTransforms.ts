@@ -5,6 +5,22 @@ import type { Item } from "./dataTypes";
 // CHQ: GEmini AI corrected the import method
 import type { RowPage, StudentRecord } from "./dataTypes";
 
+export function createCustomTableDataOld(
+  myID: number,
+  FirstName: string,
+  LastName: string,
+  Email: string,
+  Major: string
+): RowPage {
+  return {
+    myID,
+    FirstName,
+    LastName,
+    Email,
+    Major,
+  };
+}
+
 export function createCustomTableData(
   myID: number,
   FirstName: string,
@@ -25,14 +41,29 @@ export function createCustomTableData(
 // will also need to be updated to pass arguments to createCustomTableData in this new order.
 // For example:
 /**/
-export function mapPagesToCustomTableData(pages: StudentRecord[]): RowPage[] {
+// export function mapPagesToCustomTableData(pages: StudentRecord[]): RowPage[] {
+//   return pages.map((page) =>
+//     createCustomTableData(
+//       page.id,
+//       page.FirstName,
+//       page.LastName,
+//       page.Email,
+//       page.Major
+//     )
+//   );
+// }
+
+// Helper function to transform StudentRecord to RowPage
+export function transformStudentRecordToRowPage(
+  pages: StudentRecord[]
+): RowPage[] {
   return pages.map((page) =>
     createCustomTableData(
       page.id,
-      page.FirstName,
-      page.LastName,
-      page.Email,
-      page.Major
+      page.first_name,
+      page.last_name,
+      page.email,
+      page.major
     )
   );
 }
