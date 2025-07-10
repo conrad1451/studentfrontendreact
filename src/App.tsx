@@ -63,7 +63,10 @@ function NavigationButtons() {
         onClick={() => handleNavigate("/datafetcher")}
       >
         Go to data fetcher
-      </Button>{" "}
+      </Button>
+      <Button variant="contained" onClick={() => handleNavigate("/tabletest")}>
+        Go to table testing
+      </Button>
     </Box>
   );
 }
