@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 // import { SelectChangeEvent } from "@mui/material/Select"; // For Material-UI Select events
 
-import { RowPage } from "../utils/dataTypes";
+import type { RowPage } from "../utils/dataTypes";
 
 interface Item {
   value: string;
@@ -62,7 +62,7 @@ function filterByPageName(
 ): RowPage[] {
   if (enabled && filterText.trim() !== "") {
     return data.filter((row) =>
-      row.Name.toLowerCase().includes(filterText.toLowerCase())
+      row.FirstName.toLowerCase().includes(filterText.toLowerCase())
     );
   }
   return data;
