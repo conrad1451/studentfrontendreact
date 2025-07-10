@@ -1,4 +1,4 @@
-// Table.tsx
+// StudentTable.tsx
 import React, { useState, useEffect, useMemo } from "react";
 
 import {
@@ -34,14 +34,18 @@ import {
   // ColumnVisibility,
   // visibilityPresets,
   useColumnVisibilityMiniTable,
-  ColumnVisibilityMiniTable,
+  //   ColumnVisibilityMiniTable,
   visibilityPresetsMiniTable,
 } from "../hooks/useColumnVisibility";
 
-import {
-  mapPagesToCustomTableData,
-  producePropList,
-} from "../../utils/dataTransforms"; // Adjust the path as per your project structure
+import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
+
+// import {
+//   mapPagesToCustomTableData,
+//   producePropList,
+// } from "../../utils/dataTransforms"; // Adjust the path as per your project structure
+
+import { mapPagesToCustomTableData } from "../utils/dataTransforms";
 
 // import axios from "axios";
 import BasicDownshiftV1 from "../dropdown/BasicDropdownList";
@@ -417,7 +421,10 @@ const MyExpandMoreIcon = () => {
   return <>🔽</>;
 };
 
-const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
+const StudentTable = (props: {
+  thePages: FoodPage[];
+  theQuantities: number[];
+}) => {
   // 1. Data Transformation: Convert FoodPage[] to RowPage[]
   const rawTableData: RowPage[] = useMemo(
     () => mapPagesToCustomTableData(props.thePages),
@@ -476,7 +483,7 @@ const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
   useEffect(() => {
-    return () => console.log("Table unmounted or re-rendered"); // Corrected log
+    return () => console.log("StudentTable unmounted or re-rendered"); // Corrected log
   }, []);
   useEffect(
     () => console.log("allFoodNames updated:", allFoodNames),
@@ -498,7 +505,7 @@ const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
 
   return (
     <Box sx={{ p: 2 }}>
-      {/* Table Controls Section */}
+      {/* StudentTable Controls Section */}
       <Box
         sx={{
           display: "flex",
@@ -545,7 +552,9 @@ const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <IconButton
           onClick={() => setIsTableCollapsed(!isTableCollapsed)}
-          aria-label={isTableCollapsed ? "Expand Table" : "Collapse Table"}
+          aria-label={
+            isTableCollapsed ? "Expand StudentTable" : "Collapse StudentTable"
+          }
         >
           {isTableCollapsed ? <MyChevronRightIcon /> : <MyExpandMoreIcon />}
         </IconButton>
@@ -554,7 +563,7 @@ const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
         </Typography>
       </Box>
 
-      {/* Main Table Display */}
+      {/* Main StudentTable Display */}
       {!isTableCollapsed && (
         <TableContainer component={Paper} sx={{ mt: 2 }}>
           <Table stickyHeader aria-label="job application table">
@@ -600,4 +609,4 @@ const Table = (props: { thePages: FoodPage[]; theQuantities: number[] }) => {
   );
 };
 
-export default Table;
+export default StudentTable;
