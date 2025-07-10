@@ -1,25 +1,36 @@
+// useTableSorting.tsx
 import { useState, useMemo } from "react";
 
 import type { RowPage } from "../utils/dataTypes";
 
+// CHQ: Gemini AI added
+type SortableStringKeys = "FirstName" | "LastName" | "Email" | "Major";
+
+// CHQ: Gemini AI refactored from a specific comparator for first names to that for strings
 /**
- * Comparator function for sorting RowPage objects by Name.
+ * Generic comparator function for sorting RowPage objects by a specified string property.
+ * Handles case-insensitive comparison and null/undefined values.
+ *
  * @param a - First RowPage object.
  * @param b - Second RowPage object.
+ * @param columnKey - The key of the string property to sort by (e.g., "FirstName", "Email").
  * @param direction - Sort direction ("asc" or "desc").
  * @returns -1 if a < b, 1 if a > b, 0 if equal, based on direction.
  */
-function sortByFirstNameComparator(
+function sortByStringComparator(
   a: RowPage,
   b: RowPage,
+  columnKey: SortableStringKeys,
   direction: "asc" | "desc"
 ): number {
-  const nameA = a.FirstName.toLowerCase();
-  const nameB = b.FirstName.toLowerCase();
-  if (nameA < nameB) {
+  // Get values, convert to lowercase strings, handle null/undefined by treating as empty strings
+  const valA = (a[columnKey] || "").toString().toLowerCase();
+  const valB = (b[columnKey] || "").toString().toLowerCase();
+
+  if (valA < valB) {
     return direction === "asc" ? -1 : 1;
   }
-  if (nameA > nameB) {
+  if (valA > valB) {
     return direction === "asc" ? 1 : -1;
   }
   return 0;
@@ -39,55 +50,67 @@ function sortByFirstNameComparator(
  * - sortHandlers: An object containing all the functions to change sort states.
  */
 export const useTableSorting = (filteredData: RowPage[]) => {
-  // --- State for Sort Directions ---
-  const [sortDirectionFirstName, setSortDirectionFirstName] = useState<
-    "asc" | "desc" | null
-  >(null);
+  // State for the currently sorted column
+  const [sortColumn, setSortColumn] = useState<SortableStringKeys | null>(null);
+  // State for the sort direction of the current column
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
+    null
+  );
 
-  // const [sortDirectionLastName, setSortDirectionLastName] = useState<
-  //   "asc" | "desc" | null
-  // >(null);
+  // CHQ: Gemini AI added the setSortColumn to null
+  // FIX: This function should reset both sortColumn and sortDirection
+  const resetSort = () => {
+    setSortColumn(null); // Clear the sorted column
+    setSortDirection(null); // Clear the sort direction
+  };
 
-  // const [sortDirectionEmail, setSortDirectionEmail] = useState<
-  //   "asc" | "desc" | null
-  // >(null);
-
-  // const [sortDirectionMajor, setSortDirectionMajor] = useState<
-  //   "asc" | "desc" | null
-  // >(null);
-
-  // --- Reset Functions for Sorting ---
-  const resetFirstNameSort = () => setSortDirectionFirstName(null);
-  // const resetLastNameSort = () => setSortDirectionLastName(null);
-  // const resetEmailSort = () => setSortDirectionEmail(null);
-  // const resetMajorSort = () => setSortDirectionMajor(null);
-
-  // --- Sort Handlers (to be called by UI) ---
-  const handleFirstNameSort = (direction: "asc" | "desc") => {
-    setSortDirectionFirstName(direction);
-
-    // --- Memoized Sorted Data ---
-    const sortedData = useMemo(() => {
-      const sortableData = [...filteredData]; // Create a shallow copy to avoid mutating original array
-
-      if (sortDirectionFirstName) {
-        sortableData.sort((a, b) =>
-          sortByFirstNameComparator(a, b, sortDirectionFirstName)
-        );
+  // --- Sort Handler (to be called by UI, e.g., on table header click) ---
+  /**
+   * Toggles the sort direction for a given column.
+   * If the column is new, it sorts ascending. If it's the same column, it cycles: asc -> desc -> null (no sort).
+   * @param column The key of the column to sort by.
+   */
+  const handleSort = (column: SortableStringKeys) => {
+    if (sortColumn === column) {
+      // If clicking the same column, cycle through directions
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortColumn(null); // No sort
+        setSortDirection(null);
+      } else {
+        setSortDirection("asc"); // Start with ascending
       }
+    } else {
+      // If clicking a new column, set it as the sort column and start with ascending
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
 
-      return sortableData;
-    }, [filteredData, sortDirectionFirstName]);
+  // --- Memoized Sorted Data ---
+  const sortedData = useMemo(() => {
+    // Create a shallow copy to avoid mutating the original array
+    const sortableData = [...filteredData];
 
-    return {
-      sortedData,
-      sortProps: {
-        sortDirectionFirstName,
-      },
-      sortHandlers: {
-        handleFirstNameSort,
-        resetFirstNameSort,
-      },
-    };
+    if (sortColumn && sortDirection) {
+      sortableData.sort((a, b) =>
+        sortByStringComparator(a, b, sortColumn, sortDirection)
+      );
+    }
+
+    return sortableData;
+  }, [filteredData, sortColumn, sortDirection]); // Re-sort only when filteredData, sortColumn, or sortDirection changes
+
+  return {
+    sortedData,
+    sortProps: {
+      sortColumn,
+      sortDirection,
+    },
+    sortHandlers: {
+      handleSort,
+      resetSort,
+    },
   };
 };
