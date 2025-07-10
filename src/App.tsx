@@ -12,6 +12,7 @@ import StudentsDisplay from "./components/StudentsDisplay";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "./App.css";
+// import DataFetcher from "./components/StudentsDisplay";
 
 function OldApp() {
   const [count, setCount] = useState(0);
@@ -79,20 +80,21 @@ function App() {
           <Route path="/" element={<NavigationButtons />} />
           <Route path="/orig" element={<OldApp />} />
           <Route path="/datafetcher" element={<StudentsDisplay />} />
+          {/* <Route path="/datafetcher" element={<DataFetcher />} /> */}
           <Route
             path="/tabletest"
             element={
               <StudentTable
                 thePages={[
                   {
-                    id: 101,
+                    myID: 101,
                     FirstName: "Steven",
                     LastName: "Okang",
                     Email: "steveokang@gmail.com",
                     Major: "Computer Science",
                   },
                   {
-                    id: 102,
+                    myID: 102,
                     FirstName: "Kwame",
                     LastName: "Kingston",
                     Email: "kwamekingston@gmail.com",
