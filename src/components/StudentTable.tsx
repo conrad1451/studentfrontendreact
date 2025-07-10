@@ -65,12 +65,12 @@ import renderModalContent1 from "../renderModalContent";
 import type { Item, RowPage, StudentRecord } from "../utils/dataTypes";
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
+  "myID",
   "FirstName",
   // "Qty",
   "LastName",
   "Email",
   "Major",
-  "myID",
 ];
 
 const ColumnVisibilityToggles = (props: {
@@ -309,6 +309,7 @@ const TableBodyRows = (props: {
             props.visibleColumns[colName] ? (
               <TableCell key={colName}>
                 {/* Make sure to render the correct property from 'row' based on 'colName' */}
+                {colName === "myID" && row.myID}
                 {colName === "FirstName" && row.FirstName}
                 {colName === "LastName" && row.LastName}
                 {colName === "Email" && row.Email}
