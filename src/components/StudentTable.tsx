@@ -66,10 +66,11 @@ import type { Item, RowPage, StudentRecord } from "../utils/dataTypes";
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
   "FirstName",
-  "Qty",
+  // "Qty",
   "LastName",
   "Email",
   "Major",
+  "myID",
 ];
 
 const ColumnVisibilityToggles = (props: {
@@ -113,7 +114,7 @@ const ColumnVisibilityControlModal = (props: {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: { xs: "90%", sm: "80%", md: 800 }, // Responsive width
+          width: { xs: "90%", sm: "80%", md: 800 },
           bgcolor: "background.paper",
           border: "2px solid #000",
           boxShadow: 24,
@@ -130,7 +131,7 @@ const ColumnVisibilityControlModal = (props: {
           <Typography variant="subtitle1">Apply Preset:</Typography>
           <FormControl fullWidth size="small">
             <Select
-              value="" // No initial selection, user chooses from list
+              value=""
               label="Presets"
               onChange={(e) =>
                 props.onSelectPreset(
@@ -145,7 +146,6 @@ const ColumnVisibilityControlModal = (props: {
                 <MenuItem key={key} value={key}>
                   {key.charAt(0).toUpperCase() +
                     key.slice(1).replace(/([A-Z])/g, " $1")}{" "}
-                  {/* Format camelCase to readable */}
                 </MenuItem>
               ))}
             </Select>
@@ -172,42 +172,22 @@ const ColumnVisibilityControlModal = (props: {
   );
 };
 
+// CHQ: Gemini AI debugged this functional component to
+//  accomodate generalized functions for props sorting and visibility
 const TableHeaderCells = (props: {
   visibleColumns: ColumnVisibilityMiniTable;
   sortProps: ReturnType<typeof useTableSorting>["sortProps"];
   sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
 }) => {
-  // Modified: Only include truly sortable columns
-  const sortableColumns: Partial<
-    Record<keyof ColumnVisibilityMiniTable, (direction: "asc" | "desc") => void>
-  > = {
-    FirstName: props.sortHandlers.handleNameSort,
-    LastName: props.sortHandlers.handleNameSort,
-    Email: props.sortHandlers.handleNameSort,
-    Major: props.sortHandlers.handleNameSort,
-    // CreatedStart: props.sortHandlers.handleNotedTimeSort,
-  };
+  // Define sortable columns. This type allows you to specify which columns
+  // are actually sortable, if not all `ColumnVisibilityMiniTable` keys are.
+  // For this example, all displayed string columns are sortable.
+  type SortableTableColumns = "FirstName" | "LastName" | "Email" | "Major";
 
-  // Modified: Only include sort directions for truly sortable columns
-  const sortDirectionMap: Partial<
-    Record<keyof ColumnVisibilityMiniTable, "asc" | "desc" | null>
-  > = {
-    FirstName: props.sortProps.sortDirectionName,
-    LastName: props.sortProps.sortDirectionName,
-    Email: props.sortProps.sortDirectionName,
-    Major: props.sortProps.sortDirectionName,
-  };
-
-  // Modified: Only include reset handlers for truly sortable columns
-  const resetSortHandlerMap: Partial<
-    Record<keyof ColumnVisibilityMiniTable, () => void>
-  > = {
-    FirstName: props.sortHandlers.resetNameSort,
-    LastName: props.sortHandlers.resetNameSort,
-    Email: props.sortHandlers.resetNameSort,
-    Major: props.sortHandlers.resetNameSort,
-  };
+  // FIX 2 & 3: Correctly call handleSort and use the correct sortProps values.
+  // No need for separate maps for handlers, props, and resets for each column.
+  // Use the single `handleSort` and `resetSort` exposed by the hook.
 
   return (
     <TableHead>
@@ -219,45 +199,92 @@ const TableHeaderCells = (props: {
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName}
                 </Typography>
-                {sortableColumns[colName] && ( // This condition now correctly checks if the column is sortable
+                {/* Check if the column is one of the "SortableStringKeys" from useTableSorting */}
+                {(
+                  [
+                    "FirstName",
+                    "LastName",
+                    "Email",
+                    "Major",
+                  ] as SortableTableColumns[]
+                ).includes(colName as SortableTableColumns) && (
                   <>
                     <Button
-                      onClick={() => sortableColumns[colName]?.("asc")} // Added optional chaining
-                      title="Sort Ascending"
+                      onClick={() =>
+                        props.sortHandlers.handleSort(
+                          colName as SortableTableColumns
+                        )
+                      }
+                      title={
+                        props.sortProps.sortColumn === colName &&
+                        props.sortProps.sortDirection === "asc"
+                          ? "Current: Ascending. Click to sort Descending."
+                          : props.sortProps.sortColumn === colName &&
+                            props.sortProps.sortDirection === "desc"
+                          ? "Current: Descending. Click to reset sort."
+                          : "Click to sort Ascending."
+                      }
                       sx={{
                         minWidth: "auto",
                         p: "2px",
+                        // Hide ascending arrow if currently sorted descending or not sorted
+                        // Show only if not sorted or currently sorted descending.
                         visibility:
-                          sortDirectionMap[colName] === "asc"
+                          props.sortProps.sortColumn === colName &&
+                          props.sortProps.sortDirection === "asc"
                             ? "hidden"
                             : "visible",
                       }}
                     >
-                      ⬆️
+                      {props.sortProps.sortColumn === colName &&
+                      props.sortProps.sortDirection === "asc"
+                        ? "▲"
+                        : "⬆️"}
                     </Button>
                     <Button
-                      onClick={() => sortableColumns[colName]?.("desc")} // Added optional chaining
-                      title="Sort Descending"
+                      onClick={() =>
+                        props.sortHandlers.handleSort(
+                          colName as SortableTableColumns
+                        )
+                      }
+                      title={
+                        props.sortProps.sortColumn === colName &&
+                        props.sortProps.sortDirection === "desc"
+                          ? "Current: Descending. Click to reset sort."
+                          : props.sortProps.sortColumn === colName &&
+                            props.sortProps.sortDirection === "asc"
+                          ? "Current: Ascending. Click to sort Descending."
+                          : "Click to sort Descending."
+                      }
                       sx={{
                         minWidth: "auto",
                         p: "2px",
+                        // Hide descending arrow if currently sorted ascending or not sorted
+                        // Show only if not sorted or currently sorted ascending.
                         visibility:
-                          sortDirectionMap[colName] === "desc"
+                          props.sortProps.sortColumn === colName &&
+                          props.sortProps.sortDirection === "desc"
                             ? "hidden"
                             : "visible",
                       }}
                     >
-                      ⬇️
+                      {props.sortProps.sortColumn === colName &&
+                      props.sortProps.sortDirection === "desc"
+                        ? "▼"
+                        : "⬇️"}
                     </Button>
-                    {sortDirectionMap[colName] && (
-                      <Button
-                        onClick={resetSortHandlerMap[colName]}
-                        title="Reset Sort"
-                        sx={{ minWidth: "auto", p: "2px" }}
-                      >
-                        🔄
-                      </Button>
-                    )}
+
+                    {/* Reset Sort Button - show only if this column is currently sorted */}
+                    {props.sortProps.sortColumn === colName &&
+                      props.sortProps.sortDirection && (
+                        <Button
+                          onClick={props.sortHandlers.resetSort} // FIX 2: Use the unified resetSort
+                          title="Reset All Sorts"
+                          sx={{ minWidth: "auto", p: "2px" }}
+                        >
+                          🔄
+                        </Button>
+                      )}
                   </>
                 )}
               </Box>
@@ -271,41 +298,22 @@ const TableHeaderCells = (props: {
 
 const TableBodyRows = (props: {
   data: RowPage[];
-  // FoodQty: number[];
   visibleColumns: ColumnVisibilityMiniTable;
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
 }) => {
-  // CHQ: Gemini AI generated
-  // Helper function to calculate the dot product for a given nutrient column
-  // const calculateDotProduct = (
-  //   nutrientColName: keyof RowPage,
-  //   data: RowPage[],
-  //   quantities: number[]
-  // ) => {
-  //   let total = 0;
-  //   for (let i = 0; i < data.length; i++) {
-  //     const quantity = quantities[i] || 0; // Default to 0 if quantity is undefined
-  //     const nutrientValue = (data[i][nutrientColName] as number) || 0; // Cast to number, default to 0
-  //     total += quantity * nutrientValue;
-  //   }
-  //   return total.toFixed(2); // Format to two decimal places
-  // };
-
   return (
     <TableBody>
-      {props.data.map((row, index) => (
+      {props.data.map((row) => (
         <TableRow key={row.myID}>
           {props.theColumnKeys.map((colName) =>
             props.visibleColumns[colName] ? (
               <TableCell key={colName}>
+                {/* Make sure to render the correct property from 'row' based on 'colName' */}
                 {colName === "FirstName" && row.FirstName}
-                {/* below caused an error */}
-                {/* {colName === "Qty" && props.FoodQty[index]} */}
-                {/* {colName === "Qty" && row.ServingCount} */}
-                {/* NEW: Display ServingCount as Qty */}
                 {colName === "LastName" && row.LastName}
                 {colName === "Email" && row.Email}
-                {colName === "Major" && row.Major}
+                {colName === "Major" && (row.Major || "N/A")}{" "}
+                {/* Handle null Major */}
               </TableCell>
             ) : null
           )}
@@ -318,7 +326,7 @@ const TableBodyRows = (props: {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName === "FirstName"
-                    ? "Count of Students" + String("data.length")
+                    ? "Count of Students: " + String(props.data.length) // Corrected to use props.data.length
                     : ""}
                 </Typography>
               </Box>
@@ -329,7 +337,6 @@ const TableBodyRows = (props: {
     </TableBody>
   );
 };
-
 const MyChevronRightIcon = () => {
   return <>▶️</>;
 };
@@ -338,10 +345,8 @@ const MyExpandMoreIcon = () => {
   return <>🔽</>;
 };
 
-const StudentTable = (props: {
-  thePages: StudentRecord[];
-  // theQuantities: number[];
-}) => {
+// CHQ: Gemini AI removed useless comments and function exports from hook
+const StudentTable = (props: { thePages: StudentRecord[] }) => {
   // 1. Data Transformation: Convert StudentRecord[] to RowPage[]
   const rawTableData: RowPage[] = useMemo(
     () => mapPagesToCustomTableData(props.thePages),
@@ -364,8 +369,8 @@ const StudentTable = (props: {
   } = useColumnVisibilityMiniTable("default"); // Set initial preset
 
   // 3. Filtering Hook
-  const { filteredData, filterProps, filterHandlers, derivedLists } =
-    useTableFilters(initialTableDataForHooks);
+  // Assuming useTableFilters handles its own logic and returns filteredData
+  const { filteredData } = useTableFilters(initialTableDataForHooks); // You might need other filterProps/Handlers later
 
   // 4. Sorting Hook
   const { sortedData, sortProps, sortHandlers } = useTableSorting(filteredData);
@@ -374,30 +379,21 @@ const StudentTable = (props: {
   const allStudentNames: Item[] = useMemo(
     () =>
       rawTableData.map((row) => ({
-        id: Math.floor(100 * Math.random()),
+        id: Math.floor(100 * Math.random()), // Consider using a more stable ID if available
         value: row.FirstName,
       })),
     [rawTableData]
   );
 
-  //   // State to hold the processed lines from FoodEntryProcessor
-  // const [foodEntryProcessedLines, setFoodEntryProcessedLines] = useState<
-  //   { id: string; text: string; matchedItem: Item | null }[]
-  // >([]);
-
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
   useEffect(() => {
-    return () => console.log("StudentTable unmounted or re-rendered"); // Corrected log
+    return () => console.log("StudentTable unmounted or re-rendered");
   }, []);
   useEffect(
     () => console.log("allStudentNames updated:", allStudentNames),
     [allStudentNames]
   );
-  // Log the processed lines from FoodEntryProcessor
-  // useEffect(() => {
-  //   console.log("Food Entry Processed Lines:", foodEntryProcessedLines);
-  // }, [foodEntryProcessedLines]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
@@ -428,16 +424,7 @@ const StudentTable = (props: {
           Customize Columns
         </Button>
       </Box>
-      {/* <Box>
-        <Button
-          variant="contained"
-          onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-            handleOpenModal("bro testing")
-          }
-        >
-          test open modal with message
-        </Button>
-      </Box> */}
+
       {/* Column Visibility Modal */}
       <ColumnVisibilityControlModal
         open={isColumnModalOpen}
@@ -459,14 +446,15 @@ const StudentTable = (props: {
           {isTableCollapsed ? <MyChevronRightIcon /> : <MyExpandMoreIcon />}
         </IconButton>
         <Typography variant="h6">
-          {isTableCollapsed ? "Show Meal Breakdown" : "Meal Breakdown"}
+          {isTableCollapsed ? "Show Student List" : "Student List"}{" "}
+          {/* Changed text */}
         </Typography>
       </Box>
 
       {/* Main StudentTable Display */}
       {!isTableCollapsed && (
         <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table stickyHeader aria-label="job application table">
+          <Table stickyHeader aria-label="student table">
             <TableHeaderCells
               visibleColumns={visibleColumns}
               sortProps={sortProps}
@@ -475,7 +463,6 @@ const StudentTable = (props: {
             />
             <TableBodyRows
               data={sortedData}
-              // FoodQty={props.theQuantities}
               visibleColumns={visibleColumns}
               theColumnKeys={allColumnKeys}
             />
@@ -485,6 +472,8 @@ const StudentTable = (props: {
 
       <Modal open={modalOpen} onClose={handleCloseModal}>
         <Box className="myTable-modalBox">
+          {" "}
+          {/* Assuming CSS classes are defined */}
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Page Content
           </Typography>
@@ -502,9 +491,6 @@ const StudentTable = (props: {
           </Box>
         </Box>
       </Modal>
-      {/* Optional: MyDataBreakdown */}
-      {/* If MyDataBreakdown needs filtered/sorted data, pass `sortedData` */}
-      {/* <MyDataBreakdown data={sortedData} /> */}
     </Box>
   );
 };
