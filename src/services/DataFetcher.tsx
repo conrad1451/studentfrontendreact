@@ -1,4 +1,6 @@
-// CHQ: Gemini AI made scaffolding, and I renamed the module
+// DataFetcher.tsx
+
+// import axios from "axios";
 
 // src/DataFetcher.tsx (for a TypeScript project)
 import { useState, useEffect } from "react";
