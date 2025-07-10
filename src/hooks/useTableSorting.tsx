@@ -72,7 +72,6 @@ export const useTableSorting = (filteredData: RowPage[]) => {
    */
   const handleSort = (column: SortableStringKeys) => {
     if (sortColumn === column) {
-      // If clicking the same column, cycle through directions
       if (sortDirection === "asc") {
         setSortDirection("desc");
       } else if (sortDirection === "desc") {
@@ -82,7 +81,6 @@ export const useTableSorting = (filteredData: RowPage[]) => {
         setSortDirection("asc"); // Start with ascending
       }
     } else {
-      // If clicking a new column, set it as the sort column and start with ascending
       setSortColumn(column);
       setSortDirection("asc");
     }
