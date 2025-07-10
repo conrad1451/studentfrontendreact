@@ -1,30 +1,12 @@
 // dataTransforms.ts
 
-// export interface Item {
-//   value: string;
-// }
+import type { Item } from "./dataTypes";
 
 // CHQ: GEmini AI corrected the import method
 import type { RowPage, StudentRecord } from "./dataTypes";
-// interface RowPage {
-//   myID: string;
-//   Name: string;
-//   CreatedTime: Date;
-//   EditedTime: Date;
-//   CreatedStart: Date;
-//   CreatedEnd: Date;
-//   PublishedStart: Date;
-//   PublishedEnd: Date;
-//   Area: string;
-//   Source: string;
-//   Link: string;
-//   Type: string;
-//   Tags: string[];
-//   PageURL: string;
-//   // pageContent: string;
-// }
+
 export function createCustomTableData(
-  myID: string,
+  myID: number,
   FirstName: string,
   LastName: string,
   Email: string,
@@ -110,7 +92,8 @@ export function producePropList(
   const uniqueList = [...new Set(rawList)];
 
   // Map the unique string values into the { value: string } format required by the Item interface.
-  const propList: Item[] = uniqueList.map((theProp) => ({
+  const propList: Item[] = uniqueList.map((theProp, id) => ({
+    id: id,
     value: theProp,
   }));
 

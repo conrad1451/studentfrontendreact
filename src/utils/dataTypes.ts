@@ -1,5 +1,5 @@
 export interface RowPage {
-  myID: string;
+  myID: number;
   FirstName: string;
   LastName: string;
   Email: string;
@@ -7,11 +7,16 @@ export interface RowPage {
 }
 
 export interface StudentRecord {
-  id: string;
+  id: number;
   FirstName: string;
   LastName: string;
   Email: string;
   Major: string;
+}
+
+export interface Item {
+  id: number;
+  value: string;
 }
 
 export interface FoodItem {
