@@ -1,6 +1,4 @@
-// StudentTable.tsx
 import React, { useState, useEffect, useMemo } from "react";
-
 import {
   Table,
   TableBody,
@@ -13,62 +11,29 @@ import {
   Box,
   Typography,
   Switch,
-  // TextField,
   FormControlLabel,
   FormControl,
-  // InputLabel,
   Select,
   MenuItem,
   IconButton,
 } from "@mui/material";
-// import { SelectChangeEvent } from "@mui/material/Select";
-// import FormGroup from "@mui/material/FormGroup";
 import Modal from "@mui/material/Modal";
-// --- Import Custom Hooks ---
+import MoreVertIcon from "@mui/icons-material/MoreVert"; // Icon for the action button
 
+// --- Import Custom Hooks ---
 import { useTableFilters } from "../hooks/useTableFilters";
 import { useTableSorting } from "../hooks/useTableSorting";
-
 import {
-  // useColumnVisibility,
-  // ColumnVisibility,
-  // visibilityPresets,
   useColumnVisibilityMiniTable,
-  //   ColumnVisibilityMiniTable,
   visibilityPresetsMiniTable,
 } from "../hooks/useColumnVisibility";
 
 import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
-
-// import {
-//   mapPagesToCustomTableData,
-//   producePropList,
-// } from "../../utils/dataTransforms"; // Adjust the path as per your project structure
-
-// import {
-//   // mapPagesToCustomTableData,
-//   transformStudentRecordToRowPage,
-//   producePropList,
-// } from "../utils/dataTransforms";
-
-// import axios from "axios";
-// import BasicDownshiftV1 from "../dropdown/BasicDropdownList";
-// import renderModalContent1 from "../renderModalContent";
-
-// import "./App.css";
-
-// import OtherDropdownList from "./OtherDropdownList";
-// import "./../MyTable.css"; // Import the CSS file
-
-// --- Interfaces ---
-// import { FoodItem, RowPage, FoodPage } from "../../utils/dataTypes";
-
 import type { Item, RowPage } from "../utils/dataTypes";
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
   "myID",
   "FirstName",
-  // "Qty",
   "LastName",
   "Email",
   "Major",
@@ -173,22 +138,13 @@ const ColumnVisibilityControlModal = (props: {
   );
 };
 
-// CHQ: Gemini AI debugged this functional component to
-//  accomodate generalized functions for props sorting and visibility
 const TableHeaderCells = (props: {
   visibleColumns: ColumnVisibilityMiniTable;
   sortProps: ReturnType<typeof useTableSorting>["sortProps"];
   sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
 }) => {
-  // Define sortable columns. This type allows you to specify which columns
-  // are actually sortable, if not all `ColumnVisibilityMiniTable` keys are.
-  // For this example, all displayed string columns are sortable.
   type SortableTableColumns = "FirstName" | "LastName" | "Email" | "Major";
-
-  // FIX 2 & 3: Correctly call handleSort and use the correct sortProps values.
-  // No need for separate maps for handlers, props, and resets for each column.
-  // Use the single `handleSort` and `resetSort` exposed by the hook.
 
   return (
     <TableHead>
@@ -200,7 +156,6 @@ const TableHeaderCells = (props: {
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName}
                 </Typography>
-                {/* Check if the column is one of the "SortableStringKeys" from useTableSorting */}
                 {(
                   [
                     "FirstName",
@@ -228,8 +183,6 @@ const TableHeaderCells = (props: {
                       sx={{
                         minWidth: "auto",
                         p: "2px",
-                        // Hide ascending arrow if currently sorted descending or not sorted
-                        // Show only if not sorted or currently sorted descending.
                         visibility:
                           props.sortProps.sortColumn === colName &&
                           props.sortProps.sortDirection === "asc"
@@ -260,8 +213,6 @@ const TableHeaderCells = (props: {
                       sx={{
                         minWidth: "auto",
                         p: "2px",
-                        // Hide descending arrow if currently sorted ascending or not sorted
-                        // Show only if not sorted or currently sorted ascending.
                         visibility:
                           props.sortProps.sortColumn === colName &&
                           props.sortProps.sortDirection === "desc"
@@ -275,11 +226,10 @@ const TableHeaderCells = (props: {
                         : "⬇️"}
                     </Button>
 
-                    {/* Reset Sort Button - show only if this column is currently sorted */}
                     {props.sortProps.sortColumn === colName &&
                       props.sortProps.sortDirection && (
                         <Button
-                          onClick={props.sortHandlers.resetSort} // FIX 2: Use the unified resetSort
+                          onClick={props.sortHandlers.resetSort}
                           title="Reset All Sorts"
                           sx={{ minWidth: "auto", p: "2px" }}
                         >
@@ -292,6 +242,10 @@ const TableHeaderCells = (props: {
             </TableCell>
           ) : null
         )}
+        {/* New TableCell for Actions header */}
+        <TableCell>
+          <Typography variant="subtitle2">Actions</Typography>
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -301,6 +255,7 @@ const TableBodyRows = (props: {
   data: RowPage[];
   visibleColumns: ColumnVisibilityMiniTable;
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
+  onOpenActionModal: (student: RowPage) => void; // New prop for opening action modal
 }) => {
   return (
     <TableBody>
@@ -309,16 +264,23 @@ const TableBodyRows = (props: {
           {props.theColumnKeys.map((colName) =>
             props.visibleColumns[colName] ? (
               <TableCell key={colName}>
-                {/* Make sure to render the correct property from 'row' based on 'colName' */}
                 {colName === "myID" && row.myID}
                 {colName === "FirstName" && row.FirstName}
                 {colName === "LastName" && row.LastName}
                 {colName === "Email" && row.Email}
                 {colName === "Major" && (row.Major || "N/A")}{" "}
-                {/* Handle null Major */}
               </TableCell>
             ) : null
           )}
+          {/* New TableCell for Actions button */}
+          <TableCell>
+            <IconButton
+              aria-label="actions"
+              onClick={() => props.onOpenActionModal(row)} // Pass the entire row data
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </TableCell>
         </TableRow>
       ))}
       <TableRow>
@@ -328,17 +290,20 @@ const TableBodyRows = (props: {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName === "FirstName"
-                    ? "Count of Students: " + String(props.data.length) // Corrected to use props.data.length
+                    ? "Count of Students: " + String(props.data.length)
                     : ""}
                 </Typography>
               </Box>
             </TableCell>
           ) : null
         )}
+        {/* Empty cell for the actions column in the footer row */}
+        <TableCell></TableCell>
       </TableRow>
     </TableBody>
   );
 };
+
 const MyChevronRightIcon = () => {
   return <>▶️</>;
 };
@@ -347,25 +312,134 @@ const MyExpandMoreIcon = () => {
   return <>🔽</>;
 };
 
-// CHQ: Gemini AI removed useless comments and function exports from hook
+// New component for the Edit/Delete action modal
+const StudentActionModal = (props: {
+  open: boolean;
+  onClose: () => void;
+  student: RowPage | null;
+  onEdit: (student: RowPage) => void;
+  onDelete: (student: RowPage) => void;
+}) => {
+  if (!props.student) return null; // Don't render if no student is selected
+
+  return (
+    <Modal open={props.open} onClose={props.onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: { xs: "90%", sm: 400 },
+          bgcolor: "background.paper",
+          border: "2px solid #000",
+          boxShadow: 24,
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          borderRadius: "8px", // Rounded corners
+        }}
+      >
+        <Typography variant="h6" component="h2">
+          Actions for {props.student.FirstName} {props.student.LastName} (ID:{" "}
+          {props.student.myID})
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => props.onEdit(props.student!)}
+          sx={{
+            bgcolor: "primary.main",
+            "&:hover": { bgcolor: "primary.dark" },
+            borderRadius: "8px",
+          }}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => props.onDelete(props.student!)}
+          sx={{
+            borderColor: "error.main",
+            color: "error.main",
+            "&:hover": { bgcolor: "error.light" },
+            borderRadius: "8px",
+          }}
+        >
+          Delete
+        </Button>
+        <Button
+          onClick={props.onClose}
+          variant="text"
+          sx={{ mt: 1, borderRadius: "8px" }}
+        >
+          Cancel
+        </Button>
+      </Box>
+    </Modal>
+  );
+};
+
+// New Confirmation Modal component
+const ConfirmationModal = (props: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  message: string;
+}) => {
+  return (
+    <Modal open={props.open} onClose={props.onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: { xs: "90%", sm: 400 },
+          bgcolor: "background.paper",
+          border: "2px solid #000",
+          boxShadow: 24,
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          borderRadius: "8px",
+        }}
+      >
+        <Typography variant="h6" component="h2">
+          Confirmation
+        </Typography>
+        <Typography>{props.message}</Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={props.onConfirm}
+            sx={{ borderRadius: "8px" }}
+          >
+            Confirm
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={props.onClose}
+            sx={{ borderRadius: "8px" }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+};
+
 const StudentTable = (props: { thePages: RowPage[] }) => {
-  // const StudentTable = (props: { thePages: StudentRecord[] }) => {
-  // // 1. Data Transformation: Convert StudentRecord[] to RowPage[]
-  // const rawTableData: RowPage[] = useMemo(
-  //   () => transformStudentRecordToRowPage(props.thePages),
-
-  //   // () => mapPagesToCustomTableData(props.thePages),
-  //   [props.thePages]
-  // );
-
   const rawTableData = props.thePages;
 
-  // Filter out rows with empty names (as per your original logic)
   const initialTableDataForHooks = rawTableData.filter(
     (row) => row && row.FirstName && row.FirstName.trim() !== ""
   );
 
-  // 2. Column Visibility Hook
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const {
     visibleColumns,
@@ -373,16 +447,12 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     setPresetVisibility,
     resetVisibility,
     presets,
-  } = useColumnVisibilityMiniTable("default"); // Set initial preset
+  } = useColumnVisibilityMiniTable("default");
 
-  // 3. Filtering Hook
-  // Assuming useTableFilters handles its own logic and returns filteredData
-  const { filteredData } = useTableFilters(initialTableDataForHooks); // You might need other filterProps/Handlers later
+  const { filteredData } = useTableFilters(initialTableDataForHooks);
 
-  // 4. Sorting Hook
   const { sortedData, sortProps, sortHandlers } = useTableSorting(filteredData);
 
-  // The list of all student names, mapped to the { id: number, value: string } Item format
   const allStudentNames: Item[] = useMemo(
     () =>
       rawTableData.map((row) => ({
@@ -394,6 +464,77 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
+  // CHQ: Gemini AI added the follow state variables
+
+  // State for the new action modal (Edit/Delete)
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [selectedStudentForActions, setSelectedStudentForActions] =
+    useState<RowPage | null>(null);
+
+  // State for the confirmation modal
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
+
+  // Handler to open the action modal
+  const handleOpenActionModal = (student: RowPage) => {
+    setSelectedStudentForActions(student);
+    setIsActionModalOpen(true);
+  };
+
+  // Handler to close the action modal
+  const handleCloseActionModal = () => {
+    setIsActionModalOpen(false);
+    setSelectedStudentForActions(null); // Clear selected student on close
+  };
+
+  // Placeholder for Edit action
+  const handleEditStudent = (student: RowPage) => {
+    console.log("Edit student:", student);
+    // In a real application, you would navigate to an edit form
+    // or open another modal with the student's editable details.
+    handleCloseActionModal();
+  };
+
+  // Handler to initiate delete (opens confirmation modal)
+  const handleDeleteStudent = (student: RowPage) => {
+    setStudentToDelete(student);
+    setIsConfirmationModalOpen(true);
+    handleCloseActionModal(); // Close the action modal immediately
+  };
+
+  const apiURL = import.meta.env.VITE_API_URL;
+
+  // Handler to confirm deletion and make API call
+  const confirmDeleteStudent = async () => {
+    if (studentToDelete) {
+      try {
+        const response = await fetch(`${apiURL}${studentToDelete.myID}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("Student deleted successfully:", data);
+        // You would typically refetch your student data here to update the table
+        // For example: props.onStudentDeleted(studentToDelete.myID);
+      } catch (error) {
+        console.error("Error deleting student:", error);
+        // Handle error (e.g., show an error message to the user)
+      } finally {
+        setIsConfirmationModalOpen(false); // Close confirmation modal
+        setStudentToDelete(null); // Clear student to delete
+      }
+    }
+  };
   useEffect(() => {
     return () => console.log("StudentTable unmounted or re-rendered");
   }, []);
@@ -402,13 +543,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     [allStudentNames]
   );
 
+  // The original modal (which seems to be for general content, not specific to student actions)
   const [modalOpen, setModalOpen] = useState(false);
-  // const [modalContent, setModalContent] = useState("");
-
-  // const handleOpenModal = (content: string) => {
-  //   setModalContent(content);
-  //   setModalOpen(true);
-  // };
   const handleCloseModal = () => setModalOpen(false);
 
   return (
@@ -454,7 +590,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
         </IconButton>
         <Typography variant="h6">
           {isTableCollapsed ? "Show Student List" : "Student List"}{" "}
-          {/* Changed text */}
         </Typography>
       </Box>
 
@@ -472,15 +607,15 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
               data={sortedData}
               visibleColumns={visibleColumns}
               theColumnKeys={allColumnKeys}
+              onOpenActionModal={handleOpenActionModal} // Pass the handler down
             />
           </Table>
         </TableContainer>
       )}
 
+      {/* Original Modal (unrelated to Edit/Delete actions) */}
       <Modal open={modalOpen} onClose={handleCloseModal}>
         <Box className="myTable-modalBox">
-          {" "}
-          {/* Assuming CSS classes are defined */}
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Page Content
           </Typography>
@@ -489,7 +624,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
             className="myTable-modalDescription"
             component="div"
           >
-            {"renderModalContent1(modalContent)"}
+            {"renderModalContent1(modalContent)"}{" "}
+            {/* This line needs attention if `renderModalContent1` is not defined */}
           </Typography>
           <Box className="myTable-modalActions">
             <Button variant="contained" onClick={handleCloseModal}>
@@ -498,6 +634,24 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
           </Box>
         </Box>
       </Modal>
+
+      {/* CHQ: Gemini AI added the following two components */}
+      {/* New Student Action Modal */}
+      <StudentActionModal
+        open={isActionModalOpen}
+        onClose={handleCloseActionModal}
+        student={selectedStudentForActions}
+        onEdit={handleEditStudent}
+        onDelete={handleDeleteStudent} // This now triggers the confirmation modal
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        open={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={confirmDeleteStudent}
+        message={`Are you sure you want to delete ${studentToDelete?.FirstName} ${studentToDelete?.LastName} (ID: ${studentToDelete?.myID})? This action cannot be undone.`}
+      />
     </Box>
   );
 };
