@@ -12,7 +12,8 @@ interface UseStudentsResult {
 }
 
 // Ensure VITE_API_URL is set in your .env file (e.g., VITE_API_URL=http://localhost:5000/api/students)
-const apiURL = import.meta.env.VITE_API_URL_OTHERHOST;
+// const apiURL = import.meta.env.VITE_API_URL_OTHERHOST;
+const apiURL = import.meta.env.VITE_API_URL;
 
 export const useStudents = (): UseStudentsResult => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
