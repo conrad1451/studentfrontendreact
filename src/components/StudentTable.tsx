@@ -499,7 +499,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const handleDeleteStudent = (student: RowPage) => {
     setStudentToDelete(student);
     setIsConfirmationModalOpen(true);
-    handleCloseActionModal(); // Close the action modal immediately
+    handleCloseActionModal();
   };
 
   const apiURL = import.meta.env.VITE_API_URL;
