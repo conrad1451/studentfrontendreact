@@ -508,7 +508,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const confirmDeleteStudent = async () => {
     if (studentToDelete) {
       try {
-        const response = await fetch(`${apiURL}${studentToDelete.myID}`, {
+        const response = await fetch(`${apiURL}/${studentToDelete.myID}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
