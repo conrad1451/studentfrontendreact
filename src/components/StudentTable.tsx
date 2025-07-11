@@ -53,7 +53,7 @@ import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 
 // import axios from "axios";
 // import BasicDownshiftV1 from "../dropdown/BasicDropdownList";
-import renderModalContent1 from "../renderModalContent";
+// import renderModalContent1 from "../renderModalContent";
 
 // import "./App.css";
 
@@ -63,7 +63,7 @@ import renderModalContent1 from "../renderModalContent";
 // --- Interfaces ---
 // import { FoodItem, RowPage, FoodPage } from "../../utils/dataTypes";
 
-import type { Item, RowPage, StudentRecord } from "../utils/dataTypes";
+import type { Item, RowPage } from "../utils/dataTypes";
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
   "myID",
@@ -403,12 +403,12 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   );
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
+  // const [modalContent, setModalContent] = useState("");
 
-  const handleOpenModal = (content: string) => {
-    setModalContent(content);
-    setModalOpen(true);
-  };
+  // const handleOpenModal = (content: string) => {
+  //   setModalContent(content);
+  //   setModalOpen(true);
+  // };
   const handleCloseModal = () => setModalOpen(false);
 
   return (
@@ -489,7 +489,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
             className="myTable-modalDescription"
             component="div"
           >
-            {renderModalContent1(modalContent)}
+            {"renderModalContent1(modalContent)"}
           </Typography>
           <Box className="myTable-modalActions">
             <Button variant="contained" onClick={handleCloseModal}>
