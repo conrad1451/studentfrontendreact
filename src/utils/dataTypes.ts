@@ -4,8 +4,8 @@ export interface RowPage {
   FirstName: string;
   LastName: string;
   Email: string;
-  // Major: string;
-  Major: string | null;
+  Major: string;
+  // Major: string | null;
 
   // CreatedTime: Date;
   // EditedTime: Date;
@@ -25,8 +25,8 @@ export interface StudentRecord {
   first_name: string;
   last_name: string;
   email: string;
-  // major: string;
-  major: string | null;
+  major: string;
+  // major: string | null;
   enrollment_date?: string;
 }
 
