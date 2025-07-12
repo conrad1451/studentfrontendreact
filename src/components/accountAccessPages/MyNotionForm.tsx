@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSession } from "@descope/react-sdk";
+// import { useSession } from "@descope/react-sdk";
 
 interface WebFormProps {
   onSubmit: (formData: { myName: string }) => Promise<void>;
@@ -43,7 +43,7 @@ const FormToNotion: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { session } = useSession();
+  // const { session } = useSession();
 
   const handleFormSubmit = async (formData: { myName: string }) => {
     setLoading(true);
@@ -56,7 +56,8 @@ const FormToNotion: React.FC = () => {
         import.meta.env.VITE_TEST_BSS_DATABASE_LOCAL;
 
       // FIXME: CHQ: see if the sessionToken is REALLY needed
-      const sessionToken = session?.jwt;
+      // const sessionToken = session?.jwt;
+      const sessionToken = "sampleTokenIguess";
 
       // const response = await fetch(`${BASE_URL}/targetnotion`, { // Changed endpoint to /targetnotion
       const response = await fetch(`${BASE_URL}/submitformhere`, {
