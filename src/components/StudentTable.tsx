@@ -31,6 +31,49 @@ import {
 import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 import type { Item, RowPage } from "../utils/dataTypes";
 
+interface WebFormProps {
+  onSubmit: (formData: {
+    myFirstName: string;
+    myLastName: string;
+    myEmail: string;
+    myMajor: string;
+  }) => Promise<void>;
+}
+
+const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
+  const [myName, setText] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await onSubmit({ myName });
+      setText("");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Enter text:
+        <input
+          type="text"
+          value={myName}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </label>
+      <button type="submit">Submit data to Notion</button>{" "}
+      {/* Changed button text */}
+    </form>
+  );
+};
+
+interface ApiResponse {
+  message: string;
+  // ... other properties
+}
+
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
   "myID",
   "FirstName",
@@ -257,6 +300,63 @@ const TableBodyRows = (props: {
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
   onOpenActionModal: (student: RowPage) => void; // New prop for opening action modal
 }) => {
+  const [myFirstName, setMyFirstName] = useState("");
+  const [myLastName, setMyLastName] = useState("");
+  const [myEmail, setMyEmail] = useState("");
+  const [myMajor, setMyMajor] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleNewStudentSubmit = async (formData: {
+    myFirstName: string;
+    myLastName: string;
+    myEmail: string;
+    myMajor: string;
+  }) => {
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const BASE_URL =
+        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+
+      // FIXME: CHQ: see if the sessionToken is REALLY needed
+      // const sessionToken = session?.jwt;
+      const sessionToken = "sampleTokenIguess";
+
+      // const response = await fetch(`${BASE_URL}/targetnotion`, { // Changed endpoint to /targetnotion
+      const response = await fetch(`${BASE_URL}`, {
+        // Changed endpoint to /targetnotion
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
+        },
+        body: JSON.stringify(formData), // Send form data in the body
+      });
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 600) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Server error");
+        }
+        throw new Error("Failed to submit to Notion"); // Changed error message
+      }
+
+      const result: ApiResponse = await response.json();
+      console.log("Data sent to database successfully:", result);
+      setSuccessMessage("Data sent to database successfully!"); // Changed success message
+    } catch (error) {
+      console.error("Error in database:", error);
+      setErrorMessage("Failed to send data to database. Please try again."); // Changed error message
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <TableBody>
       {props.data.map((row) => (
@@ -283,6 +383,83 @@ const TableBodyRows = (props: {
           </TableCell>
         </TableRow>
       ))}
+      <TableRow>
+        {props.theColumnKeys.map((colName) =>
+          props.visibleColumns[colName] ? (
+            <TableCell key={colName}>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="subtitle2" sx={{ mr: 1 }}>
+                  {colName === "FirstName" ? (
+                    <>
+                      <label>
+                        {}
+                        <input
+                          type="text"
+                          value={myFirstName}
+                          onChange={(e) => setMyFirstName(e.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : colName === "LastName" ? (
+                    <>
+                      <label>
+                        {}
+                        <input
+                          type="text"
+                          value={myLastName}
+                          onChange={(e) => setMyLastName(e.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : colName === "Email" ? (
+                    <>
+                      <label>
+                        {}
+                        <input
+                          type="text"
+                          value={myEmail}
+                          onChange={(e) => setMyEmail(e.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : colName === "Major" ? (
+                    <>
+                      <label>
+                        {}
+                        <input
+                          type="text"
+                          value={myMajor}
+                          onChange={(e) => setMyMajor(e.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : colName === "myID" ? (
+                    ""
+                  ) : (
+                    ""
+                  )}
+                </Typography>
+              </Box>
+            </TableCell>
+          ) : null
+        )}
+        {/* Empty cell for the actions column in the footer row */}
+        <TableCell>
+          {/* <Box maxWidth={25} padding={3} margin={2}>
+             <button type="submit" onSubmit={handleNewStudentSubmit}>
+              Add student to roster
+            </button>
+          </Box> */}
+          <div>
+            {loading && <p>Loading...</p>}
+            {successMessage && (
+              <p style={{ color: "green" }}>{successMessage}</p>
+            )}
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            <WebForm onSubmit={handleNewStudentSubmit} />
+          </div>
+        </TableCell>
+      </TableRow>
       <TableRow>
         {props.theColumnKeys.map((colName) =>
           props.visibleColumns[colName] ? (
