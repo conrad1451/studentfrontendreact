@@ -1,3 +1,5 @@
+// App.tsx
+
 // import FirstApp from "./FirstApp";
 import Login from "./auth/Login";
 import SamplePage from "./components/SamplePage";

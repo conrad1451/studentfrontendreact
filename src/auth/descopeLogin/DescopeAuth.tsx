@@ -1,3 +1,5 @@
+// DescopeAuth.tsx
+
 import { useCallback } from "react";
 
 import { Descope, useDescope, useSession, useUser } from "@descope/react-sdk";
