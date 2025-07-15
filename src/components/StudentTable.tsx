@@ -41,13 +41,13 @@ interface WebFormProps {
 }
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
-  const [myName, setText] = useState("");
+  // const [myName, setText] = useState("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await onSubmit({ myName });
-      setText("");
+      await onSubmit({ myFirstName, myLastName, myEmail, myMajor });
+      // setText("");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -55,14 +55,6 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
-        Enter text:
-        <input
-          type="text"
-          value={myName}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </label>
       <button type="submit">Submit data to Notion</button>{" "}
       {/* Changed button text */}
     </form>
