@@ -5,8 +5,8 @@ import FirstApp from "../../FirstApp";
 
 function LoginDashboard() {
   // const myChoice:string = "NotionForm";
-  // const myChoice: string = "StudentPortal";
-  const myChoice: string = "NOPE";
+  const myChoice: string = "StudentPortal";
+  // const myChoice: string = "NOPE";
 
   return (
     <>
