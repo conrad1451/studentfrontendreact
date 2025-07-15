@@ -31,32 +31,19 @@ import {
 import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 import type { Item, RowPage } from "../utils/dataTypes";
 
+// --- WebFormProps & WebForm Component ---
+// WebForm no longer needs to know about the individual form fields
+// It just needs a handler to call when the form is submitted.
 interface WebFormProps {
-  onSubmit: (formData: {
-    myFirstName: string;
-    myLastName: string;
-    myEmail: string;
-    myMajor: string;
-  }) => Promise<void>;
+  onSubmit: (event: React.FormEvent) => Promise<void>;
 }
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
-  // const [myName, setText] = useState("");
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      await onSubmit({ myFirstName, myLastName, myEmail, myMajor });
-      // setText("");
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <button type="submit">Submit data to Notion</button>{" "}
-      {/* Changed button text */}
+    <form onSubmit={onSubmit}>
+      {" "}
+      {/* Pass the onSubmit handler directly */}
+      <button type="submit">Submit data to Notion</button>
     </form>
   );
 };
@@ -286,68 +273,39 @@ const TableHeaderCells = (props: {
   );
 };
 
-const TableBodyRows = (props: {
+// --- TableBodyRowsProps and TableBodyRows Component ---
+interface TableBodyRowsProps {
   data: RowPage[];
   visibleColumns: ColumnVisibilityMiniTable;
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
-  onOpenActionModal: (student: RowPage) => void; // New prop for opening action modal
-}) => {
-  const [myFirstName, setMyFirstName] = useState("");
-  const [myLastName, setMyLastName] = useState("");
-  const [myEmail, setMyEmail] = useState("");
-  const [myMajor, setMyMajor] = useState("");
+  onOpenActionModal: (student: RowPage) => void;
+  // NEW PROPS - passed down from StudentTable
+  myFirstName: string;
+  setMyFirstName: (value: string) => void;
+  myLastName: string;
+  setMyLastName: (value: string) => void;
+  myEmail: string;
+  setMyEmail: (value: string) => void;
+  myMajor: string;
+  setMyMajor: (value: string) => void;
+  loading: boolean;
+  successMessage: string | null;
+  errorMessage: string | null;
+  onNewStudentSubmit: (event: React.FormEvent) => Promise<void>;
+}
 
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+const TableBodyRows = (props: TableBodyRowsProps) => {
+  // Remove these state declarations as they are now in StudentTable
+  // const [myFirstName, setMyFirstName] = useState("");
+  // const [myLastName, setMyLastName] = useState("");
+  // const [myEmail, setMyEmail] = useState("");
+  // const [myMajor, setMyMajor] = useState("");
 
-  const handleNewStudentSubmit = async (formData: {
-    myFirstName: string;
-    myLastName: string;
-    myEmail: string;
-    myMajor: string;
-  }) => {
-    setLoading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    try {
-      const BASE_URL =
-        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
-
-      // FIXME: CHQ: see if the sessionToken is REALLY needed
-      // const sessionToken = session?.jwt;
-      const sessionToken = "sampleTokenIguess";
-
-      // const response = await fetch(`${BASE_URL}/targetnotion`, { // Changed endpoint to /targetnotion
-      const response = await fetch(`${BASE_URL}`, {
-        // Changed endpoint to /targetnotion
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
-        },
-        body: JSON.stringify(formData), // Send form data in the body
-      });
-
-      if (!response.ok) {
-        if (response.status >= 400 && response.status < 600) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Server error");
-        }
-        throw new Error("Failed to submit to Notion"); // Changed error message
-      }
-
-      const result: ApiResponse = await response.json();
-      console.log("Data sent to database successfully:", result);
-      setSuccessMessage("Data sent to database successfully!"); // Changed success message
-    } catch (error) {
-      console.error("Error in database:", error);
-      setErrorMessage("Failed to send data to database. Please try again."); // Changed error message
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Remove these state and handler as they are now in StudentTable
+  // const [loading, setLoading] = useState(false);
+  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // const handleNewStudentSubmit = async (...) => {...};
 
   return (
     <TableBody>
@@ -364,7 +322,7 @@ const TableBodyRows = (props: {
               </TableCell>
             ) : null
           )}
-          {/* New TableCell for Actions button */}
+          {/* TableCell for Actions button for existing rows */}
           <TableCell>
             <IconButton
               aria-label="actions"
@@ -375,6 +333,7 @@ const TableBodyRows = (props: {
           </TableCell>
         </TableRow>
       ))}
+      {/* New Row for adding a student */}
       <TableRow>
         {props.theColumnKeys.map((colName) =>
           props.visibleColumns[colName] ? (
@@ -384,49 +343,49 @@ const TableBodyRows = (props: {
                   {colName === "FirstName" ? (
                     <>
                       <label>
-                        {}
                         <input
                           type="text"
-                          value={myFirstName}
-                          onChange={(e) => setMyFirstName(e.target.value)}
+                          value={props.myFirstName} // Use props
+                          onChange={(e) => props.setMyFirstName(e.target.value)} // Use props
+                          placeholder="First Name" // Added placeholder
                         />
                       </label>
                     </>
                   ) : colName === "LastName" ? (
                     <>
                       <label>
-                        {}
                         <input
                           type="text"
-                          value={myLastName}
-                          onChange={(e) => setMyLastName(e.target.value)}
+                          value={props.myLastName} // Use props
+                          onChange={(e) => props.setMyLastName(e.target.value)}
+                          placeholder="Last Name" // Added placeholder
                         />
                       </label>
                     </>
                   ) : colName === "Email" ? (
                     <>
                       <label>
-                        {}
                         <input
-                          type="text"
-                          value={myEmail}
-                          onChange={(e) => setMyEmail(e.target.value)}
+                          type="email" // Use type="email"
+                          value={props.myEmail} // Use props
+                          onChange={(e) => props.setMyEmail(e.target.value)}
+                          placeholder="Email" // Added placeholder
                         />
                       </label>
                     </>
                   ) : colName === "Major" ? (
                     <>
                       <label>
-                        {}
                         <input
                           type="text"
-                          value={myMajor}
-                          onChange={(e) => setMyMajor(e.target.value)}
+                          value={props.myMajor} // Use props
+                          onChange={(e) => props.setMyMajor(e.target.value)}
+                          placeholder="Major" // Added placeholder
                         />
                       </label>
                     </>
                   ) : colName === "myID" ? (
-                    ""
+                    "" // MyID usually auto-generated for new entries
                   ) : (
                     ""
                   )}
@@ -435,23 +394,22 @@ const TableBodyRows = (props: {
             </TableCell>
           ) : null
         )}
-        {/* Empty cell for the actions column in the footer row */}
+        {/* Cell for the WebForm in the new student row */}
         <TableCell>
-          {/* <Box maxWidth={25} padding={3} margin={2}>
-             <button type="submit" onSubmit={handleNewStudentSubmit}>
-              Add student to roster
-            </button>
-          </Box> */}
           <div>
-            {loading && <p>Loading...</p>}
-            {successMessage && (
-              <p style={{ color: "green" }}>{successMessage}</p>
+            {props.loading && <p>Loading...</p>}
+            {props.successMessage && (
+              <p style={{ color: "green" }}>{props.successMessage}</p>
             )}
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <WebForm onSubmit={handleNewStudentSubmit} />
+            {props.errorMessage && (
+              <p style={{ color: "red" }}>{props.errorMessage}</p>
+            )}
+            <WebForm onSubmit={props.onNewStudentSubmit} />{" "}
+            {/* Pass the submit handler */}
           </div>
         </TableCell>
       </TableRow>
+      {/* Footer row (Count of Students) */}
       <TableRow>
         {props.theColumnKeys.map((colName) =>
           props.visibleColumns[colName] ? (
@@ -472,7 +430,6 @@ const TableBodyRows = (props: {
     </TableBody>
   );
 };
-
 const MyChevronRightIcon = () => {
   return <>▶️</>;
 };
@@ -633,6 +590,70 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
+  //  CHQ: Gemini AI moved state variables and submission logic as part of raising the state
+
+  // --- Moved state variables and submission logic from TableBodyRows to StudentTable ---
+  const [myFirstName, setMyFirstName] = useState("");
+  const [myLastName, setMyLastName] = useState("");
+  const [myEmail, setMyEmail] = useState("");
+  const [myMajor, setMyMajor] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
+
+  const handleNewStudentSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent default form submission behavior
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const BASE_URL =
+        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+
+      // FIXME: CHQ: see if the sessionToken is REALLY needed
+      const sessionToken = "sampleTokenIguess"; // Use a real session token here
+
+      // Form the data object from the state variables here in StudentTable
+      const formData = { myFirstName, myLastName, myEmail, myMajor };
+
+      const response = await fetch(`${BASE_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
+        },
+        body: JSON.stringify(formData), // Send form data in the body
+      });
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 600) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Server error");
+        }
+        throw new Error("Failed to submit to Notion");
+      }
+
+      const result: ApiResponse = await response.json();
+      console.log("Data sent to database successfully:", result);
+      setSuccessMessage("Data sent to database successfully!");
+
+      // Clear the form fields after successful submission
+      setMyFirstName("");
+      setMyLastName("");
+      setMyEmail("");
+      setMyMajor("");
+    } catch (error) {
+      console.error("Error in database:", error);
+      setErrorMessage("Failed to send data to database. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // CHQ: Gemini AI added the follow state variables
 
   // State for the new action modal (Edit/Delete)
@@ -670,8 +691,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     setIsConfirmationModalOpen(true);
     handleCloseActionModal();
   };
-
-  const apiURL = import.meta.env.VITE_API_URL;
 
   // Handler to confirm deletion and make API call
   const confirmDeleteStudent = async () => {
@@ -772,11 +791,25 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
               sortHandlers={sortHandlers}
               theColumnKeys={allColumnKeys}
             />
+            {/* CHQ: Gemini AI added props to this as part of raising the state */}
             <TableBodyRows
               data={sortedData}
               visibleColumns={visibleColumns}
               theColumnKeys={allColumnKeys}
               onOpenActionModal={handleOpenActionModal} // Pass the handler down
+              // NEW PROPS - passing state and handlers down to TableBodyRows
+              myFirstName={myFirstName}
+              setMyFirstName={setMyFirstName}
+              myLastName={myLastName}
+              setMyLastName={setMyLastName}
+              myEmail={myEmail}
+              setMyEmail={setMyEmail}
+              myMajor={myMajor}
+              setMyMajor={setMyMajor}
+              loading={loading}
+              successMessage={successMessage}
+              errorMessage={errorMessage}
+              onNewStudentSubmit={handleNewStudentSubmit}
             />
           </Table>
         </TableContainer>
