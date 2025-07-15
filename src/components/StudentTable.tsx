@@ -43,7 +43,7 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
     <form onSubmit={onSubmit}>
       {" "}
       {/* Pass the onSubmit handler directly */}
-      <button type="submit">Submit data to Notion</button>
+      <button type="submit">Submit data to database</button>
     </form>
   );
 };
@@ -280,6 +280,7 @@ interface TableBodyRowsProps {
   theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
   onOpenActionModal: (student: RowPage) => void;
   // NEW PROPS - passed down from StudentTable
+  myId: number;
   myFirstName: string;
   setMyFirstName: (value: string) => void;
   myLastName: string;
@@ -385,7 +386,7 @@ const TableBodyRows = (props: TableBodyRowsProps) => {
                       </label>
                     </>
                   ) : colName === "myID" ? (
-                    "" // MyID usually auto-generated for new entries
+                    <>{props.myId}</>
                   ) : (
                     ""
                   )}
@@ -559,6 +560,20 @@ const ConfirmationModal = (props: {
   );
 };
 
+const idGenerator = (rawTableData: RowPage[]) => {
+  // CHQ: Gemini AI added following logic to calculate new ID
+  // --- Logic to determine the new myID ---
+  const maxId = rawTableData.reduce((max, row) => {
+    // const currentId = parseInt(row.myID, 10); // Assuming myID can be parsed as a number
+    const currentId = row.myID;
+
+    return isNaN(currentId) ? max : Math.max(max, currentId);
+  }, 0); // Start with 0 if no valid IDs found
+
+  // newMyID = String(maxId + 1); // Convert back to string for consistency with RowPage type
+  return maxId + 1;
+};
+
 const StudentTable = (props: { thePages: RowPage[] }) => {
   const rawTableData = props.thePages;
 
@@ -604,6 +619,10 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
 
+  // let newMyID: number = -1;
+
+  const newMyID: number = idGenerator(rawTableData);
+
   const handleNewStudentSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent default form submission behavior
     setLoading(true);
@@ -618,7 +637,13 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       const sessionToken = "sampleTokenIguess"; // Use a real session token here
 
       // Form the data object from the state variables here in StudentTable
-      const formData = { myFirstName, myLastName, myEmail, myMajor };
+      const formData = {
+        id: newMyID,
+        first_name: myFirstName,
+        last_name: myLastName,
+        email: myEmail,
+        major: myMajor,
+      };
 
       const response = await fetch(`${BASE_URL}`, {
         method: "POST",
@@ -634,7 +659,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
           const errorData = await response.json();
           throw new Error(errorData.message || "Server error");
         }
-        throw new Error("Failed to submit to Notion");
+        throw new Error("Failed to submit to database");
       }
 
       const result: ApiResponse = await response.json();
@@ -798,6 +823,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
               theColumnKeys={allColumnKeys}
               onOpenActionModal={handleOpenActionModal} // Pass the handler down
               // NEW PROPS - passing state and handlers down to TableBodyRows
+              myId={newMyID}
               myFirstName={myFirstName}
               setMyFirstName={setMyFirstName}
               myLastName={myLastName}
