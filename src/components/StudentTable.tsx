@@ -509,7 +509,59 @@ const StudentActionModal = (props: {
 };
 
 // New Confirmation Modal component
-const ConfirmationModal = (props: {
+const UpdateConfirmationModal = (props: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  message: string;
+}) => {
+  return (
+    <Modal open={props.open} onClose={props.onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: { xs: "90%", sm: 400 },
+          bgcolor: "background.paper",
+          border: "2px solid #000",
+          boxShadow: 24,
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          borderRadius: "8px",
+        }}
+      >
+        <Typography variant="h6" component="h2">
+          Confirmation
+        </Typography>
+        <Typography>{props.message}</Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="info"
+            onClick={props.onConfirm}
+            sx={{ borderRadius: "8px" }}
+          >
+            Confirm
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={props.onClose}
+            sx={{ borderRadius: "8px" }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+};
+
+// New Confirmation Modal component
+const DeletionConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -711,8 +763,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     console.log("Edit student:", student);
     // In a real application, you would navigate to an edit form
     // or open another modal with the student's editable details.
-    setStudentToDelete(student);
-    setIsDeletionConfirmationModalOpen(true);
+    setStudentToUpdate(student);
+    setIsUpdateConfirmationModalOpen(true);
     handleCloseActionModal();
   };
 
@@ -721,6 +773,38 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     setStudentToDelete(student);
     setIsDeletionConfirmationModalOpen(true);
     handleCloseActionModal();
+  };
+
+  // Handler to confirm update and make API call
+  const confirmUpdateStudent = async () => {
+    if (studentToDelete) {
+      try {
+        const response = await fetch(`${apiURL}/${studentToDelete.myID}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("Student deleted successfully:", data);
+        // You would typically refetch your student data here to update the table
+        // For example: props.onStudentDeleted(studentToDelete.myID);
+      } catch (error) {
+        console.error("Error deleting student:", error);
+        // Handle error (e.g., show an error message to the user)
+      } finally {
+        setIsDeletionConfirmationModalOpen(false); // Close confirmation modal
+        setStudentToDelete(null); // Clear student to delete
+      }
+    }
   };
 
   // Handler to confirm deletion and make API call
@@ -880,7 +964,13 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       />
 
       {/* Confirmation Modal */}
-      <ConfirmationModal
+      <UpdateConfirmationModal
+        open={isUpdateConfirmationModalOpen}
+        onClose={() => setIsUpdateConfirmationModalOpen(false)}
+        onConfirm={confirmUpdateStudent}
+        message={`Are you sure you want to update ${studentToUpdate?.FirstName} ${studentToUpdate?.LastName} (ID: ${studentToUpdate?.myID})?`}
+      />
+      <DeletionConfirmationModal
         open={isDeletionConfirmationModalOpen}
         onClose={() => setIsDeletionConfirmationModalOpen(false)}
         onConfirm={confirmDeleteStudent}
