@@ -687,8 +687,12 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     useState<RowPage | null>(null);
 
   // State for the confirmation modal
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [isDeletionConfirmationModalOpen, setIsDeletionConfirmationModalOpen] =
+    useState(false);
+  const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
+    useState(false);
   const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
+  const [studentToUpdate, setStudentToUpdate] = useState<RowPage | null>(null);
 
   // Handler to open the action modal
   const handleOpenActionModal = (student: RowPage) => {
@@ -707,13 +711,15 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     console.log("Edit student:", student);
     // In a real application, you would navigate to an edit form
     // or open another modal with the student's editable details.
+    setStudentToDelete(student);
+    setIsDeletionConfirmationModalOpen(true);
     handleCloseActionModal();
   };
 
   // Handler to initiate delete (opens confirmation modal)
   const handleDeleteStudent = (student: RowPage) => {
     setStudentToDelete(student);
-    setIsConfirmationModalOpen(true);
+    setIsDeletionConfirmationModalOpen(true);
     handleCloseActionModal();
   };
 
@@ -743,7 +749,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
         console.error("Error deleting student:", error);
         // Handle error (e.g., show an error message to the user)
       } finally {
-        setIsConfirmationModalOpen(false); // Close confirmation modal
+        setIsDeletionConfirmationModalOpen(false); // Close confirmation modal
         setStudentToDelete(null); // Clear student to delete
       }
     }
@@ -875,8 +881,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
       {/* Confirmation Modal */}
       <ConfirmationModal
-        open={isConfirmationModalOpen}
-        onClose={() => setIsConfirmationModalOpen(false)}
+        open={isDeletionConfirmationModalOpen}
+        onClose={() => setIsDeletionConfirmationModalOpen(false)}
         onConfirm={confirmDeleteStudent}
         message={`Are you sure you want to delete ${studentToDelete?.FirstName} ${studentToDelete?.LastName} (ID: ${studentToDelete?.myID})? This action cannot be undone.`}
       />
