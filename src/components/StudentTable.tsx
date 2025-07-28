@@ -515,18 +515,23 @@ const UpdateConfirmationModal = (props: {
   onConfirm: () => void;
   message: string;
   myId: number;
-  myFirstName: string;
-  setMyFirstName: (value: string) => void;
-  myLastName: string;
-  setMyLastName: (value: string) => void;
-  myEmail: string;
-  setMyEmail: (value: string) => void;
-  myMajor: string;
-  setMyMajor: (value: string) => void;
-  //  loading={loading}
-  //         successMessage={successMessage}
-  //         errorMessage={errorMessage}
+  // myFirstName: string;
+  // setMyFirstName: (value: string) => void;
+  // myLastName: string;
+  // setMyLastName: (value: string) => void;
+  // myEmail: string;
+  // setMyEmail: (value: string) => void;
+  // myMajor: string;
+  // setMyMajor: (value: string) => void;
+  loading: boolean;
+  successMessage: string;
+  errorMessage: string;
 }) => {
+  const [myFirstName, setMyFirstName] = useState("");
+  const [myLastName, setMyLastName] = useState("");
+  const [myEmail, setMyEmail] = useState("");
+  const [myMajor, setMyMajor] = useState("");
+
   return (
     <Modal open={props.open} onClose={props.onClose}>
       <Box
@@ -555,8 +560,10 @@ const UpdateConfirmationModal = (props: {
             <label>
               <input
                 type="text"
-                value={props.myFirstName} // Use props
-                onChange={(e) => props.setMyFirstName(e.target.value)}
+                // value={props.myFirstName} // Use props
+                // onChange={(e) => props.setMyFirstName(e.target.value)}
+                value={myFirstName} // Use props
+                onChange={(e) => setMyFirstName(e.target.value)}
                 placeholder="First Name" // Added placeholder
               />
             </label>
@@ -568,8 +575,10 @@ const UpdateConfirmationModal = (props: {
             <label>
               <input
                 type="text"
-                value={props.myLastName} // Use props
-                onChange={(e) => props.setMyLastName(e.target.value)}
+                // value={props.myLastName} // Use props
+                // onChange={(e) => props.setMyLastName(e.target.value)}
+                value={myLastName} // Use props
+                onChange={(e) => setMyLastName(e.target.value)}
                 placeholder="Last Name" // Added placeholder
               />
             </label>
@@ -580,8 +589,10 @@ const UpdateConfirmationModal = (props: {
             <label>
               <input
                 type="text"
-                value={props.myEmail} // Use props
-                onChange={(e) => props.setMyEmail(e.target.value)}
+                // value={props.myEmail} // Use props
+                // onChange={(e) => props.setMyEmail(e.target.value)}
+                value={myEmail} // Use props
+                onChange={(e) => setMyEmail(e.target.value)}
                 placeholder="Email" // Added placeholder
               />
             </label>
@@ -592,8 +603,10 @@ const UpdateConfirmationModal = (props: {
             <label>
               <input
                 type="text"
-                value={props.myMajor} // Use props
-                onChange={(e) => props.setMyMajor(e.target.value)}
+                // value={props.myMajor} // Use props
+                // onChange={(e) => props.setMyMajor(e.target.value)}
+                value={myMajor} // Use props
+                onChange={(e) => setMyMajor(e.target.value)}
                 placeholder="Major" // Added placeholder
               />
             </label>
@@ -837,20 +850,11 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   };
 
   // Handler to confirm update and make API call
-  const confirmUpdateStudent = async () => {
+  const confirmUpdateStudent = async (formData) => {
     if (studentToUpdate) {
       try {
         // FIXME: CHQ: see if the sessionToken is REALLY needed
         const sessionToken = "sampleTokenIguess"; // Use a real session token here
-
-        // Form the data object from the state variables here in StudentTable
-        const formData = {
-          id: newMyID,
-          first_name: myFirstName,
-          last_name: myLastName,
-          email: myEmail,
-          major: myMajor,
-        };
 
         const response = await fetch(`${apiURL}/${studentToUpdate.myID}`, {
           method: "PUT",
@@ -1044,17 +1048,25 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       <UpdateConfirmationModal
         open={isUpdateConfirmationModalOpen}
         onClose={() => setIsUpdateConfirmationModalOpen(false)}
-        onConfirm={confirmUpdateStudent}
+        onConfirm={() =>
+          confirmUpdateStudent({
+            id: newMyID,
+            first_name: myFirstName,
+            last_name: myLastName,
+            email: myEmail,
+            major: myMajor,
+          })
+        }
         message={`Are you sure you want to update ${studentToUpdate?.FirstName} ${studentToUpdate?.LastName} (ID: ${studentToUpdate?.myID})?`}
         myId={newMyID}
-        myFirstName={myFirstName}
-        setMyFirstName={setMyFirstName}
-        myLastName={myLastName}
-        setMyLastName={setMyLastName}
-        myEmail={myEmail}
-        setMyEmail={setMyEmail}
-        myMajor={myMajor}
-        setMyMajor={setMyMajor}
+        // myFirstName={myFirstName}
+        // setMyFirstName={setMyFirstName}
+        // myLastName={myLastName}
+        // setMyLastName={setMyLastName}
+        // myEmail={myEmail}
+        // setMyEmail={setMyEmail}
+        // myMajor={myMajor}
+        // setMyMajor={setMyMajor}
         loading={loading}
         successMessage={successMessage}
         errorMessage={errorMessage}
