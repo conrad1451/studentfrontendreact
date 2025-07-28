@@ -514,6 +514,18 @@ const UpdateConfirmationModal = (props: {
   onClose: () => void;
   onConfirm: () => void;
   message: string;
+  myId: number;
+  myFirstName: string;
+  setMyFirstName: (value: string) => void;
+  myLastName: string;
+  setMyLastName: (value: string) => void;
+  myEmail: string;
+  setMyEmail: (value: string) => void;
+  myMajor: string;
+  setMyMajor: (value: string) => void;
+  //  loading={loading}
+  //         successMessage={successMessage}
+  //         errorMessage={errorMessage}
 }) => {
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -538,6 +550,55 @@ const UpdateConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <>
+            <label>
+              <input
+                type="text"
+                value={props.myFirstName} // Use props
+                onChange={(e) => props.setMyFirstName(e.target.value)}
+                placeholder="First Name" // Added placeholder
+              />
+            </label>
+          </>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <>
+            <label>
+              <input
+                type="text"
+                value={props.myLastName} // Use props
+                onChange={(e) => props.setMyLastName(e.target.value)}
+                placeholder="Last Name" // Added placeholder
+              />
+            </label>
+          </>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <>
+            <label>
+              <input
+                type="text"
+                value={props.myEmail} // Use props
+                onChange={(e) => props.setMyEmail(e.target.value)}
+                placeholder="Email" // Added placeholder
+              />
+            </label>
+          </>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          <>
+            <label>
+              <input
+                type="text"
+                value={props.myMajor} // Use props
+                onChange={(e) => props.setMyMajor(e.target.value)}
+                placeholder="Major" // Added placeholder
+              />
+            </label>
+          </>
+        </Box>
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
           <Button
             variant="contained"
@@ -777,13 +838,29 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   // Handler to confirm update and make API call
   const confirmUpdateStudent = async () => {
-    if (studentToDelete) {
+    if (studentToUpdate) {
       try {
-        const response = await fetch(`${apiURL}/${studentToDelete.myID}`, {
-          method: "DELETE",
+        // FIXME: CHQ: see if the sessionToken is REALLY needed
+        const sessionToken = "sampleTokenIguess"; // Use a real session token here
+
+        // Form the data object from the state variables here in StudentTable
+        const formData = {
+          id: newMyID,
+          first_name: myFirstName,
+          last_name: myLastName,
+          email: myEmail,
+          major: myMajor,
+        };
+
+        const response = await fetch(`${apiURL}/${studentToUpdate.myID}`, {
+          method: "PUT",
+          // method: "PATCH",
+
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
           },
+          body: JSON.stringify(formData), // Send form data in the body
         });
 
         if (!response.ok) {
@@ -794,11 +871,11 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
         }
 
         const data = await response.json();
-        console.log("Student deleted successfully:", data);
+        console.log("Student updated successfully:", data);
         // You would typically refetch your student data here to update the table
         // For example: props.onStudentDeleted(studentToDelete.myID);
       } catch (error) {
-        console.error("Error deleting student:", error);
+        console.error("Error updating student:", error);
         // Handle error (e.g., show an error message to the user)
       } finally {
         setIsDeletionConfirmationModalOpen(false); // Close confirmation modal
@@ -969,6 +1046,18 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
         onClose={() => setIsUpdateConfirmationModalOpen(false)}
         onConfirm={confirmUpdateStudent}
         message={`Are you sure you want to update ${studentToUpdate?.FirstName} ${studentToUpdate?.LastName} (ID: ${studentToUpdate?.myID})?`}
+        myId={newMyID}
+        myFirstName={myFirstName}
+        setMyFirstName={setMyFirstName}
+        myLastName={myLastName}
+        setMyLastName={setMyLastName}
+        myEmail={myEmail}
+        setMyEmail={setMyEmail}
+        myMajor={myMajor}
+        setMyMajor={setMyMajor}
+        loading={loading}
+        successMessage={successMessage}
+        errorMessage={errorMessage}
       />
       <DeletionConfirmationModal
         open={isDeletionConfirmationModalOpen}
