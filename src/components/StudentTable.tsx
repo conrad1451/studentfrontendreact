@@ -1,3 +1,5 @@
+// StudentTable.tsx (From front end code)
+
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Table,
@@ -857,9 +859,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
         const sessionToken = "sampleTokenIguess"; // Use a real session token here
 
         const response = await fetch(`${apiURL}/${studentToUpdate.myID}`, {
-          method: "PUT",
-          // method: "PATCH",
-
+          // method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
