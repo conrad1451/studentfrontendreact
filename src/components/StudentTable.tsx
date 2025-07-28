@@ -18,6 +18,7 @@ import {
   Select,
   MenuItem,
   IconButton,
+  TextField, // Added TextField for better input control in modals
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Icon for the action button
@@ -34,10 +35,15 @@ import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 import type { Item, RowPage } from "../utils/dataTypes";
 
 // --- WebFormProps & WebForm Component ---
-// WebForm no longer needs to know about the individual form fields
-// It just needs a handler to call when the form is submitted.
 interface WebFormProps {
   onSubmit: (event: React.FormEvent) => Promise<void>;
+}
+
+interface ConfirmUpdateProps {
+  first_name: string;
+  last_name: string;
+  email: string;
+  major: string;
 }
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
@@ -199,19 +205,17 @@ const TableHeaderCells = (props: {
                         props.sortProps.sortColumn === colName &&
                         props.sortProps.sortDirection === "asc"
                           ? "Current: Ascending. Click to sort Descending."
-                          : props.sortProps.sortColumn === colName &&
-                            props.sortProps.sortDirection === "desc"
-                          ? "Current: Descending. Click to reset sort."
                           : "Click to sort Ascending."
                       }
                       sx={{
                         minWidth: "auto",
                         p: "2px",
+                        // Only show the up arrow if not currently sorted ascending
                         visibility:
                           props.sortProps.sortColumn === colName &&
                           props.sortProps.sortDirection === "asc"
-                            ? "hidden"
-                            : "visible",
+                            ? "visible" // Show if currently ascending
+                            : "visible", // Always visible to allow sorting
                       }}
                     >
                       {props.sortProps.sortColumn === colName &&
@@ -229,19 +233,17 @@ const TableHeaderCells = (props: {
                         props.sortProps.sortColumn === colName &&
                         props.sortProps.sortDirection === "desc"
                           ? "Current: Descending. Click to reset sort."
-                          : props.sortProps.sortColumn === colName &&
-                            props.sortProps.sortDirection === "asc"
-                          ? "Current: Ascending. Click to sort Descending."
                           : "Click to sort Descending."
                       }
                       sx={{
                         minWidth: "auto",
                         p: "2px",
+                        // Only show the down arrow if not currently sorted descending
                         visibility:
                           props.sortProps.sortColumn === colName &&
                           props.sortProps.sortDirection === "desc"
-                            ? "hidden"
-                            : "visible",
+                            ? "visible" // Show if currently descending
+                            : "visible", // Always visible to allow sorting
                       }}
                     >
                       {props.sortProps.sortColumn === colName &&
@@ -298,18 +300,6 @@ interface TableBodyRowsProps {
 }
 
 const TableBodyRows = (props: TableBodyRowsProps) => {
-  // Remove these state declarations as they are now in StudentTable
-  // const [myFirstName, setMyFirstName] = useState("");
-  // const [myLastName, setMyLastName] = useState("");
-  // const [myEmail, setMyEmail] = useState("");
-  // const [myMajor, setMyMajor] = useState("");
-
-  // Remove these state and handler as they are now in StudentTable
-  // const [loading, setLoading] = useState(false);
-  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  // const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // const handleNewStudentSubmit = async (...) => {...};
-
   return (
     <TableBody>
       {props.data.map((row) => (
@@ -344,49 +334,41 @@ const TableBodyRows = (props: TableBodyRowsProps) => {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName === "FirstName" ? (
-                    <>
-                      <label>
-                        <input
-                          type="text"
-                          value={props.myFirstName} // Use props
-                          onChange={(e) => props.setMyFirstName(e.target.value)} // Use props
-                          placeholder="First Name" // Added placeholder
-                        />
-                      </label>
-                    </>
+                    <TextField
+                      type="text"
+                      value={props.myFirstName}
+                      onChange={(e) => props.setMyFirstName(e.target.value)}
+                      placeholder="First Name"
+                      size="small"
+                      variant="outlined"
+                    />
                   ) : colName === "LastName" ? (
-                    <>
-                      <label>
-                        <input
-                          type="text"
-                          value={props.myLastName} // Use props
-                          onChange={(e) => props.setMyLastName(e.target.value)}
-                          placeholder="Last Name" // Added placeholder
-                        />
-                      </label>
-                    </>
+                    <TextField
+                      type="text"
+                      value={props.myLastName}
+                      onChange={(e) => props.setMyLastName(e.target.value)}
+                      placeholder="Last Name"
+                      size="small"
+                      variant="outlined"
+                    />
                   ) : colName === "Email" ? (
-                    <>
-                      <label>
-                        <input
-                          type="email" // Use type="email"
-                          value={props.myEmail} // Use props
-                          onChange={(e) => props.setMyEmail(e.target.value)}
-                          placeholder="Email" // Added placeholder
-                        />
-                      </label>
-                    </>
+                    <TextField
+                      type="email"
+                      value={props.myEmail}
+                      onChange={(e) => props.setMyEmail(e.target.value)}
+                      placeholder="Email"
+                      size="small"
+                      variant="outlined"
+                    />
                   ) : colName === "Major" ? (
-                    <>
-                      <label>
-                        <input
-                          type="text"
-                          value={props.myMajor} // Use props
-                          onChange={(e) => props.setMyMajor(e.target.value)}
-                          placeholder="Major" // Added placeholder
-                        />
-                      </label>
-                    </>
+                    <TextField
+                      type="text"
+                      value={props.myMajor}
+                      onChange={(e) => props.setMyMajor(e.target.value)}
+                      placeholder="Major"
+                      size="small"
+                      variant="outlined"
+                    />
                   ) : colName === "myID" ? (
                     <>{props.myId}</>
                   ) : (
@@ -514,25 +496,35 @@ const StudentActionModal = (props: {
 const UpdateConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (data: ConfirmUpdateProps) => Promise<void>; // Corrected type for onConfirm
   message: string;
-  myId: number;
-  // myFirstName: string;
-  // setMyFirstName: (value: string) => void;
-  // myLastName: string;
-  // setMyLastName: (value: string) => void;
-  // myEmail: string;
-  // setMyEmail: (value: string) => void;
-  // myMajor: string;
-  // setMyMajor: (value: string) => void;
+  // Pass current student data and setters from parent for editing
+  currentFirstName: string;
+  setCurrentFirstName: (value: string) => void;
+  currentLastName: string;
+  setCurrentLastName: (value: string) => void;
+  currentEmail: string;
+  setCurrentEmail: (value: string) => void;
+  currentMajor: string;
+  setCurrentMajor: (value: string) => void;
   loading: boolean;
-  successMessage: string;
-  errorMessage: string;
+  successMessage: string | null; // Can be null
+  errorMessage: string | null; // Can be null
 }) => {
-  const [myFirstName, setMyFirstName] = useState("");
-  const [myLastName, setMyLastName] = useState("");
-  const [myEmail, setMyEmail] = useState("");
-  const [myMajor, setMyMajor] = useState("");
+  // These states are now managed by the parent (StudentTable) and passed as props
+  // const [myFirstName, setMyFirstName] = useState("");
+  // const [myLastName, setMyLastName] = useState("");
+  // const [myEmail, setMyEmail] = useState("");
+  // const [myMajor, setMyMajor] = useState("");
+
+  const handleSubmit = () => {
+    props.onConfirm({
+      first_name: props.currentFirstName,
+      last_name: props.currentLastName,
+      email: props.currentEmail,
+      major: props.currentMajor,
+    });
+  };
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -557,76 +549,66 @@ const UpdateConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
-        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          <>
-            <label>
-              <input
-                type="text"
-                // value={props.myFirstName} // Use props
-                // onChange={(e) => props.setMyFirstName(e.target.value)}
-                value={myFirstName} // Use props
-                onChange={(e) => setMyFirstName(e.target.value)}
-                placeholder="First Name" // Added placeholder
-              />
-            </label>
-          </>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+          <TextField
+            label="First Name"
+            type="text"
+            value={props.currentFirstName}
+            onChange={(e) => props.setCurrentFirstName(e.target.value)}
+            placeholder="First Name"
+            size="small"
+            variant="outlined"
+          />
+          <TextField
+            label="Last Name"
+            type="text"
+            value={props.currentLastName}
+            onChange={(e) => props.setCurrentLastName(e.target.value)}
+            placeholder="Last Name"
+            size="small"
+            variant="outlined"
+          />
+          <TextField
+            label="Email"
+            type="email"
+            value={props.currentEmail}
+            onChange={(e) => props.setCurrentEmail(e.target.value)}
+            placeholder="Email"
+            size="small"
+            variant="outlined"
+          />
+          <TextField
+            label="Major"
+            type="text"
+            value={props.currentMajor}
+            onChange={(e) => props.setCurrentMajor(e.target.value)}
+            placeholder="Major"
+            size="small"
+            variant="outlined"
+          />
         </Box>
-
-        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          <>
-            <label>
-              <input
-                type="text"
-                // value={props.myLastName} // Use props
-                // onChange={(e) => props.setMyLastName(e.target.value)}
-                value={myLastName} // Use props
-                onChange={(e) => setMyLastName(e.target.value)}
-                placeholder="Last Name" // Added placeholder
-              />
-            </label>
-          </>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          <>
-            <label>
-              <input
-                type="text"
-                // value={props.myEmail} // Use props
-                // onChange={(e) => props.setMyEmail(e.target.value)}
-                value={myEmail} // Use props
-                onChange={(e) => setMyEmail(e.target.value)}
-                placeholder="Email" // Added placeholder
-              />
-            </label>
-          </>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          <>
-            <label>
-              <input
-                type="text"
-                // value={props.myMajor} // Use props
-                // onChange={(e) => props.setMyMajor(e.target.value)}
-                value={myMajor} // Use props
-                onChange={(e) => setMyMajor(e.target.value)}
-                placeholder="Major" // Added placeholder
-              />
-            </label>
-          </>
-        </Box>
+        {props.loading && <p>Loading...</p>}
+        {props.successMessage && (
+          <p style={{ color: "green" }}>{props.successMessage}</p>
+        )}
+        {props.errorMessage && (
+          <p style={{ color: "red" }}>{props.errorMessage}</p>
+        )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
           <Button
             variant="contained"
             color="info"
-            onClick={props.onConfirm}
+            onClick={handleSubmit} // Call local handleSubmit
             sx={{ borderRadius: "8px" }}
+            disabled={props.loading} // Disable during loading
           >
-            Confirm
+            Confirm Update
           </Button>
           <Button
             variant="outlined"
             onClick={props.onClose}
             sx={{ borderRadius: "8px" }}
+            disabled={props.loading} // Disable during loading
           >
             Cancel
           </Button>
@@ -642,6 +624,9 @@ const DeletionConfirmationModal = (props: {
   onClose: () => void;
   onConfirm: () => void;
   message: string;
+  loading: boolean; // Added loading prop
+  successMessage: string | null; // Added successMessage prop
+  errorMessage: string | null; // Added errorMessage prop
 }) => {
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -666,19 +651,28 @@ const DeletionConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
+        {props.loading && <p>Loading...</p>}
+        {props.successMessage && (
+          <p style={{ color: "green" }}>{props.successMessage}</p>
+        )}
+        {props.errorMessage && (
+          <p style={{ color: "red" }}>{props.errorMessage}</p>
+        )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
           <Button
             variant="contained"
             color="error"
             onClick={props.onConfirm}
             sx={{ borderRadius: "8px" }}
+            disabled={props.loading} // Disable during loading
           >
-            Confirm
+            Confirm Delete
           </Button>
           <Button
             variant="outlined"
             onClick={props.onClose}
             sx={{ borderRadius: "8px" }}
+            disabled={props.loading} // Disable during loading
           >
             Cancel
           </Button>
@@ -692,18 +686,18 @@ const idGenerator = (rawTableData: RowPage[]) => {
   // CHQ: Gemini AI added following logic to calculate new ID
   // --- Logic to determine the new myID ---
   const maxId = rawTableData.reduce((max, row) => {
-    // const currentId = parseInt(row.myID, 10); // Assuming myID can be parsed as a number
-    const currentId = row.myID;
-
+    const currentId = row.myID; // Assuming myID is already a number
     return isNaN(currentId) ? max : Math.max(max, currentId);
   }, 0); // Start with 0 if no valid IDs found
-
-  // newMyID = String(maxId + 1); // Convert back to string for consistency with RowPage type
   return maxId + 1;
 };
 
 const StudentTable = (props: { thePages: RowPage[] }) => {
-  const rawTableData = props.thePages;
+  const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages); // Manage table data locally for updates
+
+  useEffect(() => {
+    setRawTableData(props.thePages); // Update local state if props.thePages changes
+  }, [props.thePages]);
 
   const initialTableDataForHooks = rawTableData.filter(
     (row) => row && row.FirstName && row.FirstName.trim() !== ""
@@ -733,8 +727,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
-  //  CHQ: Gemini AI moved state variables and submission logic as part of raising the state
-
   // --- Moved state variables and submission logic from TableBodyRows to StudentTable ---
   const [myFirstName, setMyFirstName] = useState("");
   const [myLastName, setMyLastName] = useState("");
@@ -746,8 +738,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
-
-  // let newMyID: number = -1;
 
   const newMyID: number = idGenerator(rawTableData);
 
@@ -761,7 +751,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       const BASE_URL =
         import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
 
-      // FIXME: CHQ: see if the sessionToken is REALLY needed
       const sessionToken = "sampleTokenIguess"; // Use a real session token here
 
       // Form the data object from the state variables here in StudentTable
@@ -794,14 +783,29 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       console.log("Data sent to database successfully:", result);
       setSuccessMessage("Data sent to database successfully!");
 
+      // Optimistically add the new student to the table
+      setRawTableData((prevData) => [
+        ...prevData,
+        {
+          myID: newMyID,
+          FirstName: myFirstName,
+          LastName: myLastName,
+          Email: myEmail,
+          Major: myMajor,
+        } as RowPage, // Cast to RowPage
+      ]);
+
       // Clear the form fields after successful submission
       setMyFirstName("");
       setMyLastName("");
       setMyEmail("");
       setMyMajor("");
-    } catch (error) {
+    } catch (error: any) {
+      // Type 'any' for error for now
       console.error("Error in database:", error);
-      setErrorMessage("Failed to send data to database. Please try again.");
+      setErrorMessage(
+        error.message || "Failed to send data to database. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -822,6 +826,12 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
   const [studentToUpdate, setStudentToUpdate] = useState<RowPage | null>(null);
 
+  // States for the update modal's input fields
+  const [updateFirstName, setUpdateFirstName] = useState("");
+  const [updateLastName, setUpdateLastName] = useState("");
+  const [updateEmail, setUpdateEmail] = useState("");
+  const [updateMajor, setUpdateMajor] = useState("");
+
   // Handler to open the action modal
   const handleOpenActionModal = (student: RowPage) => {
     setSelectedStudentForActions(student);
@@ -837,9 +847,12 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   // Placeholder for Edit action
   const handleEditStudent = (student: RowPage) => {
     console.log("Edit student:", student);
-    // In a real application, you would navigate to an edit form
-    // or open another modal with the student's editable details.
     setStudentToUpdate(student);
+    // Populate the update modal's input fields with current student data
+    setUpdateFirstName(student.FirstName);
+    setUpdateLastName(student.LastName);
+    setUpdateEmail(student.Email);
+    setUpdateMajor(student.Major || ""); // Handle null major
     setIsUpdateConfirmationModalOpen(true);
     handleCloseActionModal();
   };
@@ -851,232 +864,305 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     handleCloseActionModal();
   };
 
-  // Handler to confirm update and make API call
-  const confirmUpdateStudent = async (formData) => {
-    if (studentToUpdate) {
-      try {
-        // FIXME: CHQ: see if the sessionToken is REALLY needed
-        const sessionToken = "sampleTokenIguess"; // Use a real session token here
-
-        const response = await fetch(`${apiURL}/${studentToUpdate.myID}`, {
-          // method: "PUT",
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
-          },
-          body: JSON.stringify(formData), // Send form data in the body
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(
-            errorData.error || `HTTP error! status: ${response.status}`
-          );
-        }
-
-        const data = await response.json();
-        console.log("Student updated successfully:", data);
-        // You would typically refetch your student data here to update the table
-        // For example: props.onStudentDeleted(studentToDelete.myID);
-      } catch (error) {
-        console.error("Error updating student:", error);
-        // Handle error (e.g., show an error message to the user)
-      } finally {
-        setIsDeletionConfirmationModalOpen(false); // Close confirmation modal
-        setStudentToDelete(null); // Clear student to delete
-      }
-    }
-  };
-
-  // Handler to confirm deletion and make API call
+  // Handler to confirm delete and make API call
   const confirmDeleteStudent = async () => {
-    if (studentToDelete) {
-      try {
-        const response = await fetch(`${apiURL}/${studentToDelete.myID}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+    if (!studentToDelete) {
+      console.warn("No student selected for deletion.");
+      setIsDeletionConfirmationModalOpen(false);
+      return;
+    }
 
-        if (!response.ok) {
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const BASE_URL =
+        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      const sessionToken = "sampleTokenIguess"; // Use a real session token here
+
+      const response = await fetch(`${BASE_URL}/${studentToDelete.myID}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 600) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.error || `HTTP error! status: ${response.status}`
-          );
+          throw new Error(errorData.message || "Server error");
         }
-
-        const data = await response.json();
-        console.log("Student deleted successfully:", data);
-        // You would typically refetch your student data here to update the table
-        // For example: props.onStudentDeleted(studentToDelete.myID);
-      } catch (error) {
-        console.error("Error deleting student:", error);
-        // Handle error (e.g., show an error message to the user)
-      } finally {
-        setIsDeletionConfirmationModalOpen(false); // Close confirmation modal
-        setStudentToDelete(null); // Clear student to delete
+        throw new Error("Failed to delete student");
       }
+
+      console.log(
+        `Student with ID ${studentToDelete.myID} deleted successfully.`
+      );
+      setSuccessMessage("Student deleted successfully!");
+      // Remove the student from the local state
+      setRawTableData((prevData) =>
+        prevData.filter((student) => student.myID !== studentToDelete.myID)
+      );
+    } catch (error: any) {
+      console.error("Error deleting student:", error);
+      setErrorMessage(
+        error.message || "Failed to delete student. Please try again."
+      );
+    } finally {
+      setLoading(false);
+      setIsDeletionConfirmationModalOpen(false);
+      setStudentToDelete(null); // Clear selected student
     }
   };
-  useEffect(() => {
-    return () => console.log("StudentTable unmounted or re-rendered");
-  }, []);
-  useEffect(
-    () => console.log("allStudentNames updated:", allStudentNames),
-    [allStudentNames]
-  );
 
-  // The original modal (which seems to be for general content, not specific to student actions)
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleCloseModal = () => setModalOpen(false);
+  // Handler to confirm update and make API call
+  const confirmUpdateStudent = async (formData: ConfirmUpdateProps) => {
+    // Accept formData as parameter
+    if (!studentToUpdate) {
+      console.warn("No student selected for update.");
+      setIsUpdateConfirmationModalOpen(false);
+      return;
+    }
+
+    // Build the payload for the PATCH request dynamically
+    const updatePayload: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      major?: string | null;
+    } = {};
+
+    // Only include properties if they have changed from the original studentToUpdate values
+    // and are not empty strings (unless empty string explicitly means null/clear)
+    if (
+      formData.first_name.trim() !== "" &&
+      formData.first_name !== studentToUpdate.FirstName
+    ) {
+      updatePayload.first_name = formData.first_name;
+    }
+    if (
+      formData.last_name.trim() !== "" &&
+      formData.last_name !== studentToUpdate.LastName
+    ) {
+      updatePayload.last_name = formData.last_name;
+    }
+    if (
+      formData.email.trim() !== "" &&
+      formData.email !== studentToUpdate.Email
+    ) {
+      updatePayload.email = formData.email;
+    }
+    // Handle major: if empty string, set to null, otherwise use value if changed
+    if (formData.major !== (studentToUpdate.Major || "")) {
+      // Compare with empty string if major is null
+      updatePayload.major =
+        formData.major.trim() === "" ? null : formData.major;
+    }
+
+    // If no fields were provided for update, you might want to return early
+    if (Object.keys(updatePayload).length === 0) {
+      setErrorMessage("No fields provided for update or no changes detected.");
+      setIsUpdateConfirmationModalOpen(false);
+      setUpdateFirstName("");
+      setUpdateLastName("");
+      setUpdateEmail("");
+      setUpdateMajor(""); // Clear form
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const BASE_API_URL =
+        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      const sessionToken = "sampleTokenIguess";
+
+      const response = await fetch(`${BASE_API_URL}/${studentToUpdate.myID}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(updatePayload),
+      });
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 600) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Server error during update");
+        }
+        throw new Error("Failed to update student");
+      }
+
+      const result: ApiResponse = await response.json();
+      console.log("Student updated successfully:", result);
+      setSuccessMessage("Student updated successfully!");
+
+      // Update the student in the local state after successful update
+      setRawTableData((prevData) =>
+        prevData.map((student) =>
+          student.myID === studentToUpdate.myID
+            ? {
+                ...student,
+                ...updatePayload, // Merge updated fields
+                FirstName: updatePayload.first_name || student.FirstName, // Ensure FirstName, LastName etc. are updated on RowPage
+                LastName: updatePayload.last_name || student.LastName,
+                Email: updatePayload.email || student.Email,
+                Major: (updatePayload.major === undefined
+                  ? student.Major
+                  : updatePayload.major) as string | null,
+              }
+            : student
+        )
+      );
+
+      // Clear the update form fields
+      setUpdateFirstName("");
+      setUpdateLastName("");
+      setUpdateEmail("");
+      setUpdateMajor("");
+    } catch (error: any) {
+      console.error("Error updating student:", error);
+      setErrorMessage(
+        error.message || "Failed to update student. Please try again."
+      );
+    } finally {
+      setLoading(false);
+      setIsUpdateConfirmationModalOpen(false);
+      setStudentToUpdate(null); // Clear selected student
+    }
+  };
 
   return (
-    <Box sx={{ p: 2 }}>
-      {/* StudentTable Controls Section */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 2,
-          mb: 2,
-          alignItems: "flex-start",
-        }}
-      >
-        <Button
-          variant="contained"
-          onClick={() => setIsColumnModalOpen(true)}
-          sx={{ mb: { xs: 2, md: 0 } }}
+    <Box sx={{ width: "100%", overflowX: "auto" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
         >
-          Customize Columns
-        </Button>
-      </Box>
-
-      {/* Column Visibility Modal */}
-      <ColumnVisibilityControlModal
-        open={isColumnModalOpen}
-        onClose={() => setIsColumnModalOpen(false)}
-        visibleColumns={visibleColumns}
-        onToggle={handleToggleColumn}
-        onSelectPreset={setPresetVisibility}
-        onReset={resetVisibility}
-        presets={presets}
-      />
-
-      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-        <IconButton
-          onClick={() => setIsTableCollapsed(!isTableCollapsed)}
-          aria-label={
-            isTableCollapsed ? "Expand StudentTable" : "Collapse StudentTable"
-          }
-        >
-          {isTableCollapsed ? <MyChevronRightIcon /> : <MyExpandMoreIcon />}
-        </IconButton>
-        <Typography variant="h6">
-          {isTableCollapsed ? "Show Student List" : "Student List"}{" "}
-        </Typography>
-      </Box>
-
-      {/* Main StudentTable Display */}
-      {!isTableCollapsed && (
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table stickyHeader aria-label="student table">
-            <TableHeaderCells
-              visibleColumns={visibleColumns}
-              sortProps={sortProps}
-              sortHandlers={sortHandlers}
-              theColumnKeys={allColumnKeys}
-            />
-            {/* CHQ: Gemini AI added props to this as part of raising the state */}
-            <TableBodyRows
-              data={sortedData}
-              visibleColumns={visibleColumns}
-              theColumnKeys={allColumnKeys}
-              onOpenActionModal={handleOpenActionModal} // Pass the handler down
-              // NEW PROPS - passing state and handlers down to TableBodyRows
-              myId={newMyID}
-              myFirstName={myFirstName}
-              setMyFirstName={setMyFirstName}
-              myLastName={myLastName}
-              setMyLastName={setMyLastName}
-              myEmail={myEmail}
-              setMyEmail={setMyEmail}
-              myMajor={myMajor}
-              setMyMajor={setMyMajor}
-              loading={loading}
-              successMessage={successMessage}
-              errorMessage={errorMessage}
-              onNewStudentSubmit={handleNewStudentSubmit}
-            />
-          </Table>
-        </TableContainer>
-      )}
-
-      {/* Original Modal (unrelated to Edit/Delete actions) */}
-      <Modal open={modalOpen} onClose={handleCloseModal}>
-        <Box className="myTable-modalBox">
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Page Content
+          <Typography variant="h5" component="div">
+            Student Data
           </Typography>
-          <Typography
-            id="modal-modal-description"
-            className="myTable-modalDescription"
-            component="div"
-          >
-            {"renderModalContent1(modalContent)"}{" "}
-            {/* This line needs attention if `renderModalContent1` is not defined */}
-          </Typography>
-          <Box className="myTable-modalActions">
-            <Button variant="contained" onClick={handleCloseModal}>
-              Close
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => setIsColumnModalOpen(true)}
+            >
+              Customize Columns
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setIsTableCollapsed(!isTableCollapsed)}
+            >
+              {isTableCollapsed ? <MyChevronRightIcon /> : <MyExpandMoreIcon />}{" "}
+              {isTableCollapsed ? "Expand" : "Collapse"} Table
             </Button>
           </Box>
         </Box>
-      </Modal>
 
-      {/* CHQ: Gemini AI added the following two components */}
-      {/* New Student Action Modal */}
+        <ColumnVisibilityControlModal
+          open={isColumnModalOpen}
+          onClose={() => setIsColumnModalOpen(false)}
+          visibleColumns={visibleColumns}
+          onToggle={handleToggleColumn}
+          onSelectPreset={setPresetVisibility}
+          onReset={resetVisibility}
+          presets={presets}
+        />
+
+        {!isTableCollapsed && (
+          <TableContainer>
+            <Table stickyHeader aria-label="student table">
+              <TableHeaderCells
+                visibleColumns={visibleColumns}
+                sortProps={sortProps}
+                sortHandlers={sortHandlers}
+                theColumnKeys={allColumnKeys}
+              />
+              <TableBodyRows
+                data={sortedData}
+                visibleColumns={visibleColumns}
+                theColumnKeys={allColumnKeys}
+                onOpenActionModal={handleOpenActionModal}
+                myId={newMyID} // Pass the newly generated ID
+                myFirstName={myFirstName}
+                setMyFirstName={setMyFirstName}
+                myLastName={myLastName}
+                setMyLastName={setMyLastName}
+                myEmail={myEmail}
+                setMyEmail={setMyEmail}
+                myMajor={myMajor}
+                setMyMajor={setMyMajor}
+                loading={loading}
+                successMessage={successMessage}
+                errorMessage={errorMessage}
+                onNewStudentSubmit={handleNewStudentSubmit}
+              />
+            </Table>
+          </TableContainer>
+        )}
+      </Paper>
+
+      {/* Action Modal (Edit/Delete) */}
       <StudentActionModal
         open={isActionModalOpen}
         onClose={handleCloseActionModal}
         student={selectedStudentForActions}
         onEdit={handleEditStudent}
-        onDelete={handleDeleteStudent} // This now triggers the confirmation modal
+        onDelete={handleDeleteStudent}
       />
 
-      {/* Confirmation Modal */}
+      {/* Update Confirmation Modal */}
       <UpdateConfirmationModal
         open={isUpdateConfirmationModalOpen}
-        onClose={() => setIsUpdateConfirmationModalOpen(false)}
-        onConfirm={() =>
-          confirmUpdateStudent({
-            id: newMyID,
-            first_name: myFirstName,
-            last_name: myLastName,
-            email: myEmail,
-            major: myMajor,
-          })
-        }
-        message={`Are you sure you want to update ${studentToUpdate?.FirstName} ${studentToUpdate?.LastName} (ID: ${studentToUpdate?.myID})?`}
-        myId={newMyID}
-        // myFirstName={myFirstName}
-        // setMyFirstName={setMyFirstName}
-        // myLastName={myLastName}
-        // setMyLastName={setMyLastName}
-        // myEmail={myEmail}
-        // setMyEmail={setMyEmail}
-        // myMajor={myMajor}
-        // setMyMajor={setMyMajor}
+        onClose={() => {
+          setIsUpdateConfirmationModalOpen(false);
+          setStudentToUpdate(null); // Clear selected student
+          setUpdateFirstName(""); // Clear form fields
+          setUpdateLastName("");
+          setUpdateEmail("");
+          setUpdateMajor("");
+          setErrorMessage(null); // Clear messages
+          setSuccessMessage(null);
+        }}
+        onConfirm={confirmUpdateStudent} // Pass the handler
+        message={`Are you sure you want to update student ID ${studentToUpdate?.myID}?`}
+        currentFirstName={updateFirstName}
+        setCurrentFirstName={setUpdateFirstName}
+        currentLastName={updateLastName}
+        setCurrentLastName={setUpdateLastName}
+        currentEmail={updateEmail}
+        setCurrentEmail={setUpdateEmail}
+        currentMajor={updateMajor}
+        setCurrentMajor={setUpdateMajor}
         loading={loading}
         successMessage={successMessage}
         errorMessage={errorMessage}
       />
+
+      {/* Deletion Confirmation Modal */}
       <DeletionConfirmationModal
         open={isDeletionConfirmationModalOpen}
-        onClose={() => setIsDeletionConfirmationModalOpen(false)}
+        onClose={() => {
+          setIsDeletionConfirmationModalOpen(false);
+          setStudentToDelete(null); // Clear selected student
+          setErrorMessage(null); // Clear messages
+          setSuccessMessage(null);
+        }}
         onConfirm={confirmDeleteStudent}
-        message={`Are you sure you want to delete ${studentToDelete?.FirstName} ${studentToDelete?.LastName} (ID: ${studentToDelete?.myID})? This action cannot be undone.`}
+        message={`Are you sure you want to delete student ID ${studentToDelete?.myID} - ${studentToDelete?.FirstName} ${studentToDelete?.LastName}? This action cannot be undone.`}
+        loading={loading}
+        successMessage={successMessage}
+        errorMessage={errorMessage}
       />
     </Box>
   );
