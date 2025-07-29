@@ -1,6 +1,8 @@
 // StudentTable.tsx (From front end code)
 
-import React, { useState, useEffect, useMemo } from "react";
+// import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
+
 import {
   Table,
   TableBody,
@@ -32,7 +34,8 @@ import {
 } from "../hooks/useColumnVisibility";
 
 import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
-import type { Item, RowPage } from "../utils/dataTypes";
+// import type { Item, RowPage } from "../utils/dataTypes";
+import type { RowPage } from "../utils/dataTypes";
 
 // --- WebFormProps & WebForm Component ---
 interface WebFormProps {
@@ -332,6 +335,7 @@ const TableBodyRows = (props: TableBodyRowsProps) => {
           props.visibleColumns[colName] ? (
             <TableCell key={colName}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
+                {/* // CHQ: Gemini AI changed empty div to TextField for each field */}
                 <Typography variant="subtitle2" sx={{ mr: 1 }}>
                   {colName === "FirstName" ? (
                     <TextField
@@ -517,6 +521,7 @@ const UpdateConfirmationModal = (props: {
   // const [myEmail, setMyEmail] = useState("");
   // const [myMajor, setMyMajor] = useState("");
 
+  // CHQ: Added by Gemini AI
   const handleSubmit = () => {
     props.onConfirm({
       first_name: props.currentFirstName,
@@ -549,6 +554,7 @@ const UpdateConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
+        {/* // CHQ: Gemini AI changed empty div to TextField for each field */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
           <TextField
             label="First Name"
@@ -587,6 +593,7 @@ const UpdateConfirmationModal = (props: {
             variant="outlined"
           />
         </Box>
+        {/* CHQ: Added by Gemini AI */}
         {props.loading && <p>Loading...</p>}
         {props.successMessage && (
           <p style={{ color: "green" }}>{props.successMessage}</p>
@@ -595,6 +602,7 @@ const UpdateConfirmationModal = (props: {
           <p style={{ color: "red" }}>{props.errorMessage}</p>
         )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          {/* CHQ: Gemini AI added disabling button during loading */}
           <Button
             variant="contained"
             color="info"
@@ -651,6 +659,7 @@ const DeletionConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
+        {/* CHQ: Added by Gemini AI */}
         {props.loading && <p>Loading...</p>}
         {props.successMessage && (
           <p style={{ color: "green" }}>{props.successMessage}</p>
@@ -659,6 +668,7 @@ const DeletionConfirmationModal = (props: {
           <p style={{ color: "red" }}>{props.errorMessage}</p>
         )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+          {/* CHQ: Gemini AI added disabling button during loading */}
           <Button
             variant="contained"
             color="error"
@@ -693,6 +703,7 @@ const idGenerator = (rawTableData: RowPage[]) => {
 };
 
 const StudentTable = (props: { thePages: RowPage[] }) => {
+  // CHQ: Gemini AI turned this from a variable assigned from a prop into a state variable
   const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages); // Manage table data locally for updates
 
   useEffect(() => {
@@ -716,14 +727,14 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const { sortedData, sortProps, sortHandlers } = useTableSorting(filteredData);
 
-  const allStudentNames: Item[] = useMemo(
-    () =>
-      rawTableData.map((row) => ({
-        id: Math.floor(100 * Math.random()), // Consider using a more stable ID if available
-        value: row.FirstName,
-      })),
-    [rawTableData]
-  );
+  // const allStudentNames: Item[] = useMemo(
+  //   () =>
+  //     rawTableData.map((row) => ({
+  //       id: Math.floor(100 * Math.random()), // Consider using a more stable ID if available
+  //       value: row.FirstName,
+  //     })),
+  //   [rawTableData]
+  // );
 
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
@@ -737,7 +748,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
+  // CHQ: commented out unused code
+  // const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
 
   const newMyID: number = idGenerator(rawTableData);
 
@@ -848,6 +860,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
   const handleEditStudent = (student: RowPage) => {
     console.log("Edit student:", student);
     setStudentToUpdate(student);
+
+    // CHQ: Gemini AI added the following state updates below
     // Populate the update modal's input fields with current student data
     setUpdateFirstName(student.FirstName);
     setUpdateLastName(student.LastName);
@@ -1012,8 +1026,8 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
                 LastName: updatePayload.last_name || student.LastName,
                 Email: updatePayload.email || student.Email,
                 Major: (updatePayload.major === undefined
-                  ? student.Major
-                  : updatePayload.major) as string | null,
+                  ? String(student.Major)
+                  : updatePayload.major) as string,
               }
             : student
         )
