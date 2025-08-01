@@ -1,13 +1,20 @@
 // DescopeAuth.tsx
 
 import { useCallback } from "react";
+// Example using fetch to send Descope token to your backend
+// const descopeSessionToken = useSession().sessionToken; // Get the token from Descope's SDK
 
+// Call this function after successfully getting a token from Descope
+// loginWithDescopeToken(descopeSessionToken);
 import { Descope, useDescope, useSession, useUser } from "@descope/react-sdk";
 
 import DescopeLandingPage from "./DescopeLoginLandingPage";
 
+import { loginWithDescopeToken } from "./authFunctions";
+
 const DescopeAuth = () => {
-  const { isAuthenticated, isSessionLoading } = useSession();
+  // const { isAuthenticated, isSessionLoading } = useSession();
+  const { isAuthenticated, isSessionLoading, sessionToken } = useSession();
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
 
