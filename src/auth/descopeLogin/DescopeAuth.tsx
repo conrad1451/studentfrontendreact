@@ -14,9 +14,13 @@ import { loginWithDescopeToken } from "./authFunctions";
 
 const DescopeAuth = () => {
   // const { isAuthenticated, isSessionLoading } = useSession();
-  const { isAuthenticated, isSessionLoading, sessionToken } = useSession();
+  const { isSessionLoading, sessionToken, isAuthenticated } = useSession();
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
+
+  const myUsername = user.name ? user.name : "sample user";
+
+  loginWithDescopeToken(sessionToken, myUsername);
 
   const handleLogout = useCallback(() => {
     logout();
