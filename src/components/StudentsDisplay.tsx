@@ -1,8 +1,9 @@
 // StudentsDisplay.tsx
 
-import React from "react";
+// import React from "react";
 import { useStudents } from "../hooks/useStudents";
 import StudentTable from "./StudentTable";
+import StudentTableAlt from "./StudentTableAlt";
 
 import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI components
 import type { RowPage } from "../utils/dataTypes"; // Import both
@@ -32,8 +33,11 @@ const EmptyDatabase = (props: EmptyDatabaseProps) => {
 
 // CHQ: Gemini AI renamed and refactored this.
 //      It split a single functional component into a hook and a component
-const StudentsDisplay: React.FC = () => {
-  const { students, loading, error, refetchStudents } = useStudents();
+const StudentsDisplay = (props: { theChoice: number }) => {
+  // const { students, loading, error, refetchStudents } = useStudents(1);
+  const { students, loading, error, refetchStudents } = useStudents(
+    props.theChoice
+  );
 
   // Set this to `false` to use real data from the API
   const useSampleData = false;
@@ -97,9 +101,12 @@ const StudentsDisplay: React.FC = () => {
       {/* Show EmptyDatabase component if no error, no real students, AND not using sample data */}
       {!error && dataForTable.length === 0 && !useSampleData ? (
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />
-      ) : (
-        // Render StudentTable with the prepared data (either transformed real data or sample data)
+      ) : // Render StudentTable with the prepared data (either transformed real data or sample data)
+
+      props.theChoice === 1 ? (
         <StudentTable thePages={dataForTable} />
+      ) : (
+        <StudentTableAlt thePages={dataForTable} />
       )}
     </Box>
   );

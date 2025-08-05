@@ -13,13 +13,26 @@ interface UseStudentsResult {
 
 // Ensure VITE_API_URL is set in your .env file (e.g., VITE_API_URL=http://localhost:5000/api/students)
 // const apiURL = import.meta.env.VITE_API_URL_OTHERHOST;
-const apiURL = import.meta.env.VITE_API_URL;
+const apiPicker = (theChoice: number) => {
+  const choice1 = import.meta.env.VITE_API_URL;
+  const choice2 = import.meta.env.VITE_API_GO_URL;
 
-export const useStudents = (): UseStudentsResult => {
+  if (theChoice === 1) {
+    return choice1;
+  } else {
+    return choice2;
+  }
+};
+
+export const useStudents = (theChoice: number): UseStudentsResult => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [triggerRefetch, setTriggerRefetch] = useState(0); // State to trigger refetch
+
+  const apiURL = apiPicker(theChoice);
+
+  // const apiURL=apiPicker(2)
 
   const fetchStudents = async () => {
     setLoading(true); // Set loading to true on every fetch attempt

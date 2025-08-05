@@ -32,7 +32,13 @@ function NavigationButtons() {
         variant="contained"
         onClick={() => handleNavigate("/datafetcher")}
       >
-        Go to data fetcher
+        Go to data fetcher (Python-Neon)
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => handleNavigate("/datafetchergo1")}
+      >
+        Go to data fetcher (Go-Neon)
       </Button>
       <Button variant="contained" onClick={() => handleNavigate("/tabletest")}>
         Go to table testing
@@ -48,7 +54,15 @@ function FirstApp() {
         <Routes>
           <Route path="/" element={<NavigationButtons />} />
           <Route path="/orig" element={<SamplePage />} />
-          <Route path="/datafetcher" element={<StudentsDisplay />} />
+          <Route
+            path="/datafetcher"
+            element={<StudentsDisplay theChoice={1} />}
+          />
+          <Route
+            path="/datafetchergo1"
+            element={<StudentsDisplay theChoice={2} />}
+          />
+
           {/* <Route path="/datafetcher" element={<DataFetcher />} /> */}
           <Route
             path="/tabletest"
