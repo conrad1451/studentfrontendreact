@@ -16,7 +16,7 @@ const DescopeLandingPage = (props: LandingPageProps) => {
   return (
     <>
       {/* <p>Hello {props.theUser.name}</p> */}
-      <p>Hello {props.theUser?.name}</p>{" "}
+      {/* <p>Hello {props.theUser?.name}</p>{" "} */}
       {/* Using optional chaining in case name is not always present */}
       <div>My Private Component</div>
       <LoginDashboard />
