@@ -1,3 +1,5 @@
+// FirstApp.tsx
+
 import SamplePage from "./components/SamplePage";
 // import CustomTable from './MyTable'
 import StudentTable from "./components/StudentTable";
