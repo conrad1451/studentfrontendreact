@@ -1,3 +1,5 @@
+// DescopeLoginLandingPage.tsx
+
 import LoginDashboard from "../../components/accountAccessPages/LoginDashboard";
 
 interface DescopeUser {
