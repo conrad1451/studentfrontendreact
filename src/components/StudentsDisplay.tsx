@@ -14,6 +14,46 @@ interface EmptyDatabaseProps {
   theRefetchOfStudents: () => void;
 }
 
+// CHQ: Gemini AI generated interface UserData
+export interface UserData {
+  loginsIds: string[];
+  userId: string;
+  userNames: {
+    name: string;
+    email: string;
+    phone: string;
+    verifiedEmail: boolean;
+    verifiedPhone: boolean;
+    roleNames: string[];
+    logins: any[];
+  }[];
+  userTenants: any[];
+  status: string;
+  OAuth: {
+    google: boolean;
+  };
+  SAML: boolean;
+  SCIM: boolean;
+  TOTP: boolean;
+  createTime: number;
+  customAttributes: {};
+  email: string;
+  externalIds: string[];
+  familyName: string;
+  givenName: string;
+  loginIds: string[];
+  middleName: string;
+  password: boolean;
+  phone: string;
+  picture: string;
+  roleNames: string[];
+  ssoIds: any[];
+  test: boolean;
+  verifiedEmail: boolean;
+  verifiedPhone: boolean;
+  webauthn: boolean;
+}
+
 const EmptyDatabase = (props: EmptyDatabaseProps) => {
   return (
     <Box sx={{ mt: 2 }}>
@@ -33,11 +73,21 @@ const EmptyDatabase = (props: EmptyDatabaseProps) => {
 
 // CHQ: Gemini AI renamed and refactored this.
 //      It split a single functional component into a hook and a component
-const StudentsDisplay = (props: { theChoice: number }) => {
+// const StudentsDisplay = (props: { theChoice: number; myToken: string }) => {
+const StudentsDisplay = (props: { theChoice: number; myUserID: string }) => {
   // const { students, loading, error, refetchStudents } = useStudents(1);
+
+  // const myUserID: UserData = JSON.parse(props.myToken);
+  const myUserID: UserData = JSON.parse(props.myUserID);
+
   const { students, loading, error, refetchStudents } = useStudents(
-    props.theChoice
+    props.theChoice,
+    myUserID.userId
   );
+
+  // console.log("props.myToken");
+
+  // console.log(props.myToken);
 
   // Set this to `false` to use real data from the API
   const useSampleData = false;

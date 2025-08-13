@@ -47,7 +47,8 @@ function NavigationButtons() {
   );
 }
 
-function FirstApp() {
+const FirstApp = (props: { myUserID: string }) => {
+  console.log("myUserID is " + props.myUserID);
   return (
     <>
       <Router>
@@ -56,11 +57,15 @@ function FirstApp() {
           <Route path="/orig" element={<SamplePage />} />
           <Route
             path="/datafetcher"
-            element={<StudentsDisplay theChoice={1} />}
+            element={
+              <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
+            }
           />
           <Route
             path="/datafetchergo1"
-            element={<StudentsDisplay theChoice={2} />}
+            element={
+              <StudentsDisplay theChoice={2} myUserID={props.myUserID} />
+            }
           />
 
           {/* <Route path="/datafetcher" element={<DataFetcher />} /> */}
@@ -95,6 +100,6 @@ function FirstApp() {
       </Router>
     </>
   );
-}
+};
 
 export default FirstApp;

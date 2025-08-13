@@ -11,26 +11,32 @@ interface UseStudentsResult {
   refetchStudents: () => void; // Add a refetch function
 }
 
-// Ensure VITE_API_URL is set in your .env file (e.g., VITE_API_URL=http://localhost:5000/api/students)
-// const apiURL = import.meta.env.VITE_API_URL_OTHERHOST;
-const apiPicker = (theChoice: number) => {
-  const choice1 = import.meta.env.VITE_API_URL;
+// Ensure VITE_API_PY_URL is set in your .env file (e.g., VITE_API_PY_URL=http://localhost:5000/api/students)
+// const apiURL = import.meta.env.VITE_API_PY_URL_OTHERHOST;
+const apiPicker = (theChoice: number, theToken: string) => {
+  const choice1 = import.meta.env.VITE_API_PY_URL;
   const choice2 = import.meta.env.VITE_API_GO_URL;
 
   if (theChoice === 1) {
     return choice1;
   } else {
-    return choice2;
+    return String(choice2 + "?teacherID=" + theToken);
   }
 };
+// props.theUserID
 
-export const useStudents = (theChoice: number): UseStudentsResult => {
+export const useStudents = (
+  theChoice: number,
+  theUserID: string
+): UseStudentsResult => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [triggerRefetch, setTriggerRefetch] = useState(0); // State to trigger refetch
 
-  const apiURL = apiPicker(theChoice);
+  const apiURL = apiPicker(theChoice, theUserID);
+
+  const headers = {};
 
   // const apiURL=apiPicker(2)
 
@@ -38,15 +44,25 @@ export const useStudents = (theChoice: number): UseStudentsResult => {
     setLoading(true); // Set loading to true on every fetch attempt
     setError(null); // Clear any previous errors
 
+    console.log("theUserID is:");
+    console.log(theUserID);
+
+    console.log("userId is:");
+    console.log(theUserID);
+
     if (!apiURL) {
-      setError("API URL is not defined in environment variables.");
+      setError("api url is not defined in environment variables.");
       setLoading(false);
-      console.error("VITE_API_URL is not set.");
+      console.error("api url is not set.");
       return;
     }
 
     try {
-      const response = await fetch(apiURL);
+      const response = await fetch(apiURL, {
+        method: "GET",
+        mode: "cors",
+        headers: headers,
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
