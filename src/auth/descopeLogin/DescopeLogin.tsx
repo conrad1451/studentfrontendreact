@@ -1,4 +1,4 @@
-// DescopeLOgin.tsx
+// DescopeLogin.tsx
 
 import { AuthProvider } from "@descope/react-sdk";
 

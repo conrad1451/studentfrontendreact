@@ -702,7 +702,8 @@ const idGenerator = (rawTableData: RowPage[]) => {
   return maxId + 1;
 };
 
-const StudentTable = (props: { thePages: RowPage[] }) => {
+// const StudentTable = (props: { thePages: RowPage[] }) => {
+const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
   // CHQ: Gemini AI turned this from a variable assigned from a prop into a state variable
   const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages); // Manage table data locally for updates
 
@@ -753,6 +754,39 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
 
   const newMyID: number = idGenerator(rawTableData);
 
+  // CHQ: Gemini AI added the follow state variables
+
+  // State for the new action modal (Edit/Delete)
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [selectedStudentForActions, setSelectedStudentForActions] =
+    useState<RowPage | null>(null);
+
+  // State for the confirmation modal
+  const [isDeletionConfirmationModalOpen, setIsDeletionConfirmationModalOpen] =
+    useState(false);
+  const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
+    useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
+  const [studentToUpdate, setStudentToUpdate] = useState<RowPage | null>(null);
+
+  // States for the update modal's input fields
+  const [updateFirstName, setUpdateFirstName] = useState("");
+  const [updateLastName, setUpdateLastName] = useState("");
+  const [updateEmail, setUpdateEmail] = useState("");
+  const [updateMajor, setUpdateMajor] = useState("");
+
+  // Handler to open the action modal
+  const handleOpenActionModal = (student: RowPage) => {
+    setSelectedStudentForActions(student);
+    setIsActionModalOpen(true);
+  };
+
+  // Handler to close the action modal
+  const handleCloseActionModal = () => {
+    setIsActionModalOpen(false);
+    setSelectedStudentForActions(null); // Clear selected student on close
+  };
+
   const handleNewStudentSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent default form submission behavior
     setLoading(true);
@@ -763,8 +797,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
       const BASE_URL =
         import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
 
-      const sessionToken = "sampleTokenIguess"; // Use a real session token here
-
+      const sessionToken = props.theToken;
       // Form the data object from the state variables here in StudentTable
       const formData = {
         id: newMyID,
@@ -823,39 +856,6 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     }
   };
 
-  // CHQ: Gemini AI added the follow state variables
-
-  // State for the new action modal (Edit/Delete)
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-  const [selectedStudentForActions, setSelectedStudentForActions] =
-    useState<RowPage | null>(null);
-
-  // State for the confirmation modal
-  const [isDeletionConfirmationModalOpen, setIsDeletionConfirmationModalOpen] =
-    useState(false);
-  const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
-    useState(false);
-  const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
-  const [studentToUpdate, setStudentToUpdate] = useState<RowPage | null>(null);
-
-  // States for the update modal's input fields
-  const [updateFirstName, setUpdateFirstName] = useState("");
-  const [updateLastName, setUpdateLastName] = useState("");
-  const [updateEmail, setUpdateEmail] = useState("");
-  const [updateMajor, setUpdateMajor] = useState("");
-
-  // Handler to open the action modal
-  const handleOpenActionModal = (student: RowPage) => {
-    setSelectedStudentForActions(student);
-    setIsActionModalOpen(true);
-  };
-
-  // Handler to close the action modal
-  const handleCloseActionModal = () => {
-    setIsActionModalOpen(false);
-    setSelectedStudentForActions(null); // Clear selected student on close
-  };
-
   // Placeholder for Edit action
   const handleEditStudent = (student: RowPage) => {
     console.log("Edit student:", student);
@@ -893,8 +893,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     try {
       const BASE_URL =
         import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
-      const sessionToken = "sampleTokenIguess"; // Use a real session token here
-
+      const sessionToken = props.theToken;
       const response = await fetch(`${BASE_URL}/${studentToDelete.myID}`, {
         method: "DELETE",
         headers: {
@@ -992,8 +991,7 @@ const StudentTable = (props: { thePages: RowPage[] }) => {
     try {
       const BASE_API_URL =
         import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
-      const sessionToken = "sampleTokenIguess";
-
+      const sessionToken = props.theToken;
       const response = await fetch(`${BASE_API_URL}/${studentToUpdate.myID}`, {
         method: "PATCH",
         headers: {

@@ -49,7 +49,11 @@ function NavigationButtons() {
   );
 }
 
-function FirstApp() {
+// const FirstApp = (props: { myUserID: string }) => {
+const FirstApp = (props: { mySessionToken: string }) => {
+  // console.log("myUserID is " + props.myUserID);
+  console.log("mySessionToken is " + props.mySessionToken);
+
   return (
     <>
       <Router>
@@ -58,11 +62,23 @@ function FirstApp() {
           <Route path="/orig" element={<SamplePage />} />
           <Route
             path="/datafetcher"
-            element={<StudentsDisplay theChoice={1} />}
+            element={
+              <StudentsDisplay
+                theChoice={1}
+                theSessionToken={props.mySessionToken}
+              />
+              // <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
+            }
           />
           <Route
             path="/datafetchergo1"
-            element={<StudentsDisplay theChoice={2} />}
+            element={
+              <StudentsDisplay
+                theChoice={1}
+                theSessionToken={props.mySessionToken}
+              />
+              // <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
+            }
           />
 
           {/* <Route path="/datafetcher" element={<DataFetcher />} /> */}
@@ -86,6 +102,7 @@ function FirstApp() {
                     Major: "Electrical Engineering",
                   },
                 ]}
+                theToken={"sampleToken"}
                 // theQuantities={[1, 7]}
               />
             }
@@ -97,6 +114,6 @@ function FirstApp() {
       </Router>
     </>
   );
-}
+};
 
 export default FirstApp;
