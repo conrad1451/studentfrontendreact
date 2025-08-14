@@ -42,7 +42,10 @@ function updateUIBasedOnPermissions(user: DescopeUser) {
     );
     const shouldDisplay = checkPermission(user, permission);
     elements.forEach((element) => {
-      element.style.display = shouldDisplay ? "inline-block" : "none";
+      // CHQ: Gemini AI added check for the element being an HTMLElement before trying to access 'style' property
+      if (element instanceof HTMLElement) {
+        element.style.display = shouldDisplay ? "inline-block" : "none";
+      }
     });
   });
 }
