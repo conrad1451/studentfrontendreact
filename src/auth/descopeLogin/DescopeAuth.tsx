@@ -1,5 +1,8 @@
 // DescopeAuth.tsx
 
+// Sources:
+// [1]: https://www.descope.com/blog/post/auth-rbac-webflow
+
 import { useCallback } from "react";
 
 // import { Descope, useDescope, useSession, useUser } from "@descope/react-sdk";
@@ -7,8 +10,42 @@ import { useCallback } from "react";
 import { useDescope, useSession, useUser } from "@descope/react-sdk";
 import { Descope } from "@descope/react-sdk";
 // import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
+import { useNavigate } from "react-router-dom";
 
 import DescopeLandingPage from "./DescopeLoginLandingPage";
+
+import type { DescopeUser } from "../../utils/dataTypes";
+
+// Source: [1]
+function checkPermission(user: DescopeUser, permission: string) {
+  const hasTeacherRole =
+    user.roleNames &&
+    user.roleNames.some((role) => role.toLowerCase() === "teacher");
+  const hasAdminRole =
+    user.roleNames &&
+    user.roleNames.some((role) => role.toLowerCase() === "admin");
+
+  if (hasAdminRole) {
+    return true;
+  }
+
+  if (hasTeacherRole) {
+    return ["read", "update"].includes(permission);
+  }
+}
+
+function updateUIBasedOnPermissions(user: DescopeUser) {
+  const permissions = ["create", "update", "delete", "publish"];
+  permissions.forEach((permission) => {
+    const elements = document.querySelectorAll(
+      `[data-permission="${permission}"]`
+    );
+    const shouldDisplay = checkPermission(user, permission);
+    elements.forEach((element) => {
+      element.style.display = shouldDisplay ? "inline-block" : "none";
+    });
+  });
+}
 
 const DescopeAuth = () => {
   // const { isAuthenticated, isSessionLoading, sessionToken } = useSession();
@@ -21,6 +58,8 @@ const DescopeAuth = () => {
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
+
+  const navigate = useNavigate();
 
   if (isSessionLoading || isUserLoading) {
     return <p>Loading...</p>;
@@ -53,13 +92,26 @@ const DescopeAuth = () => {
     );
   }
 
+  // CHQ: Gemini AI improved error checking in onSuccess property of Descope functional component
   return (
     <div>
       <h1>Sign In</h1>
       <Descope
         flowId="sign-up-or-in"
-        onSuccess={(e) => console.log(e.detail.user)}
-        onError={() => console.log("Could not log in!")}
+        onSuccess={(e) => {
+          console.log(e.detail.user?.name);
+          console.log(e.detail.user?.email);
+          // Check if e.detail.user is not undefined before calling the function.
+          if (e.detail.user) {
+            updateUIBasedOnPermissions(e.detail.user as DescopeUser);
+          }
+          navigate("/secure");
+        }}
+        onError={(err) => {
+          console.log("Error!", err);
+          alert("Error: " + err.detail.errorMessage);
+          console.log("Could not log in");
+        }}
       />
     </div>
   );

@@ -20,6 +20,11 @@ export interface RowPage {
 //   // EnrollmentDate: string;
 // }
 
+export interface DescopeUser {
+  name: string;
+  email: string;
+  roleNames?: string[]; // The `roleNames` property is an optional array of strings
+}
 export interface StudentRecord {
   id: number;
   first_name: string;
