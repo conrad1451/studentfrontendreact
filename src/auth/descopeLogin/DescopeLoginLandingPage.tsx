@@ -12,52 +12,15 @@ interface LandingPageProps {
   theHandleLogout: () => void;
 }
 
-export interface UserData {
-  loginsIds: string[];
-  userId: string;
-  userNames: {
-    name: string;
-    email: string;
-    phone: string;
-    verifiedEmail: boolean;
-    verifiedPhone: boolean;
-    roleNames: string[];
-    logins: any[];
-  }[];
-  userTenants: any[];
-  status: string;
-  OAuth: {
-    google: boolean;
-  };
-  SAML: boolean;
-  SCIM: boolean;
-  TOTP: boolean;
-  createTime: number;
-  customAttributes: {};
-  email: string;
-  externalIds: string[];
-  familyName: string;
-  givenName: string;
-  loginIds: string[];
-  middleName: string;
-  password: boolean;
-  phone: string;
-  picture: string;
-  roleNames: string[];
-  ssoIds: any[];
-  test: boolean;
-  verifiedEmail: boolean;
-  verifiedPhone: boolean;
-  webauthn: boolean;
-}
+// import { UserData } from "../../utils/dataTypes";
 
 const DescopeLandingPage = (props: LandingPageProps) => {
   const sessionToken = getSessionToken();
 
   // const theTeacherData: UserData = JSON.parse(props.theToken);
 
-  const theTeacherData: UserData = JSON.parse(sessionToken);
-  const theTeacherID: string = theTeacherData.userId;
+  // const theTeacherData: UserData = JSON.parse(sessionToken);
+  // const theTeacherID: string = theTeacherData.userId;
 
   return (
     <>
@@ -66,7 +29,7 @@ const DescopeLandingPage = (props: LandingPageProps) => {
       {/* Using optional chaining in case name is not always present */}
       <div>My Private Component</div>
       {/* <LoginDashboard userID={theTeacherID} /> */}
-      <LoginDashboard userID={theTeacherID} />
+      <LoginDashboard sessionToken={sessionToken} />
       {/* <FormToMongo /> */}
       <button onClick={props.theHandleLogout}>Logout</button>
     </>

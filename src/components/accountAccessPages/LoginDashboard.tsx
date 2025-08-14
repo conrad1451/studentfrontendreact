@@ -3,7 +3,8 @@ import SamplePage from "../SamplePage";
 // import Login from "../../auth/Login";
 import FirstApp from "../../FirstApp";
 
-const LoginDashboard = (props: { userID: string }) => {
+// const LoginDashboard = (props: { userID: string }) => {
+const LoginDashboard = (props: { sessionToken: string }) => {
   // const myChoice:string = "NotionForm";
   const myChoice: string = "StudentPortal";
   // const myChoice: string = "NOPE";
@@ -11,7 +12,8 @@ const LoginDashboard = (props: { userID: string }) => {
   return (
     <>
       {myChoice === "StudentPortal" ? (
-        <FirstApp myUserID={props.userID} />
+        // <FirstApp myUserID={props.userID} />
+        <FirstApp mySessionToken={props.sessionToken} />
       ) : myChoice === "NotionForm" ? (
         <FormToNotion />
       ) : (

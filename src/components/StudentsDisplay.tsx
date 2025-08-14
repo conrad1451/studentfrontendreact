@@ -9,49 +9,11 @@ import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI
 import type { RowPage } from "../utils/dataTypes"; // Import both
 import { transformStudentRecordToRowPage } from "../utils/dataTransforms";
 
+// import { UserData } from "../utils/dataTypes";
+
 // Define the prop type for EmptyDatabase for better type safety
 interface EmptyDatabaseProps {
   theRefetchOfStudents: () => void;
-}
-
-// CHQ: Gemini AI generated interface UserData
-export interface UserData {
-  loginsIds: string[];
-  userId: string;
-  userNames: {
-    name: string;
-    email: string;
-    phone: string;
-    verifiedEmail: boolean;
-    verifiedPhone: boolean;
-    roleNames: string[];
-    logins: any[];
-  }[];
-  userTenants: any[];
-  status: string;
-  OAuth: {
-    google: boolean;
-  };
-  SAML: boolean;
-  SCIM: boolean;
-  TOTP: boolean;
-  createTime: number;
-  customAttributes: {};
-  email: string;
-  externalIds: string[];
-  familyName: string;
-  givenName: string;
-  loginIds: string[];
-  middleName: string;
-  password: boolean;
-  phone: string;
-  picture: string;
-  roleNames: string[];
-  ssoIds: any[];
-  test: boolean;
-  verifiedEmail: boolean;
-  verifiedPhone: boolean;
-  webauthn: boolean;
 }
 
 const EmptyDatabase = (props: EmptyDatabaseProps) => {
@@ -74,17 +36,24 @@ const EmptyDatabase = (props: EmptyDatabaseProps) => {
 // CHQ: Gemini AI renamed and refactored this.
 //      It split a single functional component into a hook and a component
 // const StudentsDisplay = (props: { theChoice: number; myToken: string }) => {
-const StudentsDisplay = (props: { theChoice: number; myUserID: string }) => {
+// const StudentsDisplay = (props: { theChoice: number; myUserID: string }) => {
+const StudentsDisplay = (props: {
+  theChoice: number;
+  theSessionToken: string;
+}) => {
   // const { students, loading, error, refetchStudents } = useStudents(1);
 
   // const myUserID: UserData = JSON.parse(props.myToken);
-  const myUserID: UserData = JSON.parse(props.myUserID);
+  // const myUserID: UserData = JSON.parse(props.myUserID);
 
+  // const { students, loading, error, refetchStudents } = useStudents(
+  //   props.theChoice,
+  //   myUserID.userId
+  // );
   const { students, loading, error, refetchStudents } = useStudents(
     props.theChoice,
-    myUserID.userId
+    props.theSessionToken
   );
-
   // console.log("props.myToken");
 
   // console.log(props.myToken);
@@ -154,7 +123,10 @@ const StudentsDisplay = (props: { theChoice: number; myUserID: string }) => {
       ) : // Render StudentTable with the prepared data (either transformed real data or sample data)
 
       props.theChoice === 1 ? (
-        <StudentTable thePages={dataForTable} />
+        <StudentTable
+          thePages={dataForTable}
+          theToken={props.theSessionToken}
+        />
       ) : (
         <StudentTableAlt thePages={dataForTable} />
       )}
