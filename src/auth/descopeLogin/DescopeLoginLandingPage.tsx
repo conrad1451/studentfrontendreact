@@ -1,3 +1,5 @@
+// DescopeLoginLandingPage.tsx
+
 import LoginDashboard from "../../components/accountAccessPages/LoginDashboard";
 import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
 
@@ -25,7 +27,7 @@ const DescopeLandingPage = (props: LandingPageProps) => {
   return (
     <>
       {/* <p>Hello {props.theUser.name}</p> */}
-      <p>Hello {props.theUser?.name}</p>{" "}
+      {/* <p>Hello {props.theUser?.name}</p>{" "} */}
       {/* Using optional chaining in case name is not always present */}
       <div>My Private Component</div>
       {/* <LoginDashboard userID={theTeacherID} /> */}
