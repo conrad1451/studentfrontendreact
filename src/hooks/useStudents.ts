@@ -67,10 +67,15 @@ export const useStudents = (
         const data: StudentRecord[] = await response.json();
         setStudents(data);
       } catch (e: any) {
-        // } catch (e: unknown) {
-        // CHQ: Catch clause variable type annotation must be 'any' or 'unknown' if specified.ts(1196)
-        //      yet somehow, both 'any' and 'unknown' generate their own errors
-        setError(e.message);
+        // CHQ: Gemini AI created conditional for error type handling
+        // Check if 'e' is an instance of the built-in Error class.
+        if (e instanceof Error) {
+          // If it is, you can safely access its 'message' property.
+          setError(e.message);
+        } else {
+          // If it's not an Error object, you can set a generic message.
+          setError("An unknown error occurred.");
+        }
         console.error("Failed to fetch students:", e);
       } finally {
         setLoading(false);

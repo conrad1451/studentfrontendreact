@@ -7,7 +7,6 @@ import { useCallback } from "react";
 // Example using fetch to send Descope token to your backend
 // const descopeSessionToken = useSession().sessionToken; // Get the token from Descope's SDK
 
-
 // import { Descope, useDescope, useSession, useUser } from "@descope/react-sdk";
 
 import { useDescope, useSession, useUser } from "@descope/react-sdk";
@@ -60,9 +59,9 @@ const DescopeAuth = () => {
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
 
-  const myUsername = user.name ? user.name : "sample user";
+  // const myUsername = user.name ? user.name : "sample user";
 
-  loginWithDescopeToken(sessionToken, myUsername);
+  // loginWithDescopeToken(sessionToken, myUsername);
 
   const handleLogout = useCallback(() => {
     logout();
