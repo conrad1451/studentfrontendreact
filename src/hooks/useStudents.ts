@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { StudentRecord } from "../utils/dataTypes";
 
-import { apiPicker } from "../services/apiPicker";
+// import { apiPicker } from "../services/apiPicker";
 interface UseStudentsResult {
   students: StudentRecord[];
   loading: boolean;
@@ -16,8 +16,10 @@ interface UseStudentsResult {
 //   theUserID: string
 // ): UseStudentsResult => {
 export const useStudents = (
-  theChoice: number,
+  // theChoice: number,
+  theChoice: string,
   theSessionToken: string
+  // options = {}
 ): UseStudentsResult => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,7 +27,8 @@ export const useStudents = (
   const [triggerRefetch, setTriggerRefetch] = useState(0); // State to trigger refetch
 
   // const apiURL = apiPicker(theChoice, theUserID);
-  const apiURL = apiPicker(theChoice);
+  // const apiURL = apiPicker(theChoice);
+  const apiURL = theChoice;
 
   // CHQ: Gemini AI memoized headers
   // Assuming theSessionToken is a variable in scope

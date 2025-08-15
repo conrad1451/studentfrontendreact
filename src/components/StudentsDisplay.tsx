@@ -4,6 +4,7 @@
 import { useStudents } from "../hooks/useStudents";
 import StudentTable from "./StudentTable";
 import StudentTableAlt from "./StudentTableAlt";
+import { apiPicker } from "../services/apiPicker";
 
 import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI components
 import type { RowPage } from "../utils/dataTypes"; // Import both
@@ -51,7 +52,7 @@ const StudentsDisplay = (props: {
   //   myUserID.userId
   // );
   const { students, loading, error, refetchStudents } = useStudents(
-    props.theChoice,
+    apiPicker(props.theChoice),
     props.theSessionToken
   );
   // console.log("props.myToken");
@@ -59,6 +60,7 @@ const StudentsDisplay = (props: {
   // console.log(props.myToken);
 
   // Set this to `false` to use real data from the API
+
   const useSampleData = false;
 
   if (loading) {
