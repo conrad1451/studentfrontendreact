@@ -1,57 +1,38 @@
-// StudentTable.tsx (From front end code)
+// StudentTable.tsx
 
-// import React, { useState, useEffect, useMemo } from "react";
 import React, { useState, useEffect } from "react";
 
 import { idGenerator } from "../utils/idGenerator";
 
 import {
   Table,
-  // TableBody,
-  // TableCell,
   TableContainer,
-  // TableHead,
-  // TableRow,
   Paper,
   Button,
   Box,
   Typography,
-  // Switch,
-  // FormControlLabel,
-  // FormControl,
-  // Select,
-  // MenuItem,
-  // IconButton,
-  TextField, // Added TextField for better input control in modals
+  TextField,
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
-// import MoreVertIcon from "@mui/icons-material/MoreVert"; // Icon for the action button
 
 // --- Import Custom Hooks ---
 import { useTableFilters } from "../hooks/useTableFilters";
 import { useTableSorting } from "../hooks/useTableSorting";
-import {
-  useColumnVisibilityMiniTable,
-  // visibilityPresetsMiniTable,
-} from "../hooks/useColumnVisibility";
+import { useColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 
 import { ColumnVisibilityControlModal } from "./ColumnVisibilityModule";
 
 import { TableHeaderCells, TableBodyRows } from "./TableSubcomponents";
 
-// import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
-// import type { Item, RowPage } from "../utils/dataTypes";
 import type {
   RowPage,
-  // WebFormProps,
   ConfirmUpdateProps,
   ApiResponse,
-  // ColumnVisibility,
-  // TableBodyRowsProps,
 } from "../utils/dataTypes";
 
 import { allColumnKeys } from "../utils/dataTypes";
 
+// Simple icon components for the collapse button
 const MyChevronRightIcon = () => {
   return <>▶️</>;
 };
@@ -68,7 +49,8 @@ const StudentActionModal = (props: {
   onEdit: (student: RowPage) => void;
   onDelete: (student: RowPage) => void;
 }) => {
-  if (!props.student) return null; // Don't render if no student is selected
+  // Don't render if no student is selected
+  if (!props.student) return null;
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -86,7 +68,7 @@ const StudentActionModal = (props: {
           display: "flex",
           flexDirection: "column",
           gap: 2,
-          borderRadius: "8px", // Rounded corners
+          borderRadius: "8px",
         }}
       >
         <Typography variant="h6" component="h2">
@@ -129,13 +111,12 @@ const StudentActionModal = (props: {
   );
 };
 
-// New Confirmation Modal component
+// New Confirmation Modal component for Updates
 const UpdateConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
-  onConfirm: (data: ConfirmUpdateProps) => Promise<void>; // Corrected type for onConfirm
+  onConfirm: (data: ConfirmUpdateProps) => Promise<void>;
   message: string;
-  // Pass current student data and setters from parent for editing
   currentFirstName: string;
   setCurrentFirstName: (value: string) => void;
   currentLastName: string;
@@ -145,16 +126,10 @@ const UpdateConfirmationModal = (props: {
   currentMajor: string;
   setCurrentMajor: (value: string) => void;
   loading: boolean;
-  successMessage: string | null; // Can be null
-  errorMessage: string | null; // Can be null
+  successMessage: string | null;
+  errorMessage: string | null;
 }) => {
-  // These states are now managed by the parent (StudentTable) and passed as props
-  // const [myFirstName, setMyFirstName] = useState("");
-  // const [myLastName, setMyLastName] = useState("");
-  // const [myEmail, setMyEmail] = useState("");
-  // const [myMajor, setMyMajor] = useState("");
-
-  // CHQ: Added by Gemini AI
+  // Handler to call the parent's onConfirm with current form data
   const handleSubmit = () => {
     props.onConfirm({
       first_name: props.currentFirstName,
@@ -187,7 +162,7 @@ const UpdateConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
-        {/* // CHQ: Gemini AI changed empty div to TextField for each field */}
+
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
           <TextField
             label="First Name"
@@ -226,7 +201,6 @@ const UpdateConfirmationModal = (props: {
             variant="outlined"
           />
         </Box>
-        {/* CHQ: Added by Gemini AI */}
         {props.loading && <p>Loading...</p>}
         {props.successMessage && (
           <p style={{ color: "green" }}>{props.successMessage}</p>
@@ -235,13 +209,12 @@ const UpdateConfirmationModal = (props: {
           <p style={{ color: "red" }}>{props.errorMessage}</p>
         )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          {/* CHQ: Gemini AI added disabling button during loading */}
           <Button
             variant="contained"
             color="info"
-            onClick={handleSubmit} // Call local handleSubmit
+            onClick={handleSubmit}
             sx={{ borderRadius: "8px" }}
-            disabled={props.loading} // Disable during loading
+            disabled={props.loading}
           >
             Confirm Update
           </Button>
@@ -249,7 +222,7 @@ const UpdateConfirmationModal = (props: {
             variant="outlined"
             onClick={props.onClose}
             sx={{ borderRadius: "8px" }}
-            disabled={props.loading} // Disable during loading
+            disabled={props.loading}
           >
             Cancel
           </Button>
@@ -259,15 +232,15 @@ const UpdateConfirmationModal = (props: {
   );
 };
 
-// New Confirmation Modal component
+// New Confirmation Modal component for Deletion
 const DeletionConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
   message: string;
-  loading: boolean; // Added loading prop
-  successMessage: string | null; // Added successMessage prop
-  errorMessage: string | null; // Added errorMessage prop
+  loading: boolean;
+  successMessage: string | null;
+  errorMessage: string | null;
 }) => {
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -292,7 +265,6 @@ const DeletionConfirmationModal = (props: {
           Confirmation
         </Typography>
         <Typography>{props.message}</Typography>
-        {/* CHQ: Added by Gemini AI */}
         {props.loading && <p>Loading...</p>}
         {props.successMessage && (
           <p style={{ color: "green" }}>{props.successMessage}</p>
@@ -301,13 +273,12 @@ const DeletionConfirmationModal = (props: {
           <p style={{ color: "red" }}>{props.errorMessage}</p>
         )}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          {/* CHQ: Gemini AI added disabling button during loading */}
           <Button
             variant="contained"
             color="error"
             onClick={props.onConfirm}
             sx={{ borderRadius: "8px" }}
-            disabled={props.loading} // Disable during loading
+            disabled={props.loading}
           >
             Confirm Delete
           </Button>
@@ -315,7 +286,7 @@ const DeletionConfirmationModal = (props: {
             variant="outlined"
             onClick={props.onClose}
             sx={{ borderRadius: "8px" }}
-            disabled={props.loading} // Disable during loading
+            disabled={props.loading}
           >
             Cancel
           </Button>
@@ -325,19 +296,21 @@ const DeletionConfirmationModal = (props: {
   );
 };
 
-// const StudentTable = (props: { thePages: RowPage[] }) => {
 const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
   // CHQ: Gemini AI turned this from a variable assigned from a prop into a state variable
-  const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages); // Manage table data locally for updates
+  const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages);
 
+  // Sync local state with props whenever props.thePages changes
   useEffect(() => {
-    setRawTableData(props.thePages); // Update local state if props.thePages changes
+    setRawTableData(props.thePages);
   }, [props.thePages]);
 
+  // Filter out any rows that have invalid data before passing to hooks
   const initialTableDataForHooks = rawTableData.filter(
     (row) => row && row.FirstName && row.FirstName.trim() !== ""
   );
 
+  // Custom hooks for table functionality
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const {
     visibleColumns,
@@ -346,45 +319,30 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     resetVisibility,
     presets,
   } = useColumnVisibilityMiniTable("default");
-
   const { filteredData } = useTableFilters(initialTableDataForHooks);
-
   const { sortedData, sortProps, sortHandlers } = useTableSorting(filteredData);
 
-  // const allStudentNames: Item[] = useMemo(
-  //   () =>
-  //     rawTableData.map((row) => ({
-  //       id: Math.floor(100 * Math.random()), // Consider using a more stable ID if available
-  //       value: row.FirstName,
-  //     })),
-  //   [rawTableData]
-  // );
-
+  // State for the table collapse functionality
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
 
-  // --- Moved state variables and submission logic from TableBodyRows to StudentTable ---
+  // State variables for the "Add New Student" form
   const [myFirstName, setMyFirstName] = useState("");
   const [myLastName, setMyLastName] = useState("");
   const [myEmail, setMyEmail] = useState("");
   const [myMajor, setMyMajor] = useState("");
 
+  // State for API call feedback
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // CHQ: commented out unused code
-  // const apiURL = import.meta.env.VITE_API_URL; // Declare apiURL here
-
+  // Generate a new unique ID for a new student
   const newMyID: number = idGenerator(rawTableData);
 
-  // CHQ: Gemini AI added the follow state variables
-
-  // State for the new action modal (Edit/Delete)
+  // State for the action/confirmation modals
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [selectedStudentForActions, setSelectedStudentForActions] =
     useState<RowPage | null>(null);
-
-  // State for the confirmation modal
   const [isDeletionConfirmationModalOpen, setIsDeletionConfirmationModalOpen] =
     useState(false);
   const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
@@ -398,7 +356,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
   const [updateEmail, setUpdateEmail] = useState("");
   const [updateMajor, setUpdateMajor] = useState("");
 
-  // Handler to open the action modal
+  // Handler to open the action modal for a specific student
   const handleOpenActionModal = (student: RowPage) => {
     setSelectedStudentForActions(student);
     setIsActionModalOpen(true);
@@ -407,11 +365,12 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
   // Handler to close the action modal
   const handleCloseActionModal = () => {
     setIsActionModalOpen(false);
-    setSelectedStudentForActions(null); // Clear selected student on close
+    setSelectedStudentForActions(null);
   };
 
+  // Handler for adding a new student via a POST request
   const handleNewStudentSubmit = async (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -419,9 +378,8 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     try {
       const BASE_URL =
         import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
-
       const sessionToken = props.theToken;
-      // Form the data object from the state variables here in StudentTable
+
       const formData = {
         id: newMyID,
         first_name: myFirstName,
@@ -434,24 +392,21 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionToken}`, // Send JWT in Authorization header
+          Authorization: `Bearer ${sessionToken}`,
         },
-        body: JSON.stringify(formData), // Send form data in the body
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        if (response.status >= 400 && response.status < 600) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Server error");
-        }
-        throw new Error("Failed to submit to database");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Server error");
       }
 
       const result: ApiResponse = await response.json();
       console.log("Data sent to database successfully:", result);
       setSuccessMessage("Data sent to database successfully!");
 
-      // Optimistically add the new student to the table
+      // Optimistically add the new student to the local state
       setRawTableData((prevData) => [
         ...prevData,
         {
@@ -460,7 +415,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
           LastName: myLastName,
           Email: myEmail,
           Major: myMajor,
-        } as RowPage, // Cast to RowPage
+        } as RowPage,
       ]);
 
       // Clear the form fields after successful submission
@@ -469,7 +424,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       setMyEmail("");
       setMyMajor("");
     } catch (error: any) {
-      // Type 'any' for error for now
       console.error("Error in database:", error);
       setErrorMessage(
         error.message || "Failed to send data to database. Please try again."
@@ -479,29 +433,28 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     }
   };
 
-  // Placeholder for Edit action
+  // Handler to open the update confirmation modal
   const handleEditStudent = (student: RowPage) => {
     console.log("Edit student:", student);
     setStudentToUpdate(student);
 
-    // CHQ: Gemini AI added the following state updates below
     // Populate the update modal's input fields with current student data
     setUpdateFirstName(student.FirstName);
     setUpdateLastName(student.LastName);
     setUpdateEmail(student.Email);
-    setUpdateMajor(student.Major || ""); // Handle null major
+    setUpdateMajor(student.Major || ""); // Use "" for null major
     setIsUpdateConfirmationModalOpen(true);
     handleCloseActionModal();
   };
 
-  // Handler to initiate delete (opens confirmation modal)
+  // Handler to open the delete confirmation modal
   const handleDeleteStudent = (student: RowPage) => {
     setStudentToDelete(student);
     setIsDeletionConfirmationModalOpen(true);
     handleCloseActionModal();
   };
 
-  // Handler to confirm delete and make API call
+  // Handler to confirm delete and make the API call
   const confirmDeleteStudent = async () => {
     if (!studentToDelete) {
       console.warn("No student selected for deletion.");
@@ -525,11 +478,8 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       });
 
       if (!response.ok) {
-        if (response.status >= 400 && response.status < 600) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Server error");
-        }
-        throw new Error("Failed to delete student");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Server error");
       }
 
       console.log(
@@ -548,13 +498,12 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     } finally {
       setLoading(false);
       setIsDeletionConfirmationModalOpen(false);
-      setStudentToDelete(null); // Clear selected student
+      setStudentToDelete(null);
     }
   };
 
-  // Handler to confirm update and make API call
+  // Handler to confirm update and make the API call
   const confirmUpdateStudent = async (formData: ConfirmUpdateProps) => {
-    // Accept formData as parameter
     if (!studentToUpdate) {
       console.warn("No student selected for update.");
       setIsUpdateConfirmationModalOpen(false);
@@ -569,8 +518,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       major?: string | null;
     } = {};
 
-    // Only include properties if they have changed from the original studentToUpdate values
-    // and are not empty strings (unless empty string explicitly means null/clear)
+    // Only include properties if they have changed and are not empty strings
     if (
       formData.first_name.trim() !== "" &&
       formData.first_name !== studentToUpdate.FirstName
@@ -589,21 +537,16 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     ) {
       updatePayload.email = formData.email;
     }
-    // Handle major: if empty string, set to null, otherwise use value if changed
-    if (formData.major !== (studentToUpdate.Major || "")) {
-      // Compare with empty string if major is null
-      updatePayload.major =
-        formData.major.trim() === "" ? null : formData.major;
+    // Handle major: if empty string, set to null, otherwise use the new value if changed
+    const newMajor = formData.major.trim() === "" ? null : formData.major;
+    if (newMajor !== studentToUpdate.Major) {
+      updatePayload.major = newMajor;
     }
 
-    // If no fields were provided for update, you might want to return early
     if (Object.keys(updatePayload).length === 0) {
       setErrorMessage("No fields provided for update or no changes detected.");
+      setLoading(false);
       setIsUpdateConfirmationModalOpen(false);
-      setUpdateFirstName("");
-      setUpdateLastName("");
-      setUpdateEmail("");
-      setUpdateMajor(""); // Clear form
       return;
     }
 
@@ -625,36 +568,33 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       });
 
       if (!response.ok) {
-        if (response.status >= 400 && response.status < 600) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Server error during update");
-        }
-        throw new Error("Failed to update student");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Server error during update");
       }
 
       const result: ApiResponse = await response.json();
       console.log("Student updated successfully:", result);
       setSuccessMessage("Student updated successfully!");
 
-      // Update the student in the local state after successful update
+      // Update the student in the local state
       setRawTableData((prevData) =>
         prevData.map((student) =>
           student.myID === studentToUpdate.myID
             ? {
                 ...student,
-                ...updatePayload, // Merge updated fields
-                FirstName: updatePayload.first_name || student.FirstName, // Ensure FirstName, LastName etc. are updated on RowPage
+                FirstName: updatePayload.first_name || student.FirstName,
                 LastName: updatePayload.last_name || student.LastName,
                 Email: updatePayload.email || student.Email,
-                Major: (updatePayload.major === undefined
-                  ? String(student.Major)
-                  : updatePayload.major) as string,
+                Major:
+                  updatePayload.major === undefined
+                    ? student.Major
+                    : updatePayload.major,
               }
             : student
         )
       );
 
-      // Clear the update form fields
+      // Clear the update form fields and selected student
       setUpdateFirstName("");
       setUpdateLastName("");
       setUpdateEmail("");
@@ -667,7 +607,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     } finally {
       setLoading(false);
       setIsUpdateConfirmationModalOpen(false);
-      setStudentToUpdate(null); // Clear selected student
+      setStudentToUpdate(null);
     }
   };
 
@@ -704,6 +644,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
           </Box>
         </Box>
 
+        {/* Column visibility control modal */}
         <ColumnVisibilityControlModal
           open={isColumnModalOpen}
           onClose={() => setIsColumnModalOpen(false)}
@@ -728,7 +669,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
                 visibleColumns={visibleColumns}
                 theColumnKeys={allColumnKeys}
                 onOpenActionModal={handleOpenActionModal}
-                myId={newMyID} // Pass the newly generated ID
+                myId={newMyID}
                 myFirstName={myFirstName}
                 setMyFirstName={setMyFirstName}
                 myLastName={myLastName}
@@ -761,15 +702,15 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         open={isUpdateConfirmationModalOpen}
         onClose={() => {
           setIsUpdateConfirmationModalOpen(false);
-          setStudentToUpdate(null); // Clear selected student
-          setUpdateFirstName(""); // Clear form fields
+          setStudentToUpdate(null);
+          setUpdateFirstName("");
           setUpdateLastName("");
           setUpdateEmail("");
           setUpdateMajor("");
-          setErrorMessage(null); // Clear messages
+          setErrorMessage(null);
           setSuccessMessage(null);
         }}
-        onConfirm={confirmUpdateStudent} // Pass the handler
+        onConfirm={confirmUpdateStudent}
         message={`Are you sure you want to update student ID ${studentToUpdate?.myID}?`}
         currentFirstName={updateFirstName}
         setCurrentFirstName={setUpdateFirstName}
@@ -789,8 +730,8 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         open={isDeletionConfirmationModalOpen}
         onClose={() => {
           setIsDeletionConfirmationModalOpen(false);
-          setStudentToDelete(null); // Clear selected student
-          setErrorMessage(null); // Clear messages
+          setStudentToDelete(null);
+          setErrorMessage(null);
           setSuccessMessage(null);
         }}
         onConfirm={confirmDeleteStudent}
