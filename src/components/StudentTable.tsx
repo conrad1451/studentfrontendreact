@@ -3,422 +3,55 @@
 // import React, { useState, useEffect, useMemo } from "react";
 import React, { useState, useEffect } from "react";
 
+import { idGenerator } from "../utils/idGenerator";
+
 import {
   Table,
-  TableBody,
-  TableCell,
+  // TableBody,
+  // TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
+  // TableHead,
+  // TableRow,
   Paper,
   Button,
   Box,
   Typography,
-  Switch,
-  FormControlLabel,
-  FormControl,
-  Select,
-  MenuItem,
-  IconButton,
+  // Switch,
+  // FormControlLabel,
+  // FormControl,
+  // Select,
+  // MenuItem,
+  // IconButton,
   TextField, // Added TextField for better input control in modals
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import MoreVertIcon from "@mui/icons-material/MoreVert"; // Icon for the action button
+// import MoreVertIcon from "@mui/icons-material/MoreVert"; // Icon for the action button
 
 // --- Import Custom Hooks ---
 import { useTableFilters } from "../hooks/useTableFilters";
 import { useTableSorting } from "../hooks/useTableSorting";
 import {
   useColumnVisibilityMiniTable,
-  visibilityPresetsMiniTable,
+  // visibilityPresetsMiniTable,
 } from "../hooks/useColumnVisibility";
 
-import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
+import { ColumnVisibilityControlModal } from "./ColumnVisibilityModule";
+
+import { TableHeaderCells, TableBodyRows } from "./TableSubcomponents";
+
+// import type { ColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
 // import type { Item, RowPage } from "../utils/dataTypes";
-import type { RowPage } from "../utils/dataTypes";
+import type {
+  RowPage,
+  // WebFormProps,
+  ConfirmUpdateProps,
+  ApiResponse,
+  // ColumnVisibility,
+  // TableBodyRowsProps,
+} from "../utils/dataTypes";
 
-// --- WebFormProps & WebForm Component ---
-interface WebFormProps {
-  onSubmit: (event: React.FormEvent) => Promise<void>;
-}
+import { allColumnKeys } from "../utils/dataTypes";
 
-interface ConfirmUpdateProps {
-  first_name: string;
-  last_name: string;
-  email: string;
-  major: string;
-}
-
-const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
-  return (
-    <form onSubmit={onSubmit}>
-      {" "}
-      {/* Pass the onSubmit handler directly */}
-      <button type="submit">Submit data to database</button>
-    </form>
-  );
-};
-
-interface ApiResponse {
-  message: string;
-  // ... other properties
-}
-
-const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
-  "myID",
-  "FirstName",
-  "LastName",
-  "Email",
-  "Major",
-];
-
-const ColumnVisibilityToggles = (props: {
-  visibleColumns: ColumnVisibilityMiniTable;
-  handleToggleColumn: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
-}) => {
-  return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-      {props.theColumnKeys.map((colName) => (
-        <FormControlLabel
-          key={colName}
-          control={
-            <Switch
-              checked={props.visibleColumns[colName]}
-              onChange={props.handleToggleColumn}
-              name={colName}
-            />
-          }
-          label={colName}
-        />
-      ))}
-    </Box>
-  );
-};
-
-const ColumnVisibilityControlModal = (props: {
-  open: boolean;
-  onClose: () => void;
-  visibleColumns: ColumnVisibilityMiniTable;
-  onToggle: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSelectPreset: (preset: keyof typeof visibilityPresetsMiniTable) => void;
-  onReset: () => void;
-  presets: Map<string, ColumnVisibilityMiniTable>;
-}) => {
-  return (
-    <Modal open={props.open} onClose={props.onClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: { xs: "90%", sm: "80%", md: 800 },
-          bgcolor: "background.paper",
-          border: "2px solid #000",
-          boxShadow: 24,
-          p: 4,
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography variant="h6" component="h2" gutterBottom>
-          Customize Column Visibility
-        </Typography>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle1">Apply Preset:</Typography>
-          <FormControl fullWidth size="small">
-            <Select
-              value=""
-              label="Presets"
-              onChange={(e) =>
-                props.onSelectPreset(
-                  e.target.value as keyof typeof visibilityPresetsMiniTable
-                )
-              }
-            >
-              <MenuItem value="">
-                <em>None (Select Preset)</em>
-              </MenuItem>
-              {[...props.presets.keys()].map((key) => (
-                <MenuItem key={key} value={key}>
-                  {key.charAt(0).toUpperCase() +
-                    key.slice(1).replace(/([A-Z])/g, " $1")}{" "}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button onClick={props.onReset} variant="outlined" sx={{ mt: 1 }}>
-            Reset to Default
-          </Button>
-        </Box>
-
-        <Typography variant="subtitle1" gutterBottom>
-          Toggle Individual Columns:
-        </Typography>
-        <ColumnVisibilityToggles
-          visibleColumns={props.visibleColumns}
-          handleToggleColumn={props.onToggle}
-          theColumnKeys={allColumnKeys}
-        />
-
-        <Button onClick={props.onClose} variant="contained" sx={{ mt: 3 }}>
-          Close
-        </Button>
-      </Box>
-    </Modal>
-  );
-};
-
-const TableHeaderCells = (props: {
-  visibleColumns: ColumnVisibilityMiniTable;
-  sortProps: ReturnType<typeof useTableSorting>["sortProps"];
-  sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
-  theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
-}) => {
-  type SortableTableColumns = "FirstName" | "LastName" | "Email" | "Major";
-
-  return (
-    <TableHead>
-      <TableRow>
-        {props.theColumnKeys.map((colName) =>
-          props.visibleColumns[colName] ? (
-            <TableCell key={colName}>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography variant="subtitle2" sx={{ mr: 1 }}>
-                  {colName}
-                </Typography>
-                {(
-                  [
-                    "FirstName",
-                    "LastName",
-                    "Email",
-                    "Major",
-                  ] as SortableTableColumns[]
-                ).includes(colName as SortableTableColumns) && (
-                  <>
-                    <Button
-                      onClick={() =>
-                        props.sortHandlers.handleSort(
-                          colName as SortableTableColumns
-                        )
-                      }
-                      title={
-                        props.sortProps.sortColumn === colName &&
-                        props.sortProps.sortDirection === "asc"
-                          ? "Current: Ascending. Click to sort Descending."
-                          : "Click to sort Ascending."
-                      }
-                      sx={{
-                        minWidth: "auto",
-                        p: "2px",
-                        // Only show the up arrow if not currently sorted ascending
-                        visibility:
-                          props.sortProps.sortColumn === colName &&
-                          props.sortProps.sortDirection === "asc"
-                            ? "visible" // Show if currently ascending
-                            : "visible", // Always visible to allow sorting
-                      }}
-                    >
-                      {props.sortProps.sortColumn === colName &&
-                      props.sortProps.sortDirection === "asc"
-                        ? "▲"
-                        : "⬆️"}
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        props.sortHandlers.handleSort(
-                          colName as SortableTableColumns
-                        )
-                      }
-                      title={
-                        props.sortProps.sortColumn === colName &&
-                        props.sortProps.sortDirection === "desc"
-                          ? "Current: Descending. Click to reset sort."
-                          : "Click to sort Descending."
-                      }
-                      sx={{
-                        minWidth: "auto",
-                        p: "2px",
-                        // Only show the down arrow if not currently sorted descending
-                        visibility:
-                          props.sortProps.sortColumn === colName &&
-                          props.sortProps.sortDirection === "desc"
-                            ? "visible" // Show if currently descending
-                            : "visible", // Always visible to allow sorting
-                      }}
-                    >
-                      {props.sortProps.sortColumn === colName &&
-                      props.sortProps.sortDirection === "desc"
-                        ? "▼"
-                        : "⬇️"}
-                    </Button>
-
-                    {props.sortProps.sortColumn === colName &&
-                      props.sortProps.sortDirection && (
-                        <Button
-                          onClick={props.sortHandlers.resetSort}
-                          title="Reset All Sorts"
-                          sx={{ minWidth: "auto", p: "2px" }}
-                        >
-                          🔄
-                        </Button>
-                      )}
-                  </>
-                )}
-              </Box>
-            </TableCell>
-          ) : null
-        )}
-        {/* New TableCell for Actions header */}
-        <TableCell>
-          <Typography variant="subtitle2">Actions</Typography>
-        </TableCell>
-      </TableRow>
-    </TableHead>
-  );
-};
-
-// --- TableBodyRowsProps and TableBodyRows Component ---
-interface TableBodyRowsProps {
-  data: RowPage[];
-  visibleColumns: ColumnVisibilityMiniTable;
-  theColumnKeys: Array<keyof ColumnVisibilityMiniTable>;
-  onOpenActionModal: (student: RowPage) => void;
-  // NEW PROPS - passed down from StudentTable
-  myId: number;
-  myFirstName: string;
-  setMyFirstName: (value: string) => void;
-  myLastName: string;
-  setMyLastName: (value: string) => void;
-  myEmail: string;
-  setMyEmail: (value: string) => void;
-  myMajor: string;
-  setMyMajor: (value: string) => void;
-  loading: boolean;
-  successMessage: string | null;
-  errorMessage: string | null;
-  onNewStudentSubmit: (event: React.FormEvent) => Promise<void>;
-}
-
-const TableBodyRows = (props: TableBodyRowsProps) => {
-  return (
-    <TableBody>
-      {props.data.map((row) => (
-        <TableRow key={row.myID}>
-          {props.theColumnKeys.map((colName) =>
-            props.visibleColumns[colName] ? (
-              <TableCell key={colName}>
-                {colName === "myID" && row.myID}
-                {colName === "FirstName" && row.FirstName}
-                {colName === "LastName" && row.LastName}
-                {colName === "Email" && row.Email}
-                {colName === "Major" && (row.Major || "N/A")}{" "}
-              </TableCell>
-            ) : null
-          )}
-          {/* TableCell for Actions button for existing rows */}
-          <TableCell>
-            <IconButton
-              aria-label="actions"
-              onClick={() => props.onOpenActionModal(row)} // Pass the entire row data
-            >
-              <MoreVertIcon />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      ))}
-      {/* New Row for adding a student */}
-      <TableRow>
-        {props.theColumnKeys.map((colName) =>
-          props.visibleColumns[colName] ? (
-            <TableCell key={colName}>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {/* // CHQ: Gemini AI changed empty div to TextField for each field */}
-                <Typography variant="subtitle2" sx={{ mr: 1 }}>
-                  {colName === "FirstName" ? (
-                    <TextField
-                      type="text"
-                      value={props.myFirstName}
-                      onChange={(e) => props.setMyFirstName(e.target.value)}
-                      placeholder="First Name"
-                      size="small"
-                      variant="outlined"
-                    />
-                  ) : colName === "LastName" ? (
-                    <TextField
-                      type="text"
-                      value={props.myLastName}
-                      onChange={(e) => props.setMyLastName(e.target.value)}
-                      placeholder="Last Name"
-                      size="small"
-                      variant="outlined"
-                    />
-                  ) : colName === "Email" ? (
-                    <TextField
-                      type="email"
-                      value={props.myEmail}
-                      onChange={(e) => props.setMyEmail(e.target.value)}
-                      placeholder="Email"
-                      size="small"
-                      variant="outlined"
-                    />
-                  ) : colName === "Major" ? (
-                    <TextField
-                      type="text"
-                      value={props.myMajor}
-                      onChange={(e) => props.setMyMajor(e.target.value)}
-                      placeholder="Major"
-                      size="small"
-                      variant="outlined"
-                    />
-                  ) : colName === "myID" ? (
-                    <>{props.myId}</>
-                  ) : (
-                    ""
-                  )}
-                </Typography>
-              </Box>
-            </TableCell>
-          ) : null
-        )}
-        {/* Cell for the WebForm in the new student row */}
-        <TableCell>
-          <div>
-            {props.loading && <p>Loading...</p>}
-            {props.successMessage && (
-              <p style={{ color: "green" }}>{props.successMessage}</p>
-            )}
-            {props.errorMessage && (
-              <p style={{ color: "red" }}>{props.errorMessage}</p>
-            )}
-            <WebForm onSubmit={props.onNewStudentSubmit} />{" "}
-            {/* Pass the submit handler */}
-          </div>
-        </TableCell>
-      </TableRow>
-      {/* Footer row (Count of Students) */}
-      <TableRow>
-        {props.theColumnKeys.map((colName) =>
-          props.visibleColumns[colName] ? (
-            <TableCell key={colName}>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography variant="subtitle2" sx={{ mr: 1 }}>
-                  {colName === "FirstName"
-                    ? "Count of Students: " + String(props.data.length)
-                    : ""}
-                </Typography>
-              </Box>
-            </TableCell>
-          ) : null
-        )}
-        {/* Empty cell for the actions column in the footer row */}
-        <TableCell></TableCell>
-      </TableRow>
-    </TableBody>
-  );
-};
 const MyChevronRightIcon = () => {
   return <>▶️</>;
 };
@@ -690,16 +323,6 @@ const DeletionConfirmationModal = (props: {
       </Box>
     </Modal>
   );
-};
-
-const idGenerator = (rawTableData: RowPage[]) => {
-  // CHQ: Gemini AI added following logic to calculate new ID
-  // --- Logic to determine the new myID ---
-  const maxId = rawTableData.reduce((max, row) => {
-    const currentId = row.myID; // Assuming myID is already a number
-    return isNaN(currentId) ? max : Math.max(max, currentId);
-  }, 0); // Start with 0 if no valid IDs found
-  return maxId + 1;
 };
 
 // const StudentTable = (props: { thePages: RowPage[] }) => {
