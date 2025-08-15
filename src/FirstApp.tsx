@@ -74,7 +74,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
             path="/datafetchergo1"
             element={
               <StudentsDisplay
-                theChoice={1}
+                theChoice={2}
                 theSessionToken={props.mySessionToken}
               />
               // <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
