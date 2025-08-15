@@ -117,6 +117,7 @@ const StudentsDisplay = (props: {
         Student Management Dashboard
       </Typography>
 
+      {/* FIXME: add breakpoints here to debug why empty table does not show when there is no data */}
       {/* Show EmptyDatabase component if no error, no real students, AND not using sample data */}
       {!error && dataForTable.length === 0 && !useSampleData ? (
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />

@@ -13,7 +13,7 @@ import { useCallback } from "react";
 import { useDescope, useSession, useUser } from "@descope/react-sdk";
 import { Descope } from "@descope/react-sdk";
 // import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 import DescopeLandingPage from "./DescopeLoginLandingPage";
 
@@ -68,7 +68,7 @@ const DescopeAuth = () => {
     logout();
   }, [logout]);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   if (isSessionLoading || isUserLoading) {
     return <p>Loading...</p>;
@@ -114,7 +114,7 @@ const DescopeAuth = () => {
           if (e.detail.user) {
             updateUIBasedOnPermissions(e.detail.user as DescopeUser);
           }
-          navigate("/secure");
+          // navigate("/secure");
         }}
         onError={(err) => {
           console.log("Error!", err);
