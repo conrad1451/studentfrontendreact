@@ -455,7 +455,7 @@ const StudentTable = (props: {
     setSuccessMessage(null);
 
     try {
-      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
       const response = await fetch(`${BASE_URL}/${studentToDelete.myID}`, {
@@ -492,18 +492,8 @@ const StudentTable = (props: {
     dataPayload: ConfirmUpdateProps | RowPage
   ) => {
     const studentToUpdate = dataPayload as RowPage;
-    const formData = {
-      first_name: updateFirstName,
-      last_name: updateLastName,
-      email: updateEmail,
-      major: updateMajor,
-    };
 
-    if (!studentToUpdate) {
-      console.warn("No student selected for update.");
-      return;
-    }
-
+    // Create a new payload with only the fields that have been changed
     const updatePayload: {
       first_name?: string;
       last_name?: string;
@@ -511,32 +501,30 @@ const StudentTable = (props: {
       major?: string | null;
     } = {};
 
+    // Check which fields were actually changed and add them to the payload.
+    // The user's input fields (`update...`) contain the potential new values.
     if (
-      formData.first_name.trim() !== "" &&
-      formData.first_name !== studentToUpdate.FirstName
+      updateFirstName.trim() !== "" &&
+      updateFirstName !== studentToUpdate.FirstName
     ) {
-      updatePayload.first_name = formData.first_name;
+      updatePayload.first_name = updateFirstName;
     }
     if (
-      formData.last_name.trim() !== "" &&
-      formData.last_name !== studentToUpdate.LastName
+      updateLastName.trim() !== "" &&
+      updateLastName !== studentToUpdate.LastName
     ) {
-      updatePayload.last_name = formData.last_name;
+      updatePayload.last_name = updateLastName;
     }
-    if (
-      formData.email.trim() !== "" &&
-      formData.email !== studentToUpdate.Email
-    ) {
-      updatePayload.email = formData.email;
+    if (updateEmail.trim() !== "" && updateEmail !== studentToUpdate.Email) {
+      updatePayload.email = updateEmail;
     }
-
-    const newMajor = formData.major.trim() === "" ? null : formData.major;
-    if (newMajor !== studentToUpdate.Major) {
+    const newMajor = updateMajor.trim() === "" ? null : updateMajor;
+    if (newMajor !== (studentToUpdate.Major || null)) {
       updatePayload.major = newMajor;
     }
 
     if (Object.keys(updatePayload).length === 0) {
-      setErrorMessage("No fields provided for update or no changes detected.");
+      setErrorMessage("No changes detected. Nothing to update.");
       setLoading(false);
       return;
     }
@@ -546,18 +534,17 @@ const StudentTable = (props: {
     setSuccessMessage(null);
 
     try {
-      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
-      // const response = await fetch(`${BASE_URL}/${studentToUpdate.myID}`, {
-      //   method: "PATCH",
+      // The method is now "PATCH" as the server requires a partial payload.
       const response = await fetch(`${BASE_URL}/${studentToUpdate.myID}`, {
-        method: "PUT",
+        method: "PATCH", // Changed back to "PATCH" from "PUT"
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionToken}`,
         },
-        body: JSON.stringify(updatePayload),
+        body: JSON.stringify(updatePayload), // Now sending only the changed fields
       });
 
       if (!response.ok) {
@@ -569,22 +556,31 @@ const StudentTable = (props: {
       console.log("Student updated successfully:", result);
       setSuccessMessage("Student updated successfully!");
 
-      // setRawTableData((prevData) =>
-      //   prevData.map((student) =>
-      //     student.myID === studentToUpdate.myID
-      //       ? {
-      //           ...student,
-      //           FirstName: updatePayload.first_name || student.FirstName,
-      //           LastName: updatePayload.last_name || student.LastName,
-      //           Email: updatePayload.email || student.Email,
-      //           Major:
-      //             updatePayload.major === undefined
-      //               ? student.Major
-      //               : updatePayload.major,
-      //         }
-      //       : student
-      //   )
-      // );
+      // Update the local state with the new values.
+      setRawTableData((prevData) =>
+        prevData.map((student) =>
+          student.myID === studentToUpdate.myID
+            ? {
+                ...student,
+                ...Object.fromEntries(
+                  Object.entries(updatePayload).map(([key, value]) => {
+                    const mappedKey =
+                      key === "first_name"
+                        ? "FirstName"
+                        : key === "last_name"
+                        ? "LastName"
+                        : key === "email"
+                        ? "Email"
+                        : key === "major"
+                        ? "Major"
+                        : key;
+                    return [mappedKey, value];
+                  })
+                ),
+              }
+            : student
+        )
+      );
 
       setUpdateFirstName("");
       setUpdateLastName("");
