@@ -223,9 +223,9 @@ export const TableBodyRows = (props: TableBodyRowsProps) => {
                       size="small"
                       variant="outlined"
                     />
-                  ) : colName === "myID" ? (
-                    <>{props.myId}</>
                   ) : (
+                    // ) : colName === "myID" ? (
+                    //   <>{props.myId}</>
                     ""
                   )}
                 </Typography>

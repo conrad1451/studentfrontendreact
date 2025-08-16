@@ -359,7 +359,7 @@ const StudentTable = (props: {
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
       const formData = {
-        id: newMyID,
+        // id: newMyID,
         first_name: myFirstName,
         last_name: myLastName,
         email: myEmail,
@@ -549,8 +549,10 @@ const StudentTable = (props: {
       //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
+      // const response = await fetch(`${BASE_URL}/${studentToUpdate.myID}`, {
+      //   method: "PATCH",
       const response = await fetch(`${BASE_URL}/${studentToUpdate.myID}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionToken}`,
@@ -567,22 +569,22 @@ const StudentTable = (props: {
       console.log("Student updated successfully:", result);
       setSuccessMessage("Student updated successfully!");
 
-      setRawTableData((prevData) =>
-        prevData.map((student) =>
-          student.myID === studentToUpdate.myID
-            ? {
-                ...student,
-                FirstName: updatePayload.first_name || student.FirstName,
-                LastName: updatePayload.last_name || student.LastName,
-                Email: updatePayload.email || student.Email,
-                Major:
-                  updatePayload.major === undefined
-                    ? student.Major
-                    : updatePayload.major,
-              }
-            : student
-        )
-      );
+      // setRawTableData((prevData) =>
+      //   prevData.map((student) =>
+      //     student.myID === studentToUpdate.myID
+      //       ? {
+      //           ...student,
+      //           FirstName: updatePayload.first_name || student.FirstName,
+      //           LastName: updatePayload.last_name || student.LastName,
+      //           Email: updatePayload.email || student.Email,
+      //           Major:
+      //             updatePayload.major === undefined
+      //               ? student.Major
+      //               : updatePayload.major,
+      //         }
+      //       : student
+      //   )
+      // );
 
       setUpdateFirstName("");
       setUpdateLastName("");
