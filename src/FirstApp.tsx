@@ -27,19 +27,19 @@ function NavigationButtons() {
   return (
     <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
       <Button variant="contained" onClick={() => handleNavigate("/orig")}>
-        Go to original page
+        Go to Sample component page
       </Button>
-      <Button
+      {/* <Button
         variant="contained"
         onClick={() => handleNavigate("/datafetcher")}
       >
         Go to data fetcher (Python-Neon)
-      </Button>
+      </Button> */}
       <Button
         variant="contained"
         onClick={() => handleNavigate("/datafetchergo1")}
       >
-        Go to data fetcher (Go-Neon)
+        Go to Student Roster
       </Button>
     </Box>
   );
@@ -56,7 +56,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
         <Routes>
           <Route path="/" element={<NavigationButtons />} />
           <Route path="/orig" element={<SamplePage />} />
-          <Route
+          {/* <Route
             path="/datafetcher"
             element={
               <StudentsDisplay
@@ -65,7 +65,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
               />
               // <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
             }
-          />
+          /> */}
           <Route
             path="/datafetchergo1"
             element={
