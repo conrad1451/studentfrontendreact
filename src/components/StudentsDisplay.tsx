@@ -3,7 +3,6 @@
 // import React from "react";
 import { useStudents } from "../hooks/useStudents";
 import StudentTable from "./StudentTable";
-import StudentTableAlt from "./StudentTableAlt";
 import { apiPicker } from "../services/apiPicker";
 
 import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI components
@@ -132,7 +131,6 @@ const StudentsDisplay = (props: {
           theToken={props.theSessionToken}
         />
       ) : (
-        // <StudentTableAlt thePages={dataForTable} />
         <h3>There has been some sort of error!</h3>
       )}
     </Box>
