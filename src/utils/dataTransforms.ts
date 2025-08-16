@@ -3,7 +3,8 @@
 import type { Item } from "./dataTypes";
 
 // CHQ: GEmini AI corrected the import method
-import type { RowPage, StudentRecord } from "./dataTypes";
+// import type { RowPage, StudentRecord } from "./dataTypes";
+import type { RowPage } from "./dataTypes";
 
 export function createCustomTableDataOld(
   myID: number,

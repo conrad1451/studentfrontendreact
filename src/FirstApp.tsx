@@ -2,7 +2,6 @@
 
 import SamplePage from "./components/SamplePage";
 // import CustomTable from './MyTable'
-import StudentTable from "./components/StudentTable";
 
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
