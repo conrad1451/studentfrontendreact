@@ -324,7 +324,6 @@ const StudentTable = (props: {
   // Use the new confirmation hook
   const confirmationModal = useConfirmationModal();
 
-  const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
   // States for the update modal's input fields (now controlled by the main component)
   const [updateFirstName, setUpdateFirstName] = useState("");
   const [updateLastName, setUpdateLastName] = useState("");
