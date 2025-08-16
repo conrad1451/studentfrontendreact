@@ -4,8 +4,8 @@ export interface RowPage {
   FirstName: string;
   LastName: string;
   Email: string;
-  Major: string;
-  // Major: string | null;
+  // Major: string;
+  Major: string | null;
 
   // CreatedTime: Date;
   // EditedTime: Date;

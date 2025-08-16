@@ -455,7 +455,7 @@ const StudentTable = (props: {
     setSuccessMessage(null);
 
     try {
-      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
       const response = await fetch(`${BASE_URL}/${studentToDelete.myID}`, {
@@ -534,7 +534,7 @@ const StudentTable = (props: {
     setSuccessMessage(null);
 
     try {
-      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
       const BASE_URL = apiURL;
       const sessionToken = props.theToken;
       // The method is now "PATCH" as the server requires a partial payload.
@@ -556,27 +556,30 @@ const StudentTable = (props: {
       console.log("Student updated successfully:", result);
       setSuccessMessage("Student updated successfully!");
 
-      // Update the local state with the new values.
+      // New and improved logic for updating local state
+      // Create an object with the new values using the correct local PascalCase keys
+      const updatedLocalData = {
+        ...(updatePayload.first_name !== undefined && {
+          FirstName: updatePayload.first_name,
+        }),
+        ...(updatePayload.last_name !== undefined && {
+          LastName: updatePayload.last_name,
+        }),
+        ...(updatePayload.email !== undefined && {
+          Email: updatePayload.email,
+        }),
+        ...(updatePayload.major !== undefined && {
+          Major: updatePayload.major,
+        }),
+      };
+
+      // Update the local state by merging the old student data with the new values
       setRawTableData((prevData) =>
         prevData.map((student) =>
           student.myID === studentToUpdate.myID
             ? {
                 ...student,
-                ...Object.fromEntries(
-                  Object.entries(updatePayload).map(([key, value]) => {
-                    const mappedKey =
-                      key === "first_name"
-                        ? "FirstName"
-                        : key === "last_name"
-                        ? "LastName"
-                        : key === "email"
-                        ? "Email"
-                        : key === "major"
-                        ? "Major"
-                        : key;
-                    return [mappedKey, value];
-                  })
-                ),
+                ...updatedLocalData,
               }
             : student
         )
