@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { StudentRecord } from "../utils/dataTypes";
 
-// import { apiPicker } from "../services/apiPicker";
+import { apiPicker } from "../services/apiPicker";
 interface UseStudentsResult {
   students: StudentRecord[];
   loading: boolean;
@@ -16,10 +16,8 @@ interface UseStudentsResult {
 //   theUserID: string
 // ): UseStudentsResult => {
 export const useStudents = (
-  // theChoice: number,
-  theChoice: string,
+  theChoice: number,
   theSessionToken: string
-  // options = {}
 ): UseStudentsResult => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,8 +25,7 @@ export const useStudents = (
   const [triggerRefetch, setTriggerRefetch] = useState(0); // State to trigger refetch
 
   // const apiURL = apiPicker(theChoice, theUserID);
-  // const apiURL = apiPicker(theChoice);
-  const apiURL = theChoice;
+  const apiURL = apiPicker(theChoice);
 
   // CHQ: Gemini AI memoized headers
   // Assuming theSessionToken is a variable in scope
@@ -67,15 +64,10 @@ export const useStudents = (
         const data: StudentRecord[] = await response.json();
         setStudents(data);
       } catch (e: any) {
-        // CHQ: Gemini AI created conditional for error type handling
-        // Check if 'e' is an instance of the built-in Error class.
-        if (e instanceof Error) {
-          // If it is, you can safely access its 'message' property.
-          setError(e.message);
-        } else {
-          // If it's not an Error object, you can set a generic message.
-          setError("An unknown error occurred.");
-        }
+        // } catch (e: unknown) {
+        // CHQ: Catch clause variable type annotation must be 'any' or 'unknown' if specified.ts(1196)
+        //      yet somehow, both 'any' and 'unknown' generate their own errors
+        setError(e.message);
         console.error("Failed to fetch students:", e);
       } finally {
         setLoading(false);

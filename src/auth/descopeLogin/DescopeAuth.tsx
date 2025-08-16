@@ -4,13 +4,15 @@
 // [1]: https://www.descope.com/blog/post/auth-rbac-webflow
 
 import { useCallback } from "react";
+// Example using fetch to send Descope token to your backend
+// const descopeSessionToken = useSession().sessionToken; // Get the token from Descope's SDK
 
 // import { Descope, useDescope, useSession, useUser } from "@descope/react-sdk";
 
 import { useDescope, useSession, useUser } from "@descope/react-sdk";
 import { Descope } from "@descope/react-sdk";
 // import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 import DescopeLandingPage from "./DescopeLoginLandingPage";
 
@@ -58,11 +60,14 @@ const DescopeAuth = () => {
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
 
+  // const myUsername = user.name ? user.name : "sample user";
+
+  // loginWithDescopeToken(sessionToken, myUsername);
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   if (isSessionLoading || isUserLoading) {
     return <p>Loading...</p>;
@@ -108,7 +113,7 @@ const DescopeAuth = () => {
           if (e.detail.user) {
             updateUIBasedOnPermissions(e.detail.user as DescopeUser);
           }
-          navigate("/secure");
+          // navigate("/secure");
         }}
         onError={(err) => {
           console.log("Error!", err);

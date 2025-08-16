@@ -3,7 +3,7 @@
 // import React from "react";
 import { useStudents } from "../hooks/useStudents";
 import StudentTable from "./StudentTable";
-import StudentTableAlt from "./StudentTableAlt";
+import { apiPicker } from "../services/apiPicker";
 
 import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI components
 import type { RowPage } from "../utils/dataTypes"; // Import both
@@ -51,7 +51,7 @@ const StudentsDisplay = (props: {
   //   myUserID.userId
   // );
   const { students, loading, error, refetchStudents } = useStudents(
-    props.theChoice,
+    apiPicker(props.theChoice),
     props.theSessionToken
   );
   // console.log("props.myToken");
@@ -59,6 +59,7 @@ const StudentsDisplay = (props: {
   // console.log(props.myToken);
 
   // Set this to `false` to use real data from the API
+
   const useSampleData = false;
 
   if (loading) {
@@ -117,18 +118,20 @@ const StudentsDisplay = (props: {
         Student Management Dashboard
       </Typography>
 
+      {/* FIXME: add breakpoints here to debug why empty table does not show when there is no data */}
       {/* Show EmptyDatabase component if no error, no real students, AND not using sample data */}
       {!error && dataForTable.length === 0 && !useSampleData ? (
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />
       ) : // Render StudentTable with the prepared data (either transformed real data or sample data)
 
-      props.theChoice === 1 ? (
+      props.theChoice === 1 || props.theChoice === 2 ? (
         <StudentTable
           thePages={dataForTable}
+          theChoice={apiPicker(props.theChoice)}
           theToken={props.theSessionToken}
         />
       ) : (
-        <StudentTableAlt thePages={dataForTable} />
+        <h3>There has been some sort of error!</h3>
       )}
     </Box>
   );

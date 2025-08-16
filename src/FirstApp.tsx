@@ -2,7 +2,6 @@
 
 import SamplePage from "./components/SamplePage";
 // import CustomTable from './MyTable'
-import StudentTable from "./components/StudentTable";
 
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -42,9 +41,6 @@ function NavigationButtons() {
       >
         Go to data fetcher (Go-Neon)
       </Button>
-      <Button variant="contained" onClick={() => handleNavigate("/tabletest")}>
-        Go to table testing
-      </Button>
     </Box>
   );
 }
@@ -74,7 +70,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
             path="/datafetchergo1"
             element={
               <StudentsDisplay
-                theChoice={1}
+                theChoice={2}
                 theSessionToken={props.mySessionToken}
               />
               // <StudentsDisplay theChoice={1} myUserID={props.myUserID} />
@@ -82,31 +78,6 @@ const FirstApp = (props: { mySessionToken: string }) => {
           />
 
           {/* <Route path="/datafetcher" element={<DataFetcher />} /> */}
-          <Route
-            path="/tabletest"
-            element={
-              <StudentTable
-                thePages={[
-                  {
-                    myID: 101,
-                    FirstName: "Steven",
-                    LastName: "Okang",
-                    Email: "steveokang@gmail.com",
-                    Major: "Computer Science",
-                  },
-                  {
-                    myID: 102,
-                    FirstName: "Kwame",
-                    LastName: "Kingston",
-                    Email: "kwamekingston@gmail.com",
-                    Major: "Electrical Engineering",
-                  },
-                ]}
-                theToken={"sampleToken"}
-                // theQuantities={[1, 7]}
-              />
-            }
-          />
 
           {/* <Route path="/test" element={<MyTableTest />} /> */}
           {/* <Route path="/orig" element={ <CustomTable/>} /> */}
