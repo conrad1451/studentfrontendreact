@@ -56,13 +56,13 @@ const DescopeAuth = () => {
   // const { isAuthenticated, isSessionLoading, sessionToken } = useSession();
   const { isAuthenticated, isSessionLoading } = useSession();
   // const sessionToken = getSessionToken();
+
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
 
   // const myUsername = user.name ? user.name : "sample user";
 
   // loginWithDescopeToken(sessionToken, myUsername);
-
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
