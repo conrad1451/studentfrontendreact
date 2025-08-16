@@ -53,10 +53,16 @@ export function createCustomTableData(
 //   );
 // }
 
+// CHQ: Gemini AI edited this to avoid crashing program when teacher has no students
 // Helper function to transform StudentRecord to RowPage
-export function transformStudentRecordToRowPage(
-  pages: StudentRecord[]
-): RowPage[] {
+export const transformStudentRecordToRowPage = (pages: any): RowPage[] => {
+  // Add this check! If 'pages' is null or not an array, return an empty array.
+  if (!Array.isArray(pages)) {
+    return [];
+  }
+
+  // Your existing .map() logic will go here
+
   return pages.map((page) =>
     createCustomTableData(
       page.id,
@@ -66,8 +72,7 @@ export function transformStudentRecordToRowPage(
       page.major
     )
   );
-}
-
+};
 /**
  * Generates a list of unique property values from an array of RowPage objects,
  * suitable for populating dropdown filters. It can handle both single-string properties
