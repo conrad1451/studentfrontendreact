@@ -68,6 +68,7 @@ const StudentActionModal = (props: {
         </Typography>
         <Button
           variant="contained"
+          disabled={true}
           onClick={() => props.onEdit(props.student!)}
           sx={{
             bgcolor: "primary.main",
