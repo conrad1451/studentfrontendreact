@@ -1,9 +1,6 @@
 // StudentTable.tsx
-
 import React, { useState, useEffect } from "react";
-
 import { idGenerator } from "../utils/idGenerator";
-
 import {
   Table,
   TableContainer,
@@ -14,22 +11,17 @@ import {
   TextField,
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
-
-// --- Import Custom Hooks ---
 import { useTableFilters } from "../hooks/useTableFilters";
 import { useTableSorting } from "../hooks/useTableSorting";
 import { useColumnVisibilityMiniTable } from "../hooks/useColumnVisibility";
-
+import { useConfirmationModal } from "../hooks/useConfirmationModule";
 import { ColumnVisibilityControlModal } from "./ColumnVisibilityModule";
-
 import { TableHeaderCells, TableBodyRows } from "./TableSubcomponents";
-
 import type {
   RowPage,
   ConfirmUpdateProps,
   ApiResponse,
 } from "../utils/dataTypes";
-
 import { allColumnKeys } from "../utils/dataTypes";
 
 // Simple icon components for the collapse button
@@ -49,7 +41,6 @@ const StudentActionModal = (props: {
   onEdit: (student: RowPage) => void;
   onDelete: (student: RowPage) => void;
 }) => {
-  // Don't render if no student is selected
   if (!props.student) return null;
 
   return (
@@ -111,12 +102,15 @@ const StudentActionModal = (props: {
   );
 };
 
-// New Confirmation Modal component for Updates
+// Update Confirmation Modal component, now controlled by the hook
 const UpdateConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
-  onConfirm: (data: ConfirmUpdateProps) => Promise<void>;
+  onConfirm: () => void;
   message: string;
+  loading: boolean;
+  successMessage: string | null;
+  errorMessage: string | null;
   currentFirstName: string;
   setCurrentFirstName: (value: string) => void;
   currentLastName: string;
@@ -125,20 +119,7 @@ const UpdateConfirmationModal = (props: {
   setCurrentEmail: (value: string) => void;
   currentMajor: string;
   setCurrentMajor: (value: string) => void;
-  loading: boolean;
-  successMessage: string | null;
-  errorMessage: string | null;
 }) => {
-  // Handler to call the parent's onConfirm with current form data
-  const handleSubmit = () => {
-    props.onConfirm({
-      first_name: props.currentFirstName,
-      last_name: props.currentLastName,
-      email: props.currentEmail,
-      major: props.currentMajor,
-    });
-  };
-
   return (
     <Modal open={props.open} onClose={props.onClose}>
       <Box
@@ -212,7 +193,7 @@ const UpdateConfirmationModal = (props: {
           <Button
             variant="contained"
             color="info"
-            onClick={handleSubmit}
+            onClick={props.onConfirm}
             sx={{ borderRadius: "8px" }}
             disabled={props.loading}
           >
@@ -232,7 +213,7 @@ const UpdateConfirmationModal = (props: {
   );
 };
 
-// New Confirmation Modal component for Deletion
+// Deletion Confirmation Modal component, now controlled by the hook
 const DeletionConfirmationModal = (props: {
   open: boolean;
   onClose: () => void;
@@ -296,8 +277,12 @@ const DeletionConfirmationModal = (props: {
   );
 };
 
-const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
-  // CHQ: Gemini AI turned this from a variable assigned from a prop into a state variable
+// Main StudentTable component
+const StudentTable = (props: {
+  thePages: RowPage[];
+  theChoice: string;
+  theToken: string;
+}) => {
   const [rawTableData, setRawTableData] = useState<RowPage[]>(props.thePages);
 
   // Sync local state with props whenever props.thePages changes
@@ -336,33 +321,27 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Generate a new unique ID for a new student
-  const newMyID: number = idGenerator(rawTableData);
+  // Use the new confirmation hook
+  const confirmationModal = useConfirmationModal();
 
-  // State for the action/confirmation modals
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-  const [selectedStudentForActions, setSelectedStudentForActions] =
-    useState<RowPage | null>(null);
-  const [isDeletionConfirmationModalOpen, setIsDeletionConfirmationModalOpen] =
-    useState(false);
   const [isUpdateConfirmationModalOpen, setIsUpdateConfirmationModalOpen] =
-    useState(false);
-  const [studentToDelete, setStudentToDelete] = useState<RowPage | null>(null);
-  const [studentToUpdate, setStudentToUpdate] = useState<RowPage | null>(null);
-
-  // States for the update modal's input fields
+  // States for the update modal's input fields (now controlled by the main component)
   const [updateFirstName, setUpdateFirstName] = useState("");
   const [updateLastName, setUpdateLastName] = useState("");
   const [updateEmail, setUpdateEmail] = useState("");
   const [updateMajor, setUpdateMajor] = useState("");
 
+  const newMyID: number = idGenerator(rawTableData);
+  const apiURL = props.theChoice;
+
   // Handler to open the action modal for a specific student
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [selectedStudentForActions, setSelectedStudentForActions] =
+    useState<RowPage | null>(null);
   const handleOpenActionModal = (student: RowPage) => {
     setSelectedStudentForActions(student);
     setIsActionModalOpen(true);
   };
-
-  // Handler to close the action modal
   const handleCloseActionModal = () => {
     setIsActionModalOpen(false);
     setSelectedStudentForActions(null);
@@ -376,10 +355,10 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     setSuccessMessage(null);
 
     try {
-      const BASE_URL =
-        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      // const BASE_URL =
+      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      const BASE_URL = apiURL;
       const sessionToken = props.theToken;
-
       const formData = {
         id: newMyID,
         first_name: myFirstName,
@@ -405,8 +384,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       const result: ApiResponse = await response.json();
       console.log("Data sent to database successfully:", result);
       setSuccessMessage("Data sent to database successfully!");
-
-      // Optimistically add the new student to the local state
       setRawTableData((prevData) => [
         ...prevData,
         {
@@ -418,7 +395,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         } as RowPage,
       ]);
 
-      // Clear the form fields after successful submission
       setMyFirstName("");
       setMyLastName("");
       setMyEmail("");
@@ -435,30 +411,43 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
 
   // Handler to open the update confirmation modal
   const handleEditStudent = (student: RowPage) => {
-    console.log("Edit student:", student);
-    setStudentToUpdate(student);
-
-    // Populate the update modal's input fields with current student data
     setUpdateFirstName(student.FirstName);
     setUpdateLastName(student.LastName);
     setUpdateEmail(student.Email);
-    setUpdateMajor(student.Major || ""); // Use "" for null major
-    setIsUpdateConfirmationModalOpen(true);
-    handleCloseActionModal();
+    setUpdateMajor(student.Major || "");
+    handleCloseActionModal(); // Close the action modal first
+
+    // Now use the hook to show the update confirmation modal
+    confirmationModal.showConfirmation(
+      `Are you sure you want to update student ID ${student.myID}?`,
+      confirmUpdateStudent,
+      student,
+      "update"
+    );
   };
 
   // Handler to open the delete confirmation modal
   const handleDeleteStudent = (student: RowPage) => {
-    setStudentToDelete(student);
-    setIsDeletionConfirmationModalOpen(true);
-    handleCloseActionModal();
+    handleCloseActionModal(); // Close the action modal first
+
+    // Now use the hook to show the delete confirmation modal
+    confirmationModal.showConfirmation(
+      `Are you sure you want to delete student ID ${student.myID} - ${student.FirstName} ${student.LastName}? This action cannot be undone.`,
+      confirmDeleteStudent,
+      student,
+      "delete"
+    );
   };
 
   // Handler to confirm delete and make the API call
-  const confirmDeleteStudent = async () => {
+  const confirmDeleteStudent = async (
+    dataPayload: RowPage | ConfirmUpdateProps
+  ) => {
+    // Corrected type to match ConfirmationData
+    const studentToDelete = dataPayload as RowPage;
+
     if (!studentToDelete) {
       console.warn("No student selected for deletion.");
-      setIsDeletionConfirmationModalOpen(false);
       return;
     }
 
@@ -467,8 +456,8 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     setSuccessMessage(null);
 
     try {
-      const BASE_URL =
-        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      const BASE_URL = apiURL;
       const sessionToken = props.theToken;
       const response = await fetch(`${BASE_URL}/${studentToDelete.myID}`, {
         method: "DELETE",
@@ -486,7 +475,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         `Student with ID ${studentToDelete.myID} deleted successfully.`
       );
       setSuccessMessage("Student deleted successfully!");
-      // Remove the student from the local state
       setRawTableData((prevData) =>
         prevData.filter((student) => student.myID !== studentToDelete.myID)
       );
@@ -497,20 +485,26 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       );
     } finally {
       setLoading(false);
-      setIsDeletionConfirmationModalOpen(false);
-      setStudentToDelete(null);
     }
   };
 
   // Handler to confirm update and make the API call
-  const confirmUpdateStudent = async (formData: ConfirmUpdateProps) => {
+  const confirmUpdateStudent = async (
+    dataPayload: ConfirmUpdateProps | RowPage
+  ) => {
+    const studentToUpdate = dataPayload as RowPage;
+    const formData = {
+      first_name: updateFirstName,
+      last_name: updateLastName,
+      email: updateEmail,
+      major: updateMajor,
+    };
+
     if (!studentToUpdate) {
       console.warn("No student selected for update.");
-      setIsUpdateConfirmationModalOpen(false);
       return;
     }
 
-    // Build the payload for the PATCH request dynamically
     const updatePayload: {
       first_name?: string;
       last_name?: string;
@@ -518,7 +512,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       major?: string | null;
     } = {};
 
-    // Only include properties if they have changed and are not empty strings
     if (
       formData.first_name.trim() !== "" &&
       formData.first_name !== studentToUpdate.FirstName
@@ -537,7 +530,7 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     ) {
       updatePayload.email = formData.email;
     }
-    // Handle major: if empty string, set to null, otherwise use the new value if changed
+
     const newMajor = formData.major.trim() === "" ? null : formData.major;
     if (newMajor !== studentToUpdate.Major) {
       updatePayload.major = newMajor;
@@ -546,7 +539,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     if (Object.keys(updatePayload).length === 0) {
       setErrorMessage("No fields provided for update or no changes detected.");
       setLoading(false);
-      setIsUpdateConfirmationModalOpen(false);
       return;
     }
 
@@ -555,10 +547,10 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
     setSuccessMessage(null);
 
     try {
-      const BASE_API_URL =
-        import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      //   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+      const BASE_URL = apiURL;
       const sessionToken = props.theToken;
-      const response = await fetch(`${BASE_API_URL}/${studentToUpdate.myID}`, {
+      const response = await fetch(`${BASE_URL}/${studentToUpdate.myID}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -576,7 +568,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       console.log("Student updated successfully:", result);
       setSuccessMessage("Student updated successfully!");
 
-      // Update the student in the local state
       setRawTableData((prevData) =>
         prevData.map((student) =>
           student.myID === studentToUpdate.myID
@@ -594,7 +585,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         )
       );
 
-      // Clear the update form fields and selected student
       setUpdateFirstName("");
       setUpdateLastName("");
       setUpdateEmail("");
@@ -606,8 +596,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
       );
     } finally {
       setLoading(false);
-      setIsUpdateConfirmationModalOpen(false);
-      setStudentToUpdate(null);
     }
   };
 
@@ -644,7 +632,6 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
           </Box>
         </Box>
 
-        {/* Column visibility control modal */}
         <ColumnVisibilityControlModal
           open={isColumnModalOpen}
           onClose={() => setIsColumnModalOpen(false)}
@@ -697,49 +684,39 @@ const StudentTable = (props: { thePages: RowPage[]; theToken: string }) => {
         onDelete={handleDeleteStudent}
       />
 
-      {/* Update Confirmation Modal */}
-      <UpdateConfirmationModal
-        open={isUpdateConfirmationModalOpen}
-        onClose={() => {
-          setIsUpdateConfirmationModalOpen(false);
-          setStudentToUpdate(null);
-          setUpdateFirstName("");
-          setUpdateLastName("");
-          setUpdateEmail("");
-          setUpdateMajor("");
-          setErrorMessage(null);
-          setSuccessMessage(null);
-        }}
-        onConfirm={confirmUpdateStudent}
-        message={`Are you sure you want to update student ID ${studentToUpdate?.myID}?`}
-        currentFirstName={updateFirstName}
-        setCurrentFirstName={setUpdateFirstName}
-        currentLastName={updateLastName}
-        setCurrentLastName={setUpdateLastName}
-        currentEmail={updateEmail}
-        setCurrentEmail={setUpdateEmail}
-        currentMajor={updateMajor}
-        setCurrentMajor={setUpdateMajor}
-        loading={loading}
-        successMessage={successMessage}
-        errorMessage={errorMessage}
-      />
+      {/* Update Confirmation Modal (now controlled by the hook) */}
+      {confirmationModal.confirmationType === "update" && (
+        <UpdateConfirmationModal
+          open={confirmationModal.isOpen}
+          onClose={confirmationModal.cancelAction}
+          onConfirm={confirmationModal.confirmAction}
+          message={confirmationModal.message}
+          currentFirstName={updateFirstName}
+          setCurrentFirstName={setUpdateFirstName}
+          currentLastName={updateLastName}
+          setCurrentLastName={setUpdateLastName}
+          currentEmail={updateEmail}
+          setCurrentEmail={setUpdateEmail}
+          currentMajor={updateMajor}
+          setCurrentMajor={setUpdateMajor}
+          loading={loading}
+          successMessage={successMessage}
+          errorMessage={errorMessage}
+        />
+      )}
 
-      {/* Deletion Confirmation Modal */}
-      <DeletionConfirmationModal
-        open={isDeletionConfirmationModalOpen}
-        onClose={() => {
-          setIsDeletionConfirmationModalOpen(false);
-          setStudentToDelete(null);
-          setErrorMessage(null);
-          setSuccessMessage(null);
-        }}
-        onConfirm={confirmDeleteStudent}
-        message={`Are you sure you want to delete student ID ${studentToDelete?.myID} - ${studentToDelete?.FirstName} ${studentToDelete?.LastName}? This action cannot be undone.`}
-        loading={loading}
-        successMessage={successMessage}
-        errorMessage={errorMessage}
-      />
+      {/* Deletion Confirmation Modal (now controlled by the hook) */}
+      {confirmationModal.confirmationType === "delete" && (
+        <DeletionConfirmationModal
+          open={confirmationModal.isOpen}
+          onClose={confirmationModal.cancelAction}
+          onConfirm={confirmationModal.confirmAction}
+          message={confirmationModal.message}
+          loading={loading}
+          successMessage={successMessage}
+          errorMessage={errorMessage}
+        />
+      )}
     </Box>
   );
 };

@@ -125,13 +125,15 @@ const StudentsDisplay = (props: {
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />
       ) : // Render StudentTable with the prepared data (either transformed real data or sample data)
 
-      props.theChoice === 1 ? (
+      props.theChoice === 1 || props.theChoice === 2 ? (
         <StudentTable
           thePages={dataForTable}
+          theChoice={apiPicker(props.theChoice)}
           theToken={props.theSessionToken}
         />
       ) : (
-        <StudentTableAlt thePages={dataForTable} />
+        // <StudentTableAlt thePages={dataForTable} />
+        <h3>There has been some sort of error!</h3>
       )}
     </Box>
   );
