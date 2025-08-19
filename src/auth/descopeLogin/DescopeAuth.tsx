@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDescope, useSession, useUser, Descope } from "@descope/react-sdk";
 
+import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+
 // Mock data types and components for a self-contained example.
 // In a real application, these would be imported from your project.
 type DescopeUser = {
@@ -147,6 +151,27 @@ const AuthFlow = ({
   return <Descope flowId={flowId} onSuccess={onSuccess} onError={onError} />;
 };
 
+// const Buttons = (props: { theSetChoice: number }) => {
+
+const Buttons = (props: { theSetChoice: (input: number) => void }) => {
+  return (
+    <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
+      <Button variant="contained" onClick={() => props.theSetChoice(1)}>
+        Go to Guest sign in
+      </Button>
+      {/* <Button
+        variant="contained"
+        onClick={() => handleNavigate("/datafetcher")}
+      >
+        Go to data fetcher (Python-Neon)
+      </Button> */}
+      <Button variant="contained" onClick={() => props.theSetChoice(2)}>
+        Go to User sign in
+      </Button>
+    </Box>
+  );
+};
+
 // The main application component.
 const App = () => {
   // States for managing UI feedback
@@ -161,6 +186,8 @@ const App = () => {
   const { isAuthenticated, isSessionLoading } = useSession();
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
+
+  const [choice, setChoice] = useState(0);
 
   // Handle successful login
   const handleSuccess = (e: any) => {
@@ -262,27 +289,32 @@ const App = () => {
                 <span className="font-semibold">Success:</span> {successMessage}
               </div>
             )}
+            <Buttons theSetChoice={setChoice} />
             <div className="space-y-4">
-              <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Regular Sign In
-                </h3>
-                <AuthFlow
-                  flowId="sign-up-or-in"
-                  onSuccess={handleSuccess}
-                  onError={handleError}
-                />
-              </div>
-              <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Guest Sign In
-                </h3>
-                <AuthFlow
-                  flowId="create-anonymous-user-with-custom-information"
-                  onSuccess={handleSuccess}
-                  onError={handleError}
-                />
-              </div>
+              {choice === 2 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    Regular Sign In
+                  </h3>
+                  <AuthFlow
+                    flowId="sign-up-or-in"
+                    onSuccess={handleSuccess}
+                    onError={handleError}
+                  />
+                </div>
+              )}
+              {choice === 1 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    Guest Sign In
+                  </h3>
+                  <AuthFlow
+                    flowId="create-anonymous-user-with-custom-information"
+                    onSuccess={handleSuccess}
+                    onError={handleError}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
