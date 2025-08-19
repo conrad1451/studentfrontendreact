@@ -3,7 +3,7 @@
 // Sources:
 // [1]: https://www.descope.com/blog/post/auth-rbac-webflow
 
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 // Example using fetch to send Descope token to your backend
 // const descopeSessionToken = useSession().sessionToken; // Get the token from Descope's SDK
 
@@ -13,6 +13,10 @@ import { useDescope, useSession, useUser } from "@descope/react-sdk";
 import { Descope } from "@descope/react-sdk";
 // import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
 // import { useNavigate } from "react-router-dom";
+
+// import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 import DescopeLandingPage from "./DescopeLoginLandingPage";
 
@@ -52,10 +56,72 @@ function updateUIBasedOnPermissions(user: DescopeUser) {
   });
 }
 
+const GuestSignIn = () => {
+  return (
+    <Descope
+      flowId="create-anonymous-user-with-custom-information"
+      onSuccess={(e) => {
+        if (e.detail.user) {
+          updateUIBasedOnPermissions(e.detail.user as DescopeUser);
+        }
+      }}
+      onError={(err) => {
+        console.log("Error!", err);
+
+        alert("Error: " + err.detail.errorMessage);
+
+        console.log("Could not log in");
+      }}
+    />
+  );
+};
+
+const RegularSignIn = () => {
+  return (
+    <Descope
+      flowId="sign-up-or-in"
+      onSuccess={(e) => {
+        console.log(e.detail.user?.name);
+        console.log(e.detail.user?.email);
+
+        // Check if e.detail.user is not undefined before calling the function.
+        if (e.detail.user) {
+          updateUIBasedOnPermissions(e.detail.user as DescopeUser);
+        }
+      }}
+      onError={(err) => {
+        console.log("Error!", err);
+        alert("Error: " + err.detail.errorMessage);
+        console.log("Could not log in");
+      }}
+    />
+  );
+};
+
+const Buttons = (props: { theSetChoice: (input: number) => void }) => {
+  return (
+    <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
+      <Button variant="contained" onClick={() => props.theSetChoice(1)}>
+        Go to Guest sign in
+      </Button>
+
+      <Button variant="contained" onClick={() => props.theSetChoice(2)}>
+        Go to User sign in
+      </Button>
+    </Box>
+  );
+};
+
 const DescopeAuth = () => {
   // const { isAuthenticated, isSessionLoading, sessionToken } = useSession();
   const { isAuthenticated, isSessionLoading } = useSession();
   // const sessionToken = getSessionToken();
+
+  // const [hasReadPermission, setHasReadPermission] = useState(false);
+  // const [hasUpdatePermission, setHasUpdatePermission] = useState(false);
+  // const [hasDeletePermission, setHasDeletePermission] = useState(false);
+
+  const [choice, setChoice] = useState(0);
 
   const { user, isUserLoading } = useUser();
   const { logout } = useDescope();
@@ -104,23 +170,9 @@ const DescopeAuth = () => {
   return (
     <div>
       <h1>Sign In</h1>
-      <Descope
-        flowId="sign-up-or-in"
-        onSuccess={(e) => {
-          console.log(e.detail.user?.name);
-          console.log(e.detail.user?.email);
-          // Check if e.detail.user is not undefined before calling the function.
-          if (e.detail.user) {
-            updateUIBasedOnPermissions(e.detail.user as DescopeUser);
-          }
-          // navigate("/secure");
-        }}
-        onError={(err) => {
-          console.log("Error!", err);
-          alert("Error: " + err.detail.errorMessage);
-          console.log("Could not log in");
-        }}
-      />
+      <Buttons theSetChoice={setChoice} />
+      {choice === 1 && <GuestSignIn />}
+      {choice === 2 && <RegularSignIn />}
     </div>
   );
 };
