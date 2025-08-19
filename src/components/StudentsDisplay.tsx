@@ -112,6 +112,9 @@ const StudentsDisplay = (props: {
   }
   // --- END DATA PREPARATION ---
 
+  // const isHidingEmptyDatabase = true;
+  const isHidingEmptyDatabase = false;
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
@@ -120,7 +123,10 @@ const StudentsDisplay = (props: {
 
       {/* FIXME: add breakpoints here to debug why empty table does not show when there is no data */}
       {/* Show EmptyDatabase component if no error, no real students, AND not using sample data */}
-      {!error && dataForTable.length === 0 && !useSampleData ? (
+      {!error &&
+      dataForTable.length === 0 &&
+      !useSampleData &&
+      isHidingEmptyDatabase ? (
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />
       ) : // Render StudentTable with the prepared data (either transformed real data or sample data)
 
