@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDescope, useSession, useUser, Descope } from "@descope/react-sdk";
 
-import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
