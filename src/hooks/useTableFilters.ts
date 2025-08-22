@@ -11,23 +11,6 @@ import type { RowPage } from "../utils/dataTypes";
 //   value: string;
 // }
 
-// const allColumnKeys: Array<keyof RowPage> = [
-//   "Name",
-//   "Source",
-//   "UnitSize",
-//   "ServingSize",
-//   "Fat",
-//   "SatFat",
-//   "Sodium",
-//   "Protein",
-//   "Carbs",
-//   "Fiber",
-//   "Sugar",
-//   "AddedSugar",
-//   // "PageURL",
-//   // "pageContent",
-// ];
-
 // --- Utility Filtering Functions (Can be moved to a separate file like utils/filters.ts) ---
 
 /**
