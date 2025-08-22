@@ -56,7 +56,7 @@ function updateUIBasedOnPermissions(user: DescopeUser) {
   });
 }
 
-const GuestSignIn = () => {
+const GuestLogin = () => {
   return (
     <Descope
       flowId="create-anonymous-user-with-custom-information"
@@ -76,10 +76,35 @@ const GuestSignIn = () => {
   );
 };
 
-const RegularSignIn = () => {
+const UserLoginRegister = () => {
   return (
     <Descope
       flowId="sign-up-or-in"
+      onSuccess={(e) => {
+        console.log(e.detail.user?.name);
+        console.log(e.detail.user?.email);
+
+        // Check if e.detail.user is not undefined before calling the function.
+        if (e.detail.user) {
+          updateUIBasedOnPermissions(e.detail.user as DescopeUser);
+        }
+      }}
+      onError={(err) => {
+        console.log("Error!", err);
+        alert("Error: " + err.detail.errorMessage);
+        console.log("Could not log in");
+      }}
+    />
+  );
+};
+
+const UserSignIn = () => {
+  return (
+    <Descope
+      // flowId="sign-in"
+      // flowId="step-up"
+      // flowId="add-passkeys"
+      flowId="sign-in-passkeys-or-otp"
       onSuccess={(e) => {
         console.log(e.detail.user?.name);
         console.log(e.detail.user?.email);
@@ -107,6 +132,10 @@ const Buttons = (props: { theSetChoice: (input: number) => void }) => {
 
       <Button variant="contained" onClick={() => props.theSetChoice(2)}>
         Go to User sign in
+      </Button>
+
+      <Button variant="contained" onClick={() => props.theSetChoice(3)}>
+        Go to Admin sign in
       </Button>
     </Box>
   );
@@ -171,8 +200,11 @@ const DescopeAuth = () => {
     <div>
       <h1>Sign In</h1>
       <Buttons theSetChoice={setChoice} />
-      {choice === 1 && <GuestSignIn />}
-      {choice === 2 && <RegularSignIn />}
+      {choice === 1 && <GuestLogin />}
+      {choice === 2 && <UserLoginRegister />}
+      {choice === 3 && <UserSignIn />}
+
+      {/* UserSignIn */}
     </div>
   );
 };
