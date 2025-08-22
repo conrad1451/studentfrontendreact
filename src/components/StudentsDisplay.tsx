@@ -9,8 +9,6 @@ import { Box, Button, Typography } from "@mui/material"; // Import necessary MUI
 import type { RowPage } from "../utils/dataTypes"; // Import both
 import { transformStudentRecordToRowPage } from "../utils/dataTransforms";
 
-// import { UserData } from "../utils/dataTypes";
-
 // Define the prop type for EmptyDatabase for better type safety
 interface EmptyDatabaseProps {
   theRefetchOfStudents: () => void;
@@ -43,13 +41,6 @@ const StudentsDisplay = (props: {
 }) => {
   // const { students, loading, error, refetchStudents } = useStudents(1);
 
-  // const myUserID: UserData = JSON.parse(props.myToken);
-  // const myUserID: UserData = JSON.parse(props.myUserID);
-
-  // const { students, loading, error, refetchStudents } = useStudents(
-  //   props.theChoice,
-  //   myUserID.userId
-  // );
   const { students, loading, error, refetchStudents } = useStudents(
     apiPicker(props.theChoice),
     props.theSessionToken
