@@ -65,7 +65,7 @@ interface ApiResponse {
 }
 
 const allColumnKeys: Array<keyof ColumnVisibilityMiniTable> = [
-  "myID",
+  // "myID",
   "FirstName",
   "LastName",
   "Email",
@@ -310,7 +310,7 @@ const TableBodyRows = (props: TableBodyRowsProps) => {
           {props.theColumnKeys.map((colName) =>
             props.visibleColumns[colName] ? (
               <TableCell key={colName}>
-                {colName === "myID" && row.myID}
+                {/* {colName === "myID" && row.myID} */}
                 {colName === "FirstName" && row.FirstName}
                 {colName === "LastName" && row.LastName}
                 {colName === "Email" && row.Email}
@@ -373,9 +373,9 @@ const TableBodyRows = (props: TableBodyRowsProps) => {
                       size="small"
                       variant="outlined"
                     />
-                  ) : colName === "myID" ? (
-                    <>{props.myId}</>
                   ) : (
+                    // ) : colName === "myID" ? (
+                    //   <>{props.myId}</>
                     ""
                   )}
                 </Typography>
