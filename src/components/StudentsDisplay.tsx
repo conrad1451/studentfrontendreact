@@ -36,6 +36,7 @@ const StudentsDisplay: React.FC = () => {
   const { students, loading, error, refetchStudents } = useStudents();
 
   // Set this to `false` to use real data from the API
+  // const useSampleData = true;
   const useSampleData = false;
 
   if (loading) {
@@ -88,6 +89,9 @@ const StudentsDisplay: React.FC = () => {
   }
   // --- END DATA PREPARATION ---
 
+  // const isHidingEmptyDatabase = true;
+
+  const isHidingEmptyDatabase = false;
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
@@ -95,7 +99,11 @@ const StudentsDisplay: React.FC = () => {
       </Typography>
 
       {/* Show EmptyDatabase component if no error, no real students, AND not using sample data */}
-      {!error && dataForTable.length === 0 && !useSampleData ? (
+
+      {!error &&
+      dataForTable.length === 0 &&
+      !useSampleData &&
+      isHidingEmptyDatabase ? (
         <EmptyDatabase theRefetchOfStudents={refetchStudents} />
       ) : (
         // Render StudentTable with the prepared data (either transformed real data or sample data)
