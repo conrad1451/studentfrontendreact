@@ -38,7 +38,7 @@ import type { RowPage } from "../utils/dataTypes";
  * @param filterText - The text to search for in the Name property.
  * @returns Filtered array of RowPage objects.
  */
-function filterByPageName(
+function filterByFirstName(
   data: RowPage[],
   enabled: boolean,
   filterText: string
