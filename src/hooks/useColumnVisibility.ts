@@ -8,7 +8,7 @@ import type {
 
 // --- Default and Preset Column Visibility Settings ---
 export const defaultColumnVisibility: ColumnVisibility = {
-  myID: true,
+  // myID: true,
   FirstName: true,
   LastName: true,
   Email: true,
@@ -16,15 +16,15 @@ export const defaultColumnVisibility: ColumnVisibility = {
 };
 
 export const smartphoneVisibility: ColumnVisibility = {
-  myID: true,
+  // myID: true,
   FirstName: true,
-  LastName: true,
+  LastName: false,
   Email: true,
   Major: true,
 };
 
 export const defaultColumnVisibilityMiniTable: ColumnVisibilityMiniTable = {
-  myID: true,
+  // myID: true,
   FirstName: true,
   Qty: true,
   LastName: true,
@@ -33,10 +33,10 @@ export const defaultColumnVisibilityMiniTable: ColumnVisibilityMiniTable = {
 };
 
 export const smartphoneVisibilityMiniTable: ColumnVisibilityMiniTable = {
-  myID: true,
+  // myID: true,
   FirstName: true,
   Qty: true,
-  LastName: true,
+  LastName: false,
   Email: true,
   Major: true,
 };
