@@ -56,7 +56,8 @@ function filterByMajor(
 ): RowPage[] {
   if (enabled && filterText.trim() !== "") {
     return data.filter((row) =>
-      row.Major.toLowerCase().includes(filterText.toLowerCase())
+      // CHQ: Gemini AI fixed error by using nullish coalescing to provide an empty string if Major is null/undefined
+      (row.Major ?? "").toLowerCase().includes(filterText.toLowerCase())
     );
   }
   return data;
