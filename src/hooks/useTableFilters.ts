@@ -5,48 +5,7 @@ import { useState, useMemo } from "react";
 
 import type { RowPage } from "../utils/dataTypes";
 
-// interface Item {
-//   value: string;
-// }
-
-// const allColumnKeys: Array<keyof RowPage> = [
-//   "Name",
-//   "Source",
-//   "UnitSize",
-//   "ServingSize",
-//   "Fat",
-//   "SatFat",
-//   "Sodium",
-//   "Protein",
-//   "Carbs",
-//   "Fiber",
-//   "Sugar",
-//   "AddedSugar",
-//   // "PageURL",
-//   // "pageContent",
-// ];
-
 // --- Utility Filtering Functions (Can be moved to a separate file like utils/filters.ts) ---
-
-/**
- * Filters RowPage data based on a single selected value for a specified key.
- * @param filterEnabled - Boolean to enable/disable this filter.
- * @param selectedValue - The value to filter by.
- * @param curData - The current array of RowPage objects to filter.
- * @param selection - The key (property name) on which to apply the filter.
- * @returns Filtered array of RowPage objects.
- */
-// function filterBySingleSelect(
-//   filterEnabled: boolean,
-//   selectedValue: string,
-//   curData: RowPage[],
-//   selection: "Source"
-// ): RowPage[] {
-//   if (filterEnabled && selectedValue !== "") {
-//     return curData.filter((row) => row[selection] === selectedValue);
-//   }
-//   return curData;
-// }
 
 /**
  * Filters RowPage data based on whether the Name property includes the filter text (case-insensitive).
