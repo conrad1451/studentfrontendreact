@@ -5,10 +5,6 @@ import { useState, useMemo } from "react";
 
 import type { RowPage } from "../utils/dataTypes";
 
-// interface Item {
-//   value: string;
-// }
-
 // --- Utility Filtering Functions (Can be moved to a separate file like utils/filters.ts) ---
 
 /**
@@ -19,17 +15,6 @@ import type { RowPage } from "../utils/dataTypes";
  * @param selection - The key (property name) on which to apply the filter.
  * @returns Filtered array of RowPage objects.
  */
-// function filterBySingleSelect(
-//   filterEnabled: boolean,
-//   selectedValue: string,
-//   curData: RowPage[],
-//   selection: "Source"
-// ): RowPage[] {
-//   if (filterEnabled && selectedValue !== "") {
-//     return curData.filter((row) => row[selection] === selectedValue);
-//   }
-//   return curData;
-// }
 
 /**
  * Filters RowPage data based on whether the Name property includes the filter text (case-insensitive).
