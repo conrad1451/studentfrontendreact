@@ -19,9 +19,9 @@ export const defaultColumnVisibility: ColumnVisibility = {
 };
 
 export const smartphoneVisibility: ColumnVisibility = {
-  myID: true,
+  myID: false,
   FirstName: true,
-  LastName: true,
+  LastName: false,
   Email: true,
   Major: true,
 };
