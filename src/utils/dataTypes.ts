@@ -78,14 +78,14 @@ export interface TableBodyRowsProps {
   onNewStudentSubmit: (event: React.FormEvent) => Promise<void>;
 }
 export interface ColumnVisibility {
-  myID: boolean;
+  // myID: boolean;
   FirstName: boolean;
   LastName: boolean;
   Email: boolean;
   Major: boolean;
 }
 export interface ColumnVisibilityMiniTable {
-  myID: boolean;
+  // myID: boolean;
   FirstName: boolean;
   Qty: boolean;
   LastName: boolean;
@@ -94,7 +94,7 @@ export interface ColumnVisibilityMiniTable {
 }
 
 export const allColumnKeys: Array<keyof ColumnVisibility> = [
-  "myID",
+  // "myID",
   "FirstName",
   "LastName",
   "Email",
