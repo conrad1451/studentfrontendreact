@@ -34,12 +34,12 @@ import type {
 } from "../utils/dataTypes";
 
 type SortableTableColumns = "FirstName" | "LastName" | "Email" | "Major";
-type SortableTableColumnsAlt =
-  | "myID"
-  | "FirstName"
-  | "LastName"
-  | "Email"
-  | "Major";
+// type SortableTableColumnsAlt =
+//   | "myID"
+//   | "FirstName"
+//   | "LastName"
+//   | "Email"
+//   | "Major";
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
   return (
