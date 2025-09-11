@@ -1,15 +1,9 @@
 // useTableFilters.ts
 
-// CHQ: Gemini AI generated
-
 import { useState, useMemo } from "react";
 // import { SelectChangeEvent } from "@mui/material/Select"; // For Material-UI Select events
 
 import type { RowPage } from "../utils/dataTypes";
-
-// interface Item {
-//   value: string;
-// }
 
 // --- Utility Filtering Functions (Can be moved to a separate file like utils/filters.ts) ---
 
@@ -21,17 +15,6 @@ import type { RowPage } from "../utils/dataTypes";
  * @param selection - The key (property name) on which to apply the filter.
  * @returns Filtered array of RowPage objects.
  */
-// function filterBySingleSelect(
-//   filterEnabled: boolean,
-//   selectedValue: string,
-//   curData: RowPage[],
-//   selection: "Source"
-// ): RowPage[] {
-//   if (filterEnabled && selectedValue !== "") {
-//     return curData.filter((row) => row[selection] === selectedValue);
-//   }
-//   return curData;
-// }
 
 /**
  * Filters RowPage data based on whether the Name property includes the filter text (case-insensitive).
@@ -40,7 +23,7 @@ import type { RowPage } from "../utils/dataTypes";
  * @param filterText - The text to search for in the Name property.
  * @returns Filtered array of RowPage objects.
  */
-function filterByPageName(
+function filterByFirstName(
   data: RowPage[],
   enabled: boolean,
   filterText: string
@@ -48,6 +31,33 @@ function filterByPageName(
   if (enabled && filterText.trim() !== "") {
     return data.filter((row) =>
       row.FirstName.toLowerCase().includes(filterText.toLowerCase())
+    );
+  }
+  return data;
+}
+
+function filterByLastName(
+  data: RowPage[],
+  enabled: boolean,
+  filterText: string
+): RowPage[] {
+  if (enabled && filterText.trim() !== "") {
+    return data.filter((row) =>
+      row.LastName.toLowerCase().includes(filterText.toLowerCase())
+    );
+  }
+  return data;
+}
+
+function filterByMajor(
+  data: RowPage[],
+  enabled: boolean,
+  filterText: string
+): RowPage[] {
+  if (enabled && filterText.trim() !== "") {
+    return data.filter((row) =>
+      // CHQ: Gemini AI fixed error by using nullish coalescing to provide an empty string if Major is null/undefined
+      (row.Major ?? "").toLowerCase().includes(filterText.toLowerCase())
     );
   }
   return data;
@@ -69,69 +79,102 @@ function filterByPageName(
  */
 export const useTableFilters = (initialData: RowPage[]) => {
   // --- State for Filters ---
-  const [pageFilterEnabled, setPageFilterEnabled] = useState(false);
-  const [pageFilterText, setPageFilterText] = useState("");
+  const [firstnameFilterEnabled, setFirstNameFilterEnabled] = useState(false);
+  const [firstnameFilterText, setFirstNameFilterText] = useState("");
 
-  //   const [sourceFilterEnabled, setSourceFilterEnabled] = useState(false);
-  //   const [sourceSelected, setSourceSelected] = useState<string>("");
+  const [lastnameFilterEnabled, setLastNameFilterEnabled] = useState(false);
+  const [lastnameFilterText, setLastNameFilterText] = useState("");
+
+  const [majorFilterEnabled, setMajorFilterEnabled] = useState(false);
+  const [majorFilterText, setMajorFilterText] = useState("");
 
   // --- Filter Handlers ---
 
-  const handlePageFilterToggle = () => {
-    setPageFilterEnabled((prev) => !prev);
-    setPageFilterText(""); // Clear filter text when toggling off
+  const handleFirstNameFilterToggle = () => {
+    setFirstNameFilterEnabled((prev) => !prev);
+    setFirstNameFilterText(""); // Clear filter text when toggling off
   };
 
-  //   const handleSourceFilterToggle = () => {
-  //     setSourceFilterEnabled((prev) => !prev);
-  //   };
+  const handleLastNameFilterToggle = () => {
+    setLastNameFilterEnabled((prev) => !prev);
+    setLastNameFilterText(""); // Clear filter text when toggling off
+  };
 
-  //   const handleSourceChange = (selection: Item | null) => {
-  //     setSourceSelected(selection ? selection.value : "");
-  //   };
+  const handleMajorFilterToggle = () => {
+    setMajorFilterEnabled((prev) => !prev);
+    setMajorFilterText(""); // Clear filter text when toggling off
+  };
 
   // --- Reset Functions ---
-  const resetPageFilters = () => {
-    setPageFilterText("");
-    setPageFilterEnabled(false);
+  const resetFirstNameFilters = () => {
+    setFirstNameFilterText("");
+    setFirstNameFilterEnabled(false);
   };
-  //   const resetSourceFilters = () => setSourceSelected("");
+
+  const resetLastNameFilters = () => {
+    setLastNameFilterText("");
+    setLastNameFilterEnabled(false);
+  };
+
+  const resetMajorFilters = () => {
+    setMajorFilterText("");
+    setMajorFilterEnabled(false);
+  };
 
   // --- Memoized Filtered Data ---
   const filteredData = useMemo(() => {
     let currentFilteredData = initialData;
 
     // Apply page name filter
-    currentFilteredData = filterByPageName(
+    currentFilteredData = filterByFirstName(
       currentFilteredData,
-      pageFilterEnabled,
-      pageFilterText
+      firstnameFilterEnabled,
+      firstnameFilterText
     );
 
-    // // Apply single-select status filter
-    // currentFilteredData = filterBySingleSelect(
-    //   sourceFilterEnabled,
-    //   sourceSelected,
-    //   currentFilteredData,
-    //   "Source"
-    // );
+    currentFilteredData = filterByLastName(
+      currentFilteredData,
+      lastnameFilterEnabled,
+      lastnameFilterText
+    );
+
+    currentFilteredData = filterByMajor(
+      currentFilteredData,
+      majorFilterEnabled,
+      majorFilterText
+    );
 
     return currentFilteredData;
-  }, [initialData, pageFilterEnabled, pageFilterText]);
+  }, [
+    initialData,
+    firstnameFilterEnabled,
+    firstnameFilterText,
+    lastnameFilterEnabled,
+    lastnameFilterText,
+    majorFilterEnabled,
+    majorFilterText,
+  ]);
 
   return {
     filteredData,
     filterProps: {
-      isPageFilterEnabled: pageFilterEnabled,
-      pageFilterText,
-      //   isSourceFilterEnabled: sourceFilterEnabled,
-      //   sourceSelected,
+      isFirstNameFilterEnabled: firstnameFilterEnabled,
+      firstnameFilterText,
+      isLastNameFilterEnabled: lastnameFilterEnabled,
+      lastnameFilterText,
+      isMajorFilterEnabled: majorFilterEnabled,
+      majorFilterText,
     },
     filterHandlers: {
-      togglePageFilter: handlePageFilterToggle,
-      setPageFilterText,
-      resetPageFilters,
-      //   resetSourceFilters,
+      toggleFirstNameFilter: handleFirstNameFilterToggle,
+      setFirstNameFilterText,
+      resetFirstNameFilters,
+      toggleLastNameFilter: handleLastNameFilterToggle,
+      setLastNameFilterText,
+      resetLastNameFilters,
+      toggleMajorFilter: handleMajorFilterToggle,
+      setMajorFilterText,
+      resetMajorFilters,
     },
   };
 };

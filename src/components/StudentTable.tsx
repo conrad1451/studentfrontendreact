@@ -63,8 +63,7 @@ const StudentActionModal = (props: {
         }}
       >
         <Typography variant="h6" component="h2">
-          Actions for {props.student.FirstName} {props.student.LastName} (ID:{" "}
-          {props.student.myID})
+          Actions for {props.student.FirstName}
         </Typography>
         <Button
           variant="contained"
@@ -419,7 +418,9 @@ const StudentTable = (props: {
 
     // Now use the hook to show the update confirmation modal
     confirmationModal.showConfirmation(
-      `Are you sure you want to update student ID ${student.myID}?`,
+      `Are you sure you want to update student?`,
+      // `Are you sure you want to update student ID ${student.myID}?`,
+
       confirmUpdateStudent,
       student,
       "update"
@@ -432,7 +433,8 @@ const StudentTable = (props: {
 
     // Now use the hook to show the delete confirmation modal
     confirmationModal.showConfirmation(
-      `Are you sure you want to delete student ID ${student.myID} - ${student.FirstName} ${student.LastName}? This action cannot be undone.`,
+      // `Are you sure you want to delete student ID ${student.myID} - ${student.FirstName} ${student.LastName}? This action cannot be undone.`,
+      `Are you sure you want to delete student ID ${student.FirstName} ${student.LastName}? This action cannot be undone.`,
       confirmDeleteStudent,
       student,
       "delete"

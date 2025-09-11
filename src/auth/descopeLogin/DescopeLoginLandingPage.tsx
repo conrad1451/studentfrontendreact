@@ -14,15 +14,8 @@ interface LandingPageProps {
   theHandleLogout: () => void;
 }
 
-// import { UserData } from "../../utils/dataTypes";
-
 const DescopeLandingPage = (props: LandingPageProps) => {
   const sessionToken = getSessionToken();
-
-  // const theTeacherData: UserData = JSON.parse(props.theToken);
-
-  // const theTeacherData: UserData = JSON.parse(sessionToken);
-  // const theTeacherID: string = theTeacherData.userId;
 
   return (
     <>

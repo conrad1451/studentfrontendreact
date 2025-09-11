@@ -1,11 +1,16 @@
+// useColumnVisibility.ts
+
 // import { useState, useMemo } from "react";
 import { useState } from "react";
 
-import type {
-  ColumnVisibility,
-  ColumnVisibilityMiniTable,
-} from "../utils/dataTypes";
-
+// --- Interfaces
+export interface ColumnVisibility {
+  myID: boolean;
+  FirstName: boolean;
+  LastName: boolean;
+  Email: boolean;
+  Major: boolean;
+}
 // --- Default and Preset Column Visibility Settings ---
 export const defaultColumnVisibility: ColumnVisibility = {
   myID: true,
@@ -16,12 +21,21 @@ export const defaultColumnVisibility: ColumnVisibility = {
 };
 
 export const smartphoneVisibility: ColumnVisibility = {
-  myID: true,
+  myID: false,
   FirstName: true,
-  LastName: true,
+  LastName: false,
   Email: true,
   Major: true,
 };
+
+export interface ColumnVisibilityMiniTable {
+  myID: boolean;
+  FirstName: boolean;
+  Qty: boolean;
+  LastName: boolean;
+  Email: boolean;
+  Major: boolean;
+}
 
 export const defaultColumnVisibilityMiniTable: ColumnVisibilityMiniTable = {
   myID: true,

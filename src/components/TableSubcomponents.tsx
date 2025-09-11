@@ -33,6 +33,14 @@ import type {
   TableBodyRowsProps,
 } from "../utils/dataTypes";
 
+type SortableTableColumns = "FirstName" | "LastName" | "Email" | "Major";
+// type SortableTableColumnsAlt =
+//   | "myID"
+//   | "FirstName"
+//   | "LastName"
+//   | "Email"
+//   | "Major";
+
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
   return (
     <form onSubmit={onSubmit}>
@@ -40,6 +48,100 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
       {/* Pass the onSubmit handler directly */}
       <button type="submit">Submit data to database</button>
     </form>
+  );
+};
+
+const UpButton = (props: {
+  colName: SortableTableColumns;
+  // sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
+  sortProps: ReturnType<typeof useTableSorting>["sortProps"];
+  sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
+}) => {
+  return (
+    <>
+      <Button
+        onClick={
+          () => props.sortHandlers.handleSort(props.colName)
+          // props.sortHandlers.handleSort(colName as SortableTableColumns)
+        }
+        title={
+          props.sortProps.sortColumn === props.colName &&
+          props.sortProps.sortDirection === "asc"
+            ? "Current: Ascending. Click to sort Descending."
+            : "Click to sort Ascending."
+        }
+        sx={{
+          minWidth: "auto",
+          p: "2px",
+          // Only show the up arrow if not currently sorted ascending
+          visibility:
+            props.sortProps.sortColumn === props.colName &&
+            props.sortProps.sortDirection === "asc"
+              ? "visible" // Show if currently ascending
+              : "visible", // Always visible to allow sorting
+        }}
+      >
+        {props.sortProps.sortColumn === props.colName &&
+        props.sortProps.sortDirection === "asc"
+          ? "▲"
+          : "⬆️"}
+      </Button>
+    </>
+  );
+};
+
+const DownButton = (props: {
+  colName: SortableTableColumns;
+  // sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
+  sortProps: ReturnType<typeof useTableSorting>["sortProps"];
+  sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
+}) => {
+  return (
+    <>
+      <Button
+        onClick={
+          () => props.sortHandlers.handleSort(props.colName)
+          // props.sortHandlers.handleSort(colName as SortableTableColumns)
+        }
+        title={
+          props.sortProps.sortColumn === props.colName &&
+          props.sortProps.sortDirection === "desc"
+            ? "Current: Descending. Click to reset sort."
+            : "Click to sort Descending."
+        }
+        sx={{
+          minWidth: "auto",
+          p: "2px",
+          // Only show the down arrow if not currently sorted descending
+          visibility:
+            props.sortProps.sortColumn === props.colName &&
+            props.sortProps.sortDirection === "desc"
+              ? "visible" // Show if currently descending
+              : "visible", // Always visible to allow sorting
+        }}
+      >
+        {props.sortProps.sortColumn === props.colName &&
+        props.sortProps.sortDirection === "desc"
+          ? "▼"
+          : "⬇️"}
+      </Button>
+    </>
+  );
+};
+
+const ResetButton = (props: {
+  sortHandlers: ReturnType<typeof useTableSorting>["sortHandlers"];
+}) => {
+  return (
+    <>
+      <Button
+        onClick={props.sortHandlers.resetSort}
+        title="Reset All Sorts"
+        sx={{ minWidth: "auto", p: "2px" }}
+      >
+        🔄
+      </Button>
+    </>
   );
 };
 
@@ -70,72 +172,19 @@ export const TableHeaderCells = (props: {
                   ] as SortableTableColumns[]
                 ).includes(colName as SortableTableColumns) && (
                   <>
-                    <Button
-                      onClick={() =>
-                        props.sortHandlers.handleSort(
-                          colName as SortableTableColumns
-                        )
-                      }
-                      title={
-                        props.sortProps.sortColumn === colName &&
-                        props.sortProps.sortDirection === "asc"
-                          ? "Current: Ascending. Click to sort Descending."
-                          : "Click to sort Ascending."
-                      }
-                      sx={{
-                        minWidth: "auto",
-                        p: "2px",
-                        // Only show the up arrow if not currently sorted ascending
-                        visibility:
-                          props.sortProps.sortColumn === colName &&
-                          props.sortProps.sortDirection === "asc"
-                            ? "visible" // Show if currently ascending
-                            : "visible", // Always visible to allow sorting
-                      }}
-                    >
-                      {props.sortProps.sortColumn === colName &&
-                      props.sortProps.sortDirection === "asc"
-                        ? "▲"
-                        : "⬆️"}
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        props.sortHandlers.handleSort(
-                          colName as SortableTableColumns
-                        )
-                      }
-                      title={
-                        props.sortProps.sortColumn === colName &&
-                        props.sortProps.sortDirection === "desc"
-                          ? "Current: Descending. Click to reset sort."
-                          : "Click to sort Descending."
-                      }
-                      sx={{
-                        minWidth: "auto",
-                        p: "2px",
-                        // Only show the down arrow if not currently sorted descending
-                        visibility:
-                          props.sortProps.sortColumn === colName &&
-                          props.sortProps.sortDirection === "desc"
-                            ? "visible" // Show if currently descending
-                            : "visible", // Always visible to allow sorting
-                      }}
-                    >
-                      {props.sortProps.sortColumn === colName &&
-                      props.sortProps.sortDirection === "desc"
-                        ? "▼"
-                        : "⬇️"}
-                    </Button>
-
+                    <UpButton
+                      colName={colName}
+                      sortProps={props.sortProps}
+                      sortHandlers={props.sortHandlers}
+                    />
+                    <DownButton
+                      colName={colName}
+                      sortProps={props.sortProps}
+                      sortHandlers={props.sortHandlers}
+                    />
                     {props.sortProps.sortColumn === colName &&
                       props.sortProps.sortDirection && (
-                        <Button
-                          onClick={props.sortHandlers.resetSort}
-                          title="Reset All Sorts"
-                          sx={{ minWidth: "auto", p: "2px" }}
-                        >
-                          🔄
-                        </Button>
+                        <ResetButton sortHandlers={props.sortHandlers} />
                       )}
                   </>
                 )}
@@ -160,7 +209,7 @@ export const TableBodyRows = (props: TableBodyRowsProps) => {
           {props.theColumnKeys.map((colName) =>
             props.visibleColumns[colName] ? (
               <TableCell key={colName}>
-                {colName === "myID" && row.myID}
+                {/* {colName === "myID" && row.myID} */}
                 {colName === "FirstName" && row.FirstName}
                 {colName === "LastName" && row.LastName}
                 {colName === "Email" && row.Email}

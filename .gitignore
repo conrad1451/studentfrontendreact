@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 this.html
+
+/tests/components/StudentTable.notest.tsx
+/tests/components/TableHeaderCells.notest.tsx
