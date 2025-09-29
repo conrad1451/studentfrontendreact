@@ -27,9 +27,15 @@ function checkPermission(user: DescopeUser, permission: string) {
   const hasTeacherRole =
     user.roleNames &&
     user.roleNames.some((role) => role.toLowerCase() === "teacher");
+  // const hasAdminRole =
+  //   user.roleNames &&
+  //   user.roleNames.some((role) => role.toLowerCase() === "admin");
+
   const hasAdminRole =
     user.roleNames &&
-    user.roleNames.some((role) => role.toLowerCase() === "admin");
+    user.roleNames.some(
+      (role) => role.toLowerCase() === "School Administrator"
+    );
 
   if (hasAdminRole) {
     return true;
