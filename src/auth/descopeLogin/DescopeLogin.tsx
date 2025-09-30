@@ -5,7 +5,8 @@ import { AuthProvider } from "@descope/react-sdk";
 import DescopeAuth from "./DescopeAuth";
 
 function DescopeLogin() {
-  const projectId = import.meta.env.VITE_DESCOPE_PROJECT_PERSONAL_MELLOW_NAVY;
+  const projectId = import.meta.env.VITE_DESCOPE_PERSONALPROJECT1;
+  // const projectId = import.meta.env.VITE_DESCOPE_PROJECT_PERSONAL_MELLOW_NAVY;
   // const projectId = import.meta.env.VITE_DESCOPE_PROJECT_ID;
 
   return (

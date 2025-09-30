@@ -39,32 +39,32 @@ const registerTeacherOnBackend = async (user: DescopeUser) => {
     return;
   }
 
-  let firstName: string;
-  let lastName: string;
+  // let firstName: string;
+  // let lastName: string;
 
-  // 2. Handle optional 'name' field
-  if (user.name) {
-    // If name exists, try to split it
-    const names = user.name.split(/\s+/);
-    firstName = names[0];
-    lastName = names.length > 1 ? names.slice(1).join(" ") : names[0];
-  } else {
-    firstName = "names[0]";
-    lastName = "names.length";
-    // Fallback: Use loginId for both first and last name if the full name is missing
-    // console.warn(
-    //   "User name is missing. Using loginId for first and last name fallback."
-    // );
-    // firstName = user.loginId;
-    // lastName = user.loginId;
-  }
+  // // 2. Handle optional 'name' field
+  // if (user.name) {
+  //   // If name exists, try to split it
+  //   const names = user.name.split(/\s+/);
+  //   firstName = names[0];
+  //   lastName = names.length > 1 ? names.slice(1).join(" ") : names[0];
+  // } else {
+  //   firstName = "names[0]";
+  //   lastName = "names.length";
+  //   // Fallback: Use loginId for both first and last name if the full name is missing
+  //   // console.warn(
+  //   //   "User name is missing. Using loginId for first and last name fallback."
+  //   // );
+  //   // firstName = user.loginId;
+  //   // lastName = user.loginId;
+  // }
 
-  const backendData = {
-    // This ensures we always send strings for names
-    first_name: firstName,
-    last_name: lastName,
-    teacher_username: user.loginId, // Still using loginId as the username
-  };
+  // const backendData = {
+  //   // This ensures we always send strings for names
+  //   first_name: firstName,
+  //   last_name: lastName,
+  //   teacher_username: user.loginId, // Still using loginId as the username
+  // };
 
   // // Split the full name into first and last names (simple assumption)
   // const names = user.name.split(/\s+/);
@@ -89,7 +89,7 @@ const registerTeacherOnBackend = async (user: DescopeUser) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionToken}`, // Send the session token for validation
       },
-      body: JSON.stringify(backendData),
+      // body: JSON.stringify(backendData),
     });
 
     if (response.ok) {
