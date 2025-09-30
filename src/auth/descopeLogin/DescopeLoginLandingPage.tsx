@@ -28,28 +28,59 @@ interface LandingPageProps {
 const registerTeacherOnBackend = async (user: DescopeUser) => {
   const sessionToken = getSessionToken(); // Get the current session token
 
-  // Ensure we have a token and the necessary user data
-  if (!sessionToken || !user.name || !user.loginId || !user.email) {
+  // 1. REQUIRE ONLY the sessionToken and loginId
+  if (!sessionToken || !user.loginId) {
+    // // Ensure we have a token and the necessary user data
+    // if (!sessionToken || !user.name || !user.loginId || !user.email) {
     console.error(
-      "Missing token or required user data for backend registration."
+      "Missing token or required user data (loginId) for backend registration. Skipping."
+      // "Missing token or required user data for backend registration."
     );
     return;
   }
 
-  // Split the full name into first and last names (simple assumption)
-  const names = user.name.split(/\s+/);
-  const firstName = names[0];
-  const lastName = names.length > 1 ? names.slice(1).join(" ") : names[0]; // If one name, use it as last name too
+  let firstName: string;
+  let lastName: string;
+
+  // 2. Handle optional 'name' field
+  if (user.name) {
+    // If name exists, try to split it
+    const names = user.name.split(/\s+/);
+    firstName = names[0];
+    lastName = names.length > 1 ? names.slice(1).join(" ") : names[0];
+  } else {
+    // Fallback: Use loginId for both first and last name if the full name is missing
+    console.warn(
+      "User name is missing. Using loginId for first and last name fallback."
+    );
+    firstName = user.loginId;
+    lastName = user.loginId;
+  }
 
   const backendData = {
+    // This ensures we always send strings for names
     first_name: firstName,
     last_name: lastName,
-    teacher_username: user.loginId, // Assuming loginId is the username or unique identifier
-    // Note: The backend handler will use the TeacherID from the *token*, not the body.
+    teacher_username: user.loginId, // Still using loginId as the username
   };
 
+  // // Split the full name into first and last names (simple assumption)
+  // const names = user.name.split(/\s+/);
+  // const firstName = names[0];
+  // const lastName = names.length > 1 ? names.slice(1).join(" ") : names[0]; // If one name, use it as last name too
+
+  // const backendData = {
+  //   first_name: firstName,
+  //   last_name: lastName,
+  //   teacher_username: user.loginId, // Assuming loginId is the username or unique identifier
+  //   // Note: The backend handler will use the TeacherID from the *token*, not the body.
+  // };
+
   try {
-    const response = await fetch("http://localhost:8080/api/registerteacher", {
+    const BASE_URL =
+      import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_LOCALHOST;
+
+    const response = await fetch(`${BASE_URL}/api/registerteacher`, {
       // <-- Update URL if needed (e.g., to Vercel URL)
       method: "POST",
       headers: {
