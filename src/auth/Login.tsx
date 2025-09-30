@@ -5,7 +5,8 @@ import SamplePage from "../components/SamplePage";
 import { AuthProvider } from "@descope/react-sdk";
 
 const Login = () => {
-  const projectId = import.meta.env.VITE_DESCOPE_PROJECT_ID;
+  const projectId = import.meta.env.VITE_DESCOPE_PROJECT_PERSONAL_MELLOW_NAVY;
+  // const projectId = import.meta.env.VITE_DESCOPE_PROJECT_ID;
 
   const loginChoice: string = "Descope";
   return (
