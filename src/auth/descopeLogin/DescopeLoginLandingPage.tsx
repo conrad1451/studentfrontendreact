@@ -49,12 +49,14 @@ const registerTeacherOnBackend = async (user: DescopeUser) => {
     firstName = names[0];
     lastName = names.length > 1 ? names.slice(1).join(" ") : names[0];
   } else {
+    firstName = "names[0]";
+    lastName = "names.length";
     // Fallback: Use loginId for both first and last name if the full name is missing
-    console.warn(
-      "User name is missing. Using loginId for first and last name fallback."
-    );
-    firstName = user.loginId;
-    lastName = user.loginId;
+    // console.warn(
+    //   "User name is missing. Using loginId for first and last name fallback."
+    // );
+    // firstName = user.loginId;
+    // lastName = user.loginId;
   }
 
   const backendData = {
