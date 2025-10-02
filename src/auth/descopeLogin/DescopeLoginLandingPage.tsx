@@ -26,6 +26,7 @@ const DescopeLandingPage = (props: LandingPageProps) => {
       {/* <LoginDashboard userID={theTeacherID} /> */}
       <LoginDashboard sessionToken={sessionToken} />
       {/* <FormToMongo /> */}
+      <button onClick={props.theHandleLogout}>Back</button>
       <button onClick={props.theHandleLogout}>Logout</button>
     </>
   );
