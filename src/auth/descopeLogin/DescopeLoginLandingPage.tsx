@@ -2,6 +2,7 @@
 
 import LoginDashboard from "../../components/accountAccessPages/LoginDashboard";
 import { getSessionToken } from "@descope/react-sdk"; // CHQ: suggested by Descope AI
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface DescopeUser {
   name?: string; // Assuming 'name' is a property in the user object. Adjust as needed.
@@ -17,6 +18,18 @@ interface LandingPageProps {
 const DescopeLandingPage = (props: LandingPageProps) => {
   const sessionToken = getSessionToken();
 
+  // CHQ: Gemini AI added the hooks and handleBack callback
+  // 2. Initialize the hooks
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAtLandingPage = location.pathname === "/";
+
+  // Function for the back button
+  const handleBack = () => {
+    // Navigates to the base path '/'
+    navigate("/");
+  };
   return (
     <>
       {/* <p>Hello {props.theUser.name}</p> */}
@@ -26,7 +39,9 @@ const DescopeLandingPage = (props: LandingPageProps) => {
       {/* <LoginDashboard userID={theTeacherID} /> */}
       <LoginDashboard sessionToken={sessionToken} />
       {/* <FormToMongo /> */}
-      <button onClick={props.theHandleLogout}>Back</button>
+
+      {/* CHQ: Gemini AI added Conditionally render the "Back" button */}
+      {!isAtLandingPage && <button onClick={handleBack}>Back</button>}
       <button onClick={props.theHandleLogout}>Logout</button>
     </>
   );
