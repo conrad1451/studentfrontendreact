@@ -19,14 +19,14 @@ import "./App.css";
 // --- REQUIRED TYPE STUBS ---
 
 // Assuming StudentRecord is the structure of your student data
-interface StudentRecord {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  major: string;
-  teacher_id: string; // Assuming this is also present
-}
+// interface StudentRecord {
+//   id: number;
+//   first_name: string;
+//   last_name: string;
+//   email: string;
+//   major: string;
+//   teacher_id: string; // Assuming this is also present
+// }
 
 // Assuming UseStudentsResult is the return type of your custom hook
 // interface UseStudentsResult {
