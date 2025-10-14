@@ -8,6 +8,6 @@ export const apiPicker = (theChoice: number) => {
     return choice1;
   } else {
     // return String(choice2 + "?teacherID=" + theToken);
-    return choice2;
+    return choice2 + "/godbstudents";
   }
 };
