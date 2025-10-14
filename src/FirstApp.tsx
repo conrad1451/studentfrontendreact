@@ -49,64 +49,65 @@ const BASE_API_URL = import.meta.env.VITE_API_GO_URL;
  * @param sessionToken The Descope session token for authentication.
  */
 
-const registerTeacherInDB = async (sessionToken: string) => {
-  if (!BASE_API_URL) {
-    console.error("VITE_GO_API_URL environment variable is not set.");
-    alert("Error: API URL is not configured.");
-    return;
-  }
+// CHQ: No longer needed because server handles automatic teacher registration to teacher table
+// const registerTeacherInDB = async (sessionToken: string) => {
+//   if (!BASE_API_URL) {
+//     console.error("VITE_GO_API_URL environment variable is not set.");
+//     alert("Error: API URL is not configured.");
+//     return;
+//   }
 
-  const apiURL = `${BASE_API_URL}/registerteacher`;
+//   const apiURL = `${BASE_API_URL}/registerteacher`;
 
-  try {
-    const response = await fetch(apiURL, {
-      method: "POST", // Changed to POST
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionToken}`,
-      },
-      // Optionally send a minimal body, though the backend relies on the token for the ID
-      body: JSON.stringify({}),
-    });
+//   try {
+//     const response = await fetch(apiURL, {
+//       method: "POST", // Changed to POST
+//       mode: "cors",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${sessionToken}`,
+//       },
+//       // Optionally send a minimal body, though the backend relies on the token for the ID
+//       body: JSON.stringify({}),
+//     });
 
-    let data = null;
+//     let data = null;
 
-    // Check if the response is successful AND has content (not a 204 No Content)
-    // response.json() will throw an error if the body is empty.
-    const hasContent =
-      response.headers.get("content-length") !== "0" && response.status !== 204;
+//     // Check if the response is successful AND has content (not a 204 No Content)
+//     // response.json() will throw an error if the body is empty.
+//     const hasContent =
+//       response.headers.get("content-length") !== "0" && response.status !== 204;
 
-    if (hasContent) {
-      try {
-        data = await response.json();
-      } catch (e) {
-        // This catches cases where the backend sends a successful status
-        // but the body is not valid JSON (e.g., plain text or empty)
-        console.warn(
-          "API call succeeded but failed to parse response body as JSON.",
-          e
-        );
-      }
-    }
-    if (!response.ok) {
-      // Handle non-2xx responses
-      const errorMessage =
-        data?.message || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
+//     if (hasContent) {
+//       try {
+//         data = await response.json();
+//       } catch (e) {
+//         // This catches cases where the backend sends a successful status
+//         // but the body is not valid JSON (e.g., plain text or empty)
+//         console.warn(
+//           "API call succeeded but failed to parse response body as JSON.",
+//           e
+//         );
+//       }
+//     }
+//     if (!response.ok) {
+//       // Handle non-2xx responses
+//       const errorMessage =
+//         data?.message || `HTTP error! status: ${response.status}`;
+//       throw new Error(errorMessage);
+//     }
 
-    // Success response
-    const successMessage = data?.message || "Teacher registered successfully.";
-    console.log("Teacher registration successful:", data);
-    alert("Teacher registration processed successfully: " + successMessage);
-  } catch (e: any) {
-    const errorMessage =
-      e instanceof Error ? e.message : "An unknown error occurred.";
-    console.error("Failed to register teacher:", errorMessage);
-    alert("Failed to register teacher: " + errorMessage);
-  }
-};
+//     // Success response
+//     const successMessage = data?.message || "Teacher registered successfully.";
+//     console.log("Teacher registration successful:", data);
+//     alert("Teacher registration processed successfully: " + successMessage);
+//   } catch (e: any) {
+//     const errorMessage =
+//       e instanceof Error ? e.message : "An unknown error occurred.";
+//     console.error("Failed to register teacher:", errorMessage);
+//     alert("Failed to register teacher: " + errorMessage);
+//   }
+// };
 
 // ----------------------------------------------------------------------
 // Navigation Component
@@ -124,10 +125,11 @@ function NavigationButtons({ mySessionToken }: NavigationButtonsProps) {
     navigate(path);
   };
 
-  // Memoize the handler for registering the teacher
-  const handleRegisterTeacher = useCallback(() => {
-    registerTeacherInDB(mySessionToken);
-  }, [mySessionToken]);
+  // CHQ: No longer needed because middleware handles automatic teacher registration to teacher table
+  // // Memoize the handler for registering the teacher
+  // const handleRegisterTeacher = useCallback(() => {
+  //   registerTeacherInDB(mySessionToken);
+  // }, [mySessionToken]);
 
   return (
     <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
@@ -140,13 +142,15 @@ function NavigationButtons({ mySessionToken }: NavigationButtonsProps) {
       >
         Go to Student Roster
       </Button>
-      <Button
+
+      {/* CHQ: No longer needed because middleware handles automatic teacher registration to teacher table */}
+      {/* <Button
         variant="contained"
         // 2. Updated to call the new registration function
         onClick={handleRegisterTeacher}
       >
         Register as a Teacher
-      </Button>
+      </Button> */}
     </Box>
   );
 }
