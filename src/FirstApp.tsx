@@ -138,7 +138,7 @@ function NavigationButtons({ mySessionToken }: NavigationButtonsProps) {
       </Button>
       <Button
         variant="contained"
-        onClick={() => handleNavigate("/datafetchergo1")}
+        onClick={() => handleNavigate("/studentroster")}
       >
         Go to Student Roster
       </Button>
@@ -175,7 +175,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
           />
           <Route path="/orig" element={<SamplePage />} />
           <Route
-            path="/datafetchergo1"
+            path="/studentroster"
             element={
               // StudentsDisplay needs the session token to use the useStudents hook
               <StudentsDisplay
