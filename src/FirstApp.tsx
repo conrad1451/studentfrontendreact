@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
 import StudentsDisplay from "./components/StudentsDisplay";
+import TeacherInfo from "./components/TeacherInfo";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "./App.css";
@@ -35,8 +36,7 @@ import "./App.css";
 // }
 
 // Get API base URL from environment variables
-// const BASE_API_URL = import.meta.env.VITE_GO_API_URL;
-const BASE_API_URL = import.meta.env.VITE_API_GO_URL;
+// const BASE_API_URL = import.meta.env.VITE_API_GO_URL;
 
 // ----------------------------------------------------------------------
 // 1. New Imperative Function to Register Teacher (replaces writetonewtalbe hook)
@@ -143,6 +143,12 @@ function NavigationButtons({ mySessionToken }: NavigationButtonsProps) {
         Go to Student Roster
       </Button>
 
+      <Button
+        variant="contained"
+        onClick={() => handleNavigate("/teacherprofile")}
+      >
+        Go to Teacher Profile
+      </Button>
       {/* CHQ: No longer needed because middleware handles automatic teacher registration to teacher table */}
       {/* <Button
         variant="contained"
@@ -184,6 +190,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
               />
             }
           />
+          <Route path="/teacherprofile" element={<TeacherInfo />} />
         </Routes>
       </Router>
     </>
