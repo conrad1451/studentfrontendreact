@@ -1,6 +1,9 @@
 // FirstApp.tsx
 
-import React, { useState, useEffect, useMemo, useCallback } from "react"; // ADDED: useCallback for the new function
+// import React, { useState, useEffect, useMemo, useCallback } from "react"; // ADDED: useCallback for the new function
+
+import { useCallback } from "react"; // ADDED: useCallback for the new function
+
 import SamplePage from "./components/SamplePage";
 // import CustomTable from './MyTable'
 
@@ -26,12 +29,12 @@ interface StudentRecord {
 }
 
 // Assuming UseStudentsResult is the return type of your custom hook
-interface UseStudentsResult {
-  students: StudentRecord[];
-  loading: boolean;
-  error: string | null;
-  refetchStudents: () => void;
-}
+// interface UseStudentsResult {
+//   students: StudentRecord[];
+//   loading: boolean;
+//   error: string | null;
+//   refetchStudents: () => void;
+// }
 
 // Get API base URL from environment variables
 // const BASE_API_URL = import.meta.env.VITE_GO_API_URL;
