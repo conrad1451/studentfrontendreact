@@ -114,11 +114,8 @@ import "./App.css";
 // ----------------------------------------------------------------------
 
 // The FirstApp component now passes the session token to NavigationButtons
-interface NavigationButtonsProps {
-  mySessionToken: string;
-}
 
-function NavigationButtons({ mySessionToken }: NavigationButtonsProps) {
+function NavigationButtons() {
   const navigate = useNavigate();
 
   const handleNavigate = (path: string) => {
@@ -173,12 +170,7 @@ const FirstApp = (props: { mySessionToken: string }) => {
       <Router>
         <Routes>
           {/* 3. Pass the session token down to the NavigationButtons component */}
-          <Route
-            path="/"
-            element={
-              <NavigationButtons mySessionToken={props.mySessionToken} />
-            }
-          />
+          <Route path="/" element={<NavigationButtons />} />
           <Route path="/orig" element={<SamplePage />} />
           <Route
             path="/studentroster"
@@ -190,7 +182,10 @@ const FirstApp = (props: { mySessionToken: string }) => {
               />
             }
           />
-          <Route path="/teacherprofile" element={<TeacherInfo />} />
+          <Route
+            path="/teacherprofile"
+            element={<TeacherInfo mySessionToken={props.mySessionToken} />}
+          />
         </Routes>
       </Router>
     </>
