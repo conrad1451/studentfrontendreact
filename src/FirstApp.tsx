@@ -1,11 +1,9 @@
 // FirstApp.tsx
 
 // import React, { useState, useEffect, useMemo, useCallback } from "react"; // ADDED: useCallback for the new function
-
 import { useCallback } from "react"; // ADDED: useCallback for the new function
 
 import SamplePage from "./components/SamplePage";
-// import CustomTable from './MyTable'
 
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
