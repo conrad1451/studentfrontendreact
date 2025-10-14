@@ -18,7 +18,8 @@ import { Descope } from "@descope/react-sdk";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
-import DescopeLandingPage from "./DescopeLoginLandingPage";
+// import DescopeLandingPage from "./DescopeLoginLandingPage";
+import DescopeLandingPage from "../../CombinedStudentPortalLogin";
 
 import type { DescopeUser } from "../../utils/dataTypes";
 
