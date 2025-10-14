@@ -23,9 +23,7 @@ const DescopeLandingPage = (props: LandingPageProps) => {
       {/* <p>Hello {props.theUser?.name}</p>{" "} */}
       {/* Using optional chaining in case name is not always present */}
       <div>My Private Component</div>
-      {/* <LoginDashboard userID={theTeacherID} /> */}
       <LoginDashboard sessionToken={sessionToken} />
-      {/* <FormToMongo /> */}
       {/* <button onClick={props.theHandleLogout}>Back</button> */}
       <button onClick={props.theHandleLogout}>Logout</button>
     </>
