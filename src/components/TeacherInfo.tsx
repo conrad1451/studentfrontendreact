@@ -229,7 +229,7 @@ const StudentCreationForm: React.FC<AppProps> = ({ sessionToken }) => {
 };
 
 const TeacherInfo = (props: { mySessionToken: string }) => {
-  return <StudentCreationForm sessionToken={mySessionToken} />;
+  return <StudentCreationForm sessionToken={props.mySessionToken} />;
 };
 
 export default TeacherInfo;
